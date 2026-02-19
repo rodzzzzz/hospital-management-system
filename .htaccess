@@ -1,0 +1,5 @@
+RewriteEngine On
+
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+RewriteCond %{DOCUMENT_ROOT}/%1.php -f
+RewriteRule ^ /%1.php [R=301,L]

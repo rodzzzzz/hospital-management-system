@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autofill</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        width: 300px;
+        margin: 0;
+        padding: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        font-size: 13px;
+        color: #1f2937;
+        background: #fff;
+      }
+      .header {
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f9fafb;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+        letter-spacing: -0.01em;
+      }
+      .body {
+        padding: 16px;
+      }
+      .section {
+        margin-bottom: 14px;
+      }
+      .section:last-child {
+        margin-bottom: 0;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #374151;
+        font-size: 12px;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 13px;
+        background: #fff;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      input::placeholder {
+        color: #9ca3af;
+      }
+      input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 10px 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-primary {
+        background: #2563eb;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1d4ed8;
+      }
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: #6b7280;
+        margin-top: 8px;
+      }
+      .btn-ghost:hover {
+        color: #374151;
+        background: #f3f4f6;
+      }
+      .status {
+        margin-top: 10px;
+        padding: 9px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .status.success {
+        background: #ecfdf5;
+        color: #047857;
+      }
+      .status.error {
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+      .status.info {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .logged-in-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #ecfdf5;
+        color: #047857;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 12px;
+      }
+      .logged-in-badge::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 12px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>TTSI AutoFill</h1>
+    </div>
+    <div class="body">
+      <div id="viewLoggedIn" class="hidden">
+        <div class="logged-in-badge" id="loggedInAs">
+          Logged in as <span id="loggedInUsername"></span>
+        </div>
+        <div class="section">
+          <button type="button" class="btn btn-primary" id="btnFill">
+            Fill form on this page
+          </button>
+        </div>
+        <div class="section">
+          <button type="button" class="btn btn-ghost" id="btnLogout">
+            Log out
+          </button>
+        </div>
+      </div>
+      <div id="viewLogin" class="hidden">
+        <div class="section">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Your username"
+            autocomplete="username"
+          />
+        </div>
+        <div class="section">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Your password"
+            autocomplete="current-password"
+          />
+        </div>
+        <div class="section">
+          <button type="button" class="btn btn-primary" id="btnLogin">
+            Log in
+          </button>
+        </div>
+      </div>
+      <div id="status" class="status hidden"></div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
