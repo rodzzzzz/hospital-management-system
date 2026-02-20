@@ -11,7 +11,7 @@ function db(): PDO
     $host = getenv('DB_HOST') ?: '127.0.0.1';
     $dbName = getenv('DB_NAME') ?: 'TTSI_auto';
     $user = getenv('DB_USER') ?: 'root';
-    $pass = getenv('DB_PASS') ?: '';
+    $pass = getenv('DB_PASS') ?: 'password';
 
     $pdo = new PDO("mysql:host={$host};charset=utf8mb4", $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

@@ -350,7 +350,7 @@ Lanao Del Sur, BARMM 9300
                         <div class="queue-item bg-gray-50 border border-gray-300">
                             <div class="queue-number">${patient.queue_number}</div>
                             <div class="patient-info">
-                                <div class="patient-name line-clamp-1">${patient.full_name} ${patient.full_name} ${patient.full_name} ${patient.full_name} ${patient.full_name}</div>
+                                <div class="patient-name line-clamp-1">${patient.full_name}</div>
                             </div>
                         </div>
                     `).join('');
