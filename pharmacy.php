@@ -238,7 +238,61 @@
                         </div>
                     </div>
                 </div>
-                 <!-- Product List Section -->
+
+                <!-- Pharmacy Queue Section -->
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Pharmacy Queue</h2>
+                        <span class="text-sm text-gray-500">Prescription dispensing queue</span>
+                        <div class="flex items-center space-x-3">
+                            <button id="pharmacyCallNextBtn" onclick="callNextPatient()" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+                                <i class="fas fa-bell"></i> Call Next
+                            </button>
+                            <button onclick="callNextAndMarkUnavailable()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                                <i class="fas fa-user-slash"></i> Call Next & Mark Unavailable
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Currently Serving -->
+                    <div class="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div class="text-sm font-medium text-gray-600 mb-1">Currently Serving:</div>
+                        <div id="pharmacyCurrentlyServing" class="text-lg font-semibold text-yellow-600">No patient being served</div>
+                        <div id="pharmacyStationSelection" class="mt-3 hidden">
+                            <div class="text-sm font-medium text-gray-600 mb-1">Next Destination:</div>
+                            <select id="pharmacyDestinationStation" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                                <option value="">Select destination...</option>
+                            </select>
+                            <button onclick="completeService()" class="ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                <i class="fas fa-check"></i> Complete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Queue List -->
+                    <div class="space-y-2">
+                        <div class="text-sm font-medium text-gray-600 mb-2">Waiting Patients:</div>
+                        <div id="pharmacyQueueList" class="space-y-2">
+                            <div class="text-center text-gray-400 py-8">No patients in queue</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unavailable Patients -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="text-sm font-medium text-gray-600 mb-2">Unavailable Patients:</div>
+                        <div id="pharmacyUnavailablePatientsList" class="space-y-2">
+                            <div class="text-center text-gray-400 py-2">No unavailable patients</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <button onclick="openDisplayScreen()" class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                            <i class="fas fa-tv"></i> Open Display Screen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product List Section -->
                 <div class="bg-white rounded-2xl shadow-sm">
                     <div class="p-6 border-b border-gray-100">
                         <div class="flex justify-between items-center">
@@ -2986,6 +3040,245 @@
             chart.data.datasets[1].hidden = !e.target.checked;
             chart.update();
         });
+
+        // Pharmacy Queue Management Functions
+        let currentPharmacyQueueData = null;
+
+        async function loadPharmacyQueue() {
+            try {
+                const response = await fetch('/api/queue/display/3'); // Pharmacy station ID is 3
+                currentPharmacyQueueData = await response.json();
+                updatePharmacyQueueDisplay();
+            } catch (error) {
+                console.error('Error loading Pharmacy queue:', error);
+            }
+        }
+
+        function getQueueEntryId(row) {
+            if (!row) return 0;
+            const v = row.queue_id ?? row.queue_entry_id ?? row.id;
+            return Number(v || 0);
+        }
+
+        function updatePharmacyQueueDisplay() {
+            if (!currentPharmacyQueueData) return;
+
+            const callNextBtn = document.getElementById('pharmacyCallNextBtn');
+            if (callNextBtn) {
+                const disabled = !!currentPharmacyQueueData.currently_serving;
+                callNextBtn.disabled = disabled;
+                callNextBtn.classList.toggle('opacity-50', disabled);
+                callNextBtn.classList.toggle('cursor-not-allowed', disabled);
+            }
+
+            // Update currently serving
+            const currentlyServingDiv = document.getElementById('pharmacyCurrentlyServing');
+            if (currentPharmacyQueueData.currently_serving) {
+                currentlyServingDiv.innerHTML = `
+                    <div class="font-semibold">${currentPharmacyQueueData.currently_serving.full_name}</div>
+                    <div class="text-sm text-gray-600">${currentPharmacyQueueData.currently_serving.queue_number}</div>
+                `;
+                
+                // Show station selection dropdown
+                document.getElementById('pharmacyStationSelection').classList.remove('hidden');
+                loadPharmacyStationOptions();
+            } else {
+                currentlyServingDiv.innerHTML = '<span class="text-gray-400">No patient being served</span>';
+                document.getElementById('pharmacyStationSelection').classList.add('hidden');
+            }
+
+            // Update queue list
+            const queueListDiv = document.getElementById('pharmacyQueueList');
+            if (currentPharmacyQueueData.next_patients && currentPharmacyQueueData.next_patients.length > 0) {
+                queueListDiv.innerHTML = currentPharmacyQueueData.next_patients.map((patient, index) => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <span class="font-semibold text-yellow-600">${patient.queue_number}</span>
+                            <div>
+                                <div class="font-medium">${patient.full_name}</div>
+                                <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Est. ${index * 10} min
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                queueListDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No patients in queue</div>';
+            }
+
+            // Update unavailable patients
+            const unavailableDiv = document.getElementById('pharmacyUnavailablePatientsList');
+            if (unavailableDiv) {
+                if (currentPharmacyQueueData.unavailable_patients && currentPharmacyQueueData.unavailable_patients.length > 0) {
+                    unavailableDiv.innerHTML = currentPharmacyQueueData.unavailable_patients.map(patient => `
+                        <div class="flex justify-between items-center p-2 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100" onclick="recallPharmacyUnavailablePatient(${getQueueEntryId(patient)})">
+                            <div class="flex items-center space-x-3">
+                                <div>
+                                    <div class="font-medium">${patient.full_name}</div>
+                                    <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                                </div>
+                                <div class="text-sm text-orange-600">
+                                    ${patient.updated_at ? new Date(patient.updated_at).toLocaleTimeString() : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    unavailableDiv.innerHTML = '<div class="text-center text-gray-400 py-2">No unavailable patients</div>';
+                }
+            }
+        }
+
+        function loadPharmacyStationOptions() {
+            const select = document.getElementById('pharmacyDestinationStation');
+            select.innerHTML = '<option value="">Select destination...</option>';
+            
+            // Add discharge option
+            const dischargeOption = document.createElement('option');
+            dischargeOption.value = 'discharge';
+            dischargeOption.textContent = 'Complete and Discharge';
+            select.appendChild(dischargeOption);
+            
+            // Add other stations
+            fetch('/api/queue/stations')
+                .then(response => response.json())
+                .then(data => {
+                    data.stations.forEach(station => {
+                        if (station.id !== 3) { // Don't show current station
+                            const option = document.createElement('option');
+                            option.value = station.id;
+                            option.textContent = station.station_display_name;
+                            select.appendChild(option);
+                        }
+                    });
+                });
+        }
+
+        async function callNextPatient() {
+            try {
+                const response = await fetch('/api/queue/call-next', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ station_id: 3 })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Next patient called successfully');
+                    loadPharmacyQueue();
+                } else {
+                    alert(result.message || 'No patients in queue');
+                }
+            } catch (error) {
+                console.error('Error calling next patient:', error);
+                alert('Error calling next patient');
+            }
+        }
+
+        async function callNextAndMarkUnavailable() {
+            try {
+                const response = await fetch('/api/queue/call-next-mark-unavailable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        station_id: 3
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Next patient called and previous marked unavailable');
+                    loadPharmacyQueue();
+                } else {
+                    alert(result.message || 'No patients in queue');
+                }
+            } catch (error) {
+                console.error('Error calling next and marking unavailable:', error);
+                alert('Error calling next patient');
+            }
+        }
+
+        async function recallPharmacyUnavailablePatient(queueId) {
+            try {
+                const response = await fetch('/api/queue/recall-unavailable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        queue_id: queueId
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Patient recalled successfully');
+                    loadPharmacyQueue();
+                } else {
+                    alert(result.message || 'Unable to recall patient');
+                }
+            } catch (error) {
+                console.error('Error recalling unavailable patient:', error);
+                alert('Error recalling patient');
+            }
+        }
+
+        async function completeService() {
+            if (!currentPharmacyQueueData?.currently_serving) {
+                alert('No patient currently being served');
+                return;
+            }
+
+            const destinationSelect = document.getElementById('pharmacyDestinationStation');
+            const selectedDestination = destinationSelect.value;
+            
+            if (!selectedDestination) {
+                alert('Please select a destination station');
+                return;
+            }
+
+            try {
+                let endpoint = '/api/queue/complete-service';
+                let body = { 
+                    queue_id: currentPharmacyQueueData.currently_serving.id
+                };
+                
+                if (selectedDestination !== 'discharge') {
+                    body.target_station_id = parseInt(selectedDestination);
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert(selectedDestination === 'discharge' ? 'Patient discharged successfully' : 'Prescription dispensed successfully');
+                    loadPharmacyQueue();
+                    
+                    // Reset selection
+                    destinationSelect.value = '';
+                    document.getElementById('pharmacyStationSelection').classList.add('hidden');
+                } else {
+                    alert('Error dispensing prescription');
+                }
+            } catch (error) {
+                console.error('Error completing service:', error);
+                alert('Error dispensing prescription');
+            }
+        }
+
+        function openDisplayScreen() {
+            window.open('pharmacy-display.php', '_blank');
+        }
+
+        // Auto-refresh queue every 10 seconds
+        setInterval(loadPharmacyQueue, 10000);
+        
+        // Initial load
+        loadPharmacyQueue();
     </script>
 </body>
 </html>

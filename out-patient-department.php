@@ -200,21 +200,54 @@
                 <div class="space-y-6">
                     <!-- Consultation Queue -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Consultation Queue</h3>
-                        <ul class="space-y-3">
-                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium text-gray-800">David Chen</span>
-                                <span class="text-sm text-gray-500">Dr. Jacobs</span>
-                            </li>
-                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium text-gray-800">Emily White</span>
-                                <span class="text-sm text-gray-500">Dr. Carter</span>
-                            </li>
-                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium text-gray-800">Michael Brown</span>
-                                <span class="text-sm text-gray-500">Dr. Lee</span>
-                            </li>
-                        </ul>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">OPD Queue</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="callNextPatient()" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                                    <i class="fas fa-bell"></i> Call Next
+                                </button>
+                                <button onclick="callNextAndMarkUnavailable()" class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-sm">
+                                    <i class="fas fa-user-slash"></i> Call Next & Mark Unavailable
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Currently Serving -->
+                        <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="text-sm font-medium text-gray-600 mb-1">Currently Serving:</div>
+                            <div id="currentlyServing" class="font-semibold text-blue-600">No patient being served</div>
+                            <div id="stationSelection" class="mt-3 hidden">
+                                <div class="text-sm font-medium text-gray-600 mb-1">Next Destination:</div>
+                                <select id="destinationStation" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                                    <option value="">Select destination...</option>
+                                </select>
+                                <button onclick="completeService()" class="ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                    <i class="fas fa-check"></i> Complete
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Queue List -->
+                        <div class="space-y-2">
+                            <div class="text-sm font-medium text-gray-600 mb-2">Waiting:</div>
+                            <ul id="opdQueueList" class="space-y-2">
+                                <li class="text-center text-gray-400 py-4">No patients in queue</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Unavailable Patients -->
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <div class="text-sm font-medium text-gray-600 mb-2">Unavailable Patients:</div>
+                            <div id="unavailablePatientsList" class="space-y-2">
+                                <div class="text-center text-gray-400 py-2">No unavailable patients</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button onclick="openDisplayScreen()" class="w-full px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
+                                <i class="fas fa-tv"></i> Open Display Screen
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Doctor Availability -->
@@ -5492,9 +5525,323 @@
             })();
         });
 
-            window.updateOpdAppointmentStatus = updateOpdAppointmentStatus;
-            window.viewAppointmentDetails = viewAppointmentDetails;
-            window.rejectOpdRequest = rejectOpdRequest;
+        window.updateOpdAppointmentStatus = updateOpdAppointmentStatus;
+        window.viewAppointmentDetails = viewAppointmentDetails;
+        window.rejectOpdRequest = rejectOpdRequest;
+
+        // Queue Management Functions
+        let currentQueueData = null;
+
+        async function loadOpdQueue() {
+            try {
+                const response = await fetch('/api/queue/display/1'); // OPD station ID is 1
+                currentQueueData = await response.json();
+                updateQueueDisplay();
+            } catch (error) {
+                console.error('Error loading OPD queue:', error);
+            }
+        }
+
+        function updateQueueDisplay() {
+            if (!currentQueueData) return;
+
+            // Update currently serving
+            const currentlyServingDiv = document.getElementById('currentlyServing');
+            if (currentQueueData.currently_serving) {
+                currentlyServingDiv.innerHTML = `
+                    <div class="font-semibold text-lg">${currentQueueData.currently_serving.full_name}</div>
+                    <div class="text-sm text-gray-600">${currentQueueData.currently_serving.queue_number}</div>
+                `;
+                
+                // Show station selection dropdown
+                document.getElementById('stationSelection').classList.remove('hidden');
+                loadStationOptions();
+            } else {
+                currentlyServingDiv.innerHTML = '<span class="text-gray-400">No patient being served</span>';
+                document.getElementById('stationSelection').classList.add('hidden');
+            }
+
+            // Update queue list
+            const queueListDiv = document.getElementById('opdQueueList');
+            if (currentQueueData.next_patients && currentQueueData.next_patients.length > 0) {
+                queueListDiv.innerHTML = currentQueueData.next_patients.map((patient, index) => `
+                    <li class="flex justify-between items-center p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <span class="font-semibold text-blue-600">${patient.queue_number}</span>
+                            <div>
+                                <div class="font-medium">${patient.full_name}</div>
+                                <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Est. ${index * 15} min
+                        </div>
+                    </li>
+                `).join('');
+            } else {
+                queueListDiv.innerHTML = '<li class="text-center text-gray-400 py-4">No patients in queue</li>';
+            }
+
+            // Update unavailable patients
+            const unavailableDiv = document.getElementById('unavailablePatientsList');
+            if (currentQueueData.unavailable_patients && currentQueueData.unavailable_patients.length > 0) {
+                unavailableDiv.innerHTML = currentQueueData.unavailable_patients.map(patient => `
+                    <div class="flex justify-between items-center p-2 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100" onclick="recallUnavailablePatient(${patient.id})">
+                        <div class="flex items-center space-x-3">
+                            <div>
+                                <div class="font-medium">${patient.full_name}</div>
+                                <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                            </div>
+                            <div class="text-sm text-orange-600">
+                                ${patient.updated_at ? new Date(patient.updated_at).toLocaleTimeString() : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                unavailableDiv.innerHTML = '<div class="text-center text-gray-400 py-2">No unavailable patients</div>';
+            }
+
+            // Update stats
+            document.getElementById('opdWaitingCount').textContent = currentQueueData.queue_count;
+            document.getElementById('opdAvgWaitTime').textContent = `${currentQueueData.estimated_wait_time} min`;
+        }
+
+        function loadStationOptions() {
+            const select = document.getElementById('destinationStation');
+            select.innerHTML = '<option value="">Select destination...</option>';
+            
+            // Add discharge option
+            const dischargeOption = document.createElement('option');
+            dischargeOption.value = 'discharge';
+            dischargeOption.textContent = 'Complete and Discharge';
+            select.appendChild(dischargeOption);
+            
+            // Add other stations
+            fetch('/api/queue/stations')
+                .then(response => response.json())
+                .then(data => {
+                    data.stations.forEach(station => {
+                        if (station.id !== 1) { // Don't show current station
+                            const option = document.createElement('option');
+                            option.value = station.id;
+                            option.textContent = station.station_display_name;
+                            select.appendChild(option);
+                        }
+                    });
+                });
+        }
+
+        async function callNextPatient() {
+            try {
+                const response = await fetch('/api/queue/call-next', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ station_id: 1 })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    Toastify({
+                        text: 'Next patient called successfully',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
+                    loadOpdQueue();
+                } else {
+                    Toastify({
+                        text: result.message || 'No patients in queue',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#F59E0B',
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error('Error calling next patient:', error);
+                Toastify({
+                    text: 'Error calling next patient',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
+            }
+        }
+
+        async function recallUnavailablePatient(queueId) {
+            try {
+                const response = await fetch('/api/queue/recall-unavailable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        queue_id: queueId,
+                        notes: 'Recalled from unavailable list'
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    Toastify({
+                        text: 'Patient recalled successfully',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
+                    loadOpdQueue();
+                } else {
+                    Toastify({
+                        text: result.message || 'Unable to recall patient',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#F59E0B',
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error('Error recalling unavailable patient:', error);
+                Toastify({
+                    text: 'Error recalling patient',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
+            }
+        }
+
+        async function callNextAndMarkUnavailable() {
+            try {
+                // Use the new combined API endpoint
+                const response = await fetch('/api/queue/call-next-mark-unavailable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        station_id: 1,
+                        notes: 'Patient not available for service'
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    Toastify({
+                        text: 'Next patient called and previous marked unavailable',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
+                    loadOpdQueue();
+                } else {
+                    Toastify({
+                        text: result.message || 'No patients in queue',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#F59E0B',
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error('Error calling next and marking unavailable:', error);
+                Toastify({
+                    text: 'Error calling next patient',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
+            }
+        }
+
+        async function completeService() {
+            if (!currentQueueData?.currently_serving) {
+                Toastify({
+                    text: 'No patient currently being served',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#F59E0B',
+                }).showToast();
+                return;
+            }
+
+            const destinationSelect = document.getElementById('destinationStation');
+            const selectedDestination = destinationSelect.value;
+            
+            if (!selectedDestination) {
+                Toastify({
+                    text: 'Please select a destination station',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#F59E0B',
+                }).showToast();
+                return;
+            }
+
+            try {
+                let endpoint = '/api/queue/complete-service';
+                let body = { 
+                    queue_id: currentQueueData.currently_serving.id
+                };
+                
+                if (selectedDestination !== 'discharge') {
+                    body.target_station_id = parseInt(selectedDestination);
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    Toastify({
+                        text: selectedDestination === 'discharge' ? 'Patient discharged successfully' : 'Service completed successfully',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
+                    loadOpdQueue();
+                    
+                    // Reset selection
+                    destinationSelect.value = '';
+                    document.getElementById('stationSelection').classList.add('hidden');
+                } else {
+                    Toastify({
+                        text: 'Error completing service',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#EF4444',
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error('Error completing service:', error);
+                Toastify({
+                    text: 'Error completing service',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
+            }
+        }   
+
+        function openDisplayScreen() {
+            window.open('opd-display.php', '_blank');
+        }
+
+        // Auto-refresh queue every 10 seconds
+        setInterval(loadOpdQueue, 10000);
+        
+        // Initial load
+        loadOpdQueue();
     </script>
     <?php include __DIR__ . '/includes/xray-results-release-js.php'; ?>
     </body>

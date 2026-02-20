@@ -73,6 +73,63 @@
                 </div>
             </div>
 
+            <!-- Cashier Queue Section -->
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Cashier Queue</h2>
+                            <span class="text-sm text-gray-500">Payment processing queue</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button id="cashierCallNextBtn" onclick="callNextPatient()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                <i class="fas fa-bell"></i> Call Next
+                            </button>
+                            <button onclick="callNextAndMarkUnavailable()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                                <i class="fas fa-user-slash"></i> Call Next & Mark Unavailable
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Currently Serving -->
+                <div class="p-6 border-b border-gray-100">
+                    <div class="text-sm font-medium text-gray-600 mb-1">Currently Serving:</div>
+                    <div id="cashierCurrentlyServing" class="text-lg font-semibold text-red-600">No patient being served</div>
+                    <div id="cashierStationSelection" class="mt-3 hidden">
+                        <div class="text-sm font-medium text-gray-600 mb-1">Next Destination:</div>
+                        <select id="cashierDestinationStation" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                            <option value="">Select destination...</option>
+                        </select>
+                        <button onclick="completeService()" class="ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                            <i class="fas fa-check"></i> Complete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Queue List -->
+                <div class="p-6">
+                    <div class="text-sm font-medium text-gray-600 mb-2">Waiting Patients:</div>
+                    <div id="cashierQueueList" class="space-y-2">
+                        <div class="text-center text-gray-400 py-8">No patients in queue</div>
+                    </div>
+                </div>
+
+                <!-- Unavailable Patients -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="text-sm font-medium text-gray-600 mb-2">Unavailable Patients:</div>
+                    <div id="cashierUnavailablePatientsList" class="space-y-2">
+                        <div class="text-center text-gray-400 py-2">No unavailable patients</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <button onclick="openDisplayScreen()" class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                        <i class="fas fa-tv"></i> Open Display Screen
+                    </button>
+                </div>
+            </div>
+
             <!-- Charts Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div class="bg-white rounded-lg shadow-sm p-6">
@@ -1354,8 +1411,245 @@
             payAmtInput.addEventListener('input', updatePayChange);
             payAmtInput.addEventListener('change', updatePayChange);
         }
-    </script>
+
+        // Cashier Queue Management Functions
+        let currentCashierQueueData = null;
+
+        async function loadCashierQueue() {
+            try {
+                const response = await fetch('/api/queue/display/4'); // Cashier station ID is 4
+                currentCashierQueueData = await response.json();
+                updateCashierQueueDisplay();
+            } catch (error) {
+                console.error('Error loading Cashier queue:', error);
+            }
+        }
+
+        function getQueueEntryId(row) {
+            if (!row) return 0;
+            const v = row.queue_id ?? row.queue_entry_id ?? row.id;
+            return Number(v || 0);
+        }
+
+        function updateCashierQueueDisplay() {
+            if (!currentCashierQueueData) return;
+
+            const callNextBtn = document.getElementById('cashierCallNextBtn');
+            if (callNextBtn) {
+                const disabled = !!currentCashierQueueData.currently_serving;
+                callNextBtn.disabled = disabled;
+                callNextBtn.classList.toggle('opacity-50', disabled);
+                callNextBtn.classList.toggle('cursor-not-allowed', disabled);
+            }
+
+            // Update currently serving
+            const currentlyServingDiv = document.getElementById('cashierCurrentlyServing');
+            if (currentCashierQueueData.currently_serving) {
+                currentlyServingDiv.innerHTML = `
+                    <div class="font-semibold">${currentCashierQueueData.currently_serving.full_name}</div>
+                    <div class="text-sm text-gray-600">${currentCashierQueueData.currently_serving.queue_number}</div>
+                `;
+                
+                // Show station selection dropdown
+                document.getElementById('cashierStationSelection').classList.remove('hidden');
+                loadCashierStationOptions();
+            } else {
+                currentlyServingDiv.innerHTML = '<span class="text-gray-400">No patient being served</span>';
+                document.getElementById('cashierStationSelection').classList.add('hidden');
+            }
+
+            // Update queue list
+            const queueListDiv = document.getElementById('cashierQueueList');
+            if (currentCashierQueueData.next_patients && currentCashierQueueData.next_patients.length > 0) {
+                queueListDiv.innerHTML = currentCashierQueueData.next_patients.map((patient, index) => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <span class="font-semibold text-red-600">${patient.queue_number}</span>
+                            <div>
+                                <div class="font-medium">${patient.full_name}</div>
+                                <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Est. ${index * 5} min
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                queueListDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No patients in queue</div>';
+            }
+
+            // Update unavailable patients
+            const unavailableDiv = document.getElementById('cashierUnavailablePatientsList');
+            if (unavailableDiv) {
+                if (currentCashierQueueData.unavailable_patients && currentCashierQueueData.unavailable_patients.length > 0) {
+                    unavailableDiv.innerHTML = currentCashierQueueData.unavailable_patients.map(patient => `
+                        <div class="flex justify-between items-center p-2 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100" onclick="recallCashierUnavailablePatient(${getQueueEntryId(patient)})">
+                            <div class="flex items-center space-x-3">
+                                <div>
+                                    <div class="font-medium">${patient.full_name}</div>
+                                    <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                                </div>
+                                <div class="text-sm text-orange-600">
+                                    ${patient.updated_at ? new Date(patient.updated_at).toLocaleTimeString() : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    unavailableDiv.innerHTML = '<div class="text-center text-gray-400 py-2">No unavailable patients</div>';
+                }
+            }
+        }
+
+        function loadCashierStationOptions() {
+            const select = document.getElementById('cashierDestinationStation');
+            select.innerHTML = '<option value="">Select destination...</option>';
+            
+            // Add discharge option
+            const dischargeOption = document.createElement('option');
+            dischargeOption.value = 'discharge';
+            dischargeOption.textContent = 'Complete and Discharge';
+            select.appendChild(dischargeOption);
+            
+            // Add other stations
+            fetch('/api/queue/stations')
+                .then(response => response.json())
+                .then(data => {
+                    data.stations.forEach(station => {
+                        if (station.id !== 4) { // Don't show current station
+                            const option = document.createElement('option');
+                            option.value = station.id;
+                            option.textContent = station.station_display_name;
+                            select.appendChild(option);
+                        }
+                    });
+                });
+        }
+
+        async function callNextPatient() {
+            try {
+                const response = await fetch('/api/queue/call-next', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ station_id: 4 })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Next patient called successfully', 'success');
+                    loadCashierQueue();
+                } else {
+                    showNotification(result.message || 'No patients in queue', 'warning');
+                }
+            } catch (error) {
+                console.error('Error calling next patient:', error);
+                showNotification('Error calling next patient', 'error');
+            }
+        }
+
+        async function recallCashierUnavailablePatient(queueId) {
+            try {
+                const response = await fetch('/api/queue/recall-unavailable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        queue_id: queueId
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Patient recalled successfully', 'success');
+                    loadCashierQueue();
+                } else {
+                    showNotification(result.message || 'Unable to recall patient', 'warning');
+                }
+            } catch (error) {
+                console.error('Error recalling unavailable patient:', error);
+                showNotification('Error recalling patient', 'error');
+            }
+        }
+
+        async function callNextAndMarkUnavailable() {
+            try {
+                const response = await fetch('/api/queue/call-next-mark-unavailable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        station_id: 4
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Next patient called and previous marked unavailable', 'success');
+                    loadCashierQueue();
+                } else {
+                    showNotification(result.message || 'No patients in queue', 'warning');
+                }
+            } catch (error) {
+                console.error('Error calling next and marking unavailable:', error);
+                showNotification('Error calling next patient', 'error');
+            }
+        }
+
+        async function completeService() {
+            if (!currentCashierQueueData?.currently_serving) {
+                showNotification('No patient currently being served', 'warning');
+                return;
+            }
+
+            const destinationSelect = document.getElementById('cashierDestinationStation');
+            const selectedDestination = destinationSelect.value;
+            
+            if (!selectedDestination) {
+                showNotification('Please select a destination station', 'warning');
+                return;
+            }
+
+            try {
+                let endpoint = '/api/queue/complete-service';
+                let body = { 
+                    queue_id: currentCashierQueueData.currently_serving.id
+                };
+                
+                if (selectedDestination !== 'discharge') {
+                    body.target_station_id = parseInt(selectedDestination);
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification(selectedDestination === 'discharge' ? 'Patient discharged successfully' : 'Payment completed successfully', 'success');
+                    loadCashierQueue();
+                    
+                    // Reset selection
+                    destinationSelect.value = '';
+                    document.getElementById('cashierStationSelection').classList.add('hidden');
+                } else {
+                    showNotification('Error completing payment', 'error');
+                }
+            } catch (error) {
+                console.error('Error completing service:', error);
+                showNotification('Error completing payment', 'error');
+            }
+        }
+
+        function openDisplayScreen() {
+            window.open('cashier-display.php', '_blank');
+        }
+
+        // Auto-refresh queue every 10 seconds
+        setInterval(loadCashierQueue, 10000);
+        
+        // Initial load
+        loadCashierQueue();
+</script>
 </body>
-
 </html>
-
