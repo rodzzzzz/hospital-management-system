@@ -31,10 +31,12 @@
                     <h1 class="text-2xl font-semibold">Patient Monitoring</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="addNewBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center space-x-2 hover:bg-blue-700">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Patient</span>
-                    </button>
+                    <?php if (!isset($authUser) || !is_array($authUser) || !auth_user_has_module($authUser, 'OPD')): ?>
+                        <button id="addNewBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center space-x-2 hover:bg-blue-700">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Patient</span>
+                        </button>
+                    <?php endif; ?>
                     <button class="p-2 rounded-full hover:bg-gray-100">
                         <i class="fas fa-bell text-gray-500"></i>
                     </button>
@@ -210,7 +212,6 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Procedure</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="patientsTbody" class="bg-white divide-y divide-gray-200"></tbody>
@@ -220,6 +221,42 @@
                             <div class="flex items-center justify-between">
                                 <div class="text-sm text-gray-700">
                                     <span id="patientsResultsLabel">Showing 0 results</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="patientsQueueView" class="hidden">
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold">Queue</h3>
+                                <p class="text-sm text-gray-500">New registrations waiting for nurse confirmation</p>
+                            </div>
+                            <button type="button" onclick="loadPatientQueue()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-all">
+                                Refresh
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Queue No</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chief Complaint</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Queued At</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patientQueueTbody" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-700">
+                                    <span id="patientQueueResultsLabel">Showing 0 results</span>
                                 </div>
                             </div>
                         </div>
@@ -269,25 +306,34 @@
                         <select id="patientSex" required 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none">
                             <option value="">Select sex</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">Blood Type</label>
-                        <input type="text" id="patientBloodType"
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
-                            placeholder="e.g., O+, A-, AB+">
+                        <select id="patientBloodType" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none">
+                            <option value="">Select blood type</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">Civil Status</label>
                         <select id="patientCivilStatus" required 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none">
                             <option value="">Select civil status</option>
-                            <option value="single">Single</option>
-                            <option value="married">Married</option>
-                            <option value="widowed">Widowed</option>
-                            <option value="separated">Separated</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Separated">Separated</option>
                         </select>
                     </div>
                     <div>
@@ -295,30 +341,6 @@
                         <input type="text" id="patientContact" required 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                             placeholder="Enter contact number">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Email</label>
-                        <input type="email" id="patientEmail" 
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
-                            placeholder="Enter email">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-2">PhilHealth PIN (Optional)</label>
-                        <input type="text" id="patientPhilhealthPin" 
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
-                            placeholder="12-345678901-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Initial Location</label>
-                        <select id="patientLocation" required 
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none">
-                            <option value="">Select location</option>
-                            <option value="emergency">Emergency Room</option>
-                            <option value="ward">General Ward</option>
-                            <option value="icu">ICU</option>
-                            <option value="or">Operating Room</option>
-                            <option value="pharmacy">Pharmacy</option>
-                        </select>
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Diagnosis / Chief Complaint</label>
@@ -355,18 +377,6 @@
                         <input type="text" id="patientZip" 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                             placeholder="Enter ZIP">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Employer Name</label>
-                        <input type="text" id="patientEmployerName" 
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
-                            placeholder="Enter employer name">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Employer Address</label>
-                        <input type="text" id="patientEmployerAddress" 
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
-                            placeholder="Enter employer address">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-2">Emergency Contact Name</label>
@@ -419,6 +429,30 @@
                 <button type="button" onclick="toggleModal('patientSuccessModal')"
                     class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
                     OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="queueConfirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 transform transition-all">
+            <div class="flex items-start">
+                <div class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-question text-emerald-600"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Confirm Patient</h3>
+                    <p class="text-sm text-gray-600 mt-1">Confirm this patient details and move to Patient's Progress?</p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="toggleModal('queueConfirmModal')"
+                    class="px-6 py-3 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-all">
+                    Cancel
+                </button>
+                <button type="button" id="queueConfirmYesBtn"
+                    class="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all">
+                    Confirm
                 </button>
             </div>
         </div>
@@ -559,6 +593,162 @@
             return { label: s, cls: 'bg-gray-100 text-gray-800' };
         }
 
+        async function loadPatientQueue() {
+            const tbody = document.getElementById('patientQueueTbody');
+            if (!tbody) return;
+
+            const res = await fetch('api/queue/list.php?status=queued', { headers: { 'Accept': 'application/json' } });
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !json || !json.ok) {
+                tbody.innerHTML = '';
+                const label = document.getElementById('patientQueueResultsLabel');
+                if (label) label.textContent = 'Showing 0 results';
+                return;
+            }
+
+            const rows = Array.isArray(json.queue) ? json.queue : [];
+            const label = document.getElementById('patientQueueResultsLabel');
+            if (label) label.textContent = 'Showing ' + String(rows.length) + ' results';
+
+            tbody.innerHTML = rows.map(item => {
+                const p = item.payload || {};
+                const fullName = escapeHtml(p.full_name || '');
+                const age = p.dob ? calcAge(p.dob) : null;
+                const sub = (age !== null) ? (String(age) + ' years') : '';
+                const loc = escapeHtml(p.initial_location || '');
+                const dx = escapeHtml(p.diagnosis || '');
+                const queuedAt = escapeHtml((item.created_at || '').toString());
+                const qid = Number(item.id);
+
+                return `
+                    <tr>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700 text-center">${escapeHtml(String(qid))}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <i class="fas fa-user text-gray-500"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${fullName}</div>
+                                    <div class="text-sm text-gray-500">${escapeHtml(sub)}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${loc}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${dx || '-'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${queuedAt}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex items-center gap-2">
+                                <button class="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-all" type="button" onclick="openEditQueueItem(${qid})">Edit</button>
+                                <button class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all" type="button" onclick="requestConfirmQueueItem(${qid})">Confirm</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        let currentQueueEditId = null;
+        let pendingQueueConfirmId = null;
+
+        function normalizeSelectValue(selectId, val) {
+            const v = (val ?? '').toString().trim();
+            if (v === '') return '';
+
+            const key = v.toLowerCase();
+            if (selectId === 'patientSex') {
+                if (key === 'male' || key === 'm') return 'Male';
+                if (key === 'female' || key === 'f') return 'Female';
+            }
+            if (selectId === 'patientCivilStatus') {
+                if (key === 'single') return 'Single';
+                if (key === 'married') return 'Married';
+                if (key === 'widowed') return 'Widowed';
+                if (key === 'separated') return 'Separated';
+                if (key === 'divorced') return 'Separated';
+            }
+            if (selectId === 'patientBloodType') {
+                return v.toUpperCase().replace(/\s+/g, '');
+            }
+            return v;
+        }
+
+        async function openEditQueueItem(queueId) {
+            currentQueueEditId = Number(queueId);
+            const res = await fetch('api/queue/list.php?status=queued', { headers: { 'Accept': 'application/json' } });
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !json || !json.ok) {
+                alert((json && json.error) ? json.error : 'Failed to load queue');
+                return;
+            }
+
+            const rows = Array.isArray(json.queue) ? json.queue : [];
+            const item = rows.find(r => Number(r.id) === Number(queueId));
+            if (!item || !item.payload) {
+                alert('Queue item not found');
+                return;
+            }
+
+            const p = item.payload;
+            const setVal = (id, v) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.value = (v ?? '').toString();
+            };
+
+            document.getElementById('modalTitle').textContent = 'Edit Queue Patient';
+            const form = document.getElementById('patientForm');
+            if (form) form.reset();
+
+            const submitBtn = document.getElementById('patientSubmitBtn');
+            if (submitBtn) submitBtn.textContent = 'Save Queue Changes';
+
+            setVal('patientName', p.full_name);
+            setVal('patientDob', p.dob);
+            setVal('patientSex', normalizeSelectValue('patientSex', p.sex));
+            setVal('patientBloodType', p.blood_type);
+            syncAgeFromDob();
+            setVal('patientCivilStatus', normalizeSelectValue('patientCivilStatus', p.civil_status));
+            setVal('patientContact', p.contact);
+            setVal('patientDiagnosis', p.diagnosis);
+            setVal('patientStreet', p.street_address);
+            setVal('patientBarangay', p.barangay);
+            setVal('patientCity', p.city);
+            setVal('patientProvince', p.province);
+            setVal('patientZip', p.zip_code);
+            setVal('emergencyName', p.emergency_contact_name);
+            setVal('emergencyRelationship', p.emergency_contact_relationship);
+            setVal('emergencyPhone', p.emergency_contact_phone);
+
+            toggleModal('patientModal');
+        }
+
+        function requestConfirmQueueItem(queueId) {
+            pendingQueueConfirmId = Number(queueId);
+            toggleModal('queueConfirmModal');
+        }
+
+        async function confirmQueueItem(queueId) {
+            const res = await fetch('api/queue/confirm.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ queue_id: queueId }),
+            });
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !json || !json.ok) {
+                alert((json && json.error) ? json.error : 'Failed to confirm patient');
+                return;
+            }
+
+            await loadPatientQueue();
+            await loadPatients((document.getElementById('patientSearch')?.value ?? '').toString());
+            showPatientSuccess('Patient confirmed and moved to progress.');
+        }
+
         async function loadPatients(q = '') {
             const tbody = document.getElementById('patientsTbody');
             if (!tbody) return;
@@ -624,10 +814,6 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${updated}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button class="text-blue-600 hover:text-blue-900 mr-3" type="button" onclick="openEditPatient(${Number(p.id)})">Edit</button>
-                            <button class="text-green-600 hover:text-green-900" type="button">Update Status</button>
-                        </td>
                     </tr>
                 `;
             }).join('');
@@ -723,17 +909,12 @@
                 syncAgeFromDob();
                 setVal('patientCivilStatus', p.civil_status);
                 setVal('patientContact', p.contact);
-                setVal('patientEmail', p.email);
-                setVal('patientPhilhealthPin', p.philhealth_pin);
-                setVal('patientLocation', p.initial_location);
                 setVal('patientDiagnosis', p.diagnosis);
                 setVal('patientStreet', p.street_address);
                 setVal('patientBarangay', p.barangay);
                 setVal('patientCity', p.city);
                 setVal('patientProvince', p.province);
                 setVal('patientZip', p.zip_code);
-                setVal('patientEmployerName', p.employer_name);
-                setVal('patientEmployerAddress', p.employer_address);
                 setVal('emergencyName', p.emergency_contact_name);
                 setVal('emergencyRelationship', p.emergency_contact_relationship);
                 setVal('emergencyPhone', p.emergency_contact_phone);
@@ -746,13 +927,15 @@
 
         function applyPatientsViewFromHash() {
             const raw = (window.location.hash || '').toString().replace(/^#/, '').toLowerCase();
-            const view = (raw === 'progress') ? 'progress' : 'dashboard';
+            const view = (raw === 'progress') ? 'progress' : (raw === 'queue' ? 'queue' : 'dashboard');
 
             const dash = document.getElementById('patientsDashboardView');
             const prog = document.getElementById('patientsProgressView');
+            const queue = document.getElementById('patientsQueueView');
 
             if (dash) dash.classList.toggle('hidden', view !== 'dashboard');
             if (prog) prog.classList.toggle('hidden', view !== 'progress');
+            if (queue) queue.classList.toggle('hidden', view !== 'queue');
 
             if (view === 'dashboard') {
                 if (patientsProgressPoll) {
@@ -760,7 +943,7 @@
                     patientsProgressPoll = null;
                 }
                 loadPatientStats();
-            } else {
+            } else if (view === 'progress') {
                 const q = (document.getElementById('patientSearch')?.value ?? '').toString();
                 loadPatients(q);
 
@@ -770,21 +953,43 @@
                         loadPatients(q2);
                     }, 8000);
                 }
+            } else {
+                if (patientsProgressPoll) {
+                    window.clearInterval(patientsProgressPoll);
+                    patientsProgressPoll = null;
+                }
+                loadPatientQueue();
             }
         }
 
         // Initialize event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('addNewBtn').addEventListener('click', function() {
-                document.getElementById('modalTitle').textContent = 'Add New Patient';
-                document.getElementById('patientForm').reset();
-                const idEl = document.getElementById('patientId');
-                if (idEl) idEl.value = '';
-                const submitBtn = document.getElementById('patientSubmitBtn');
-                if (submitBtn) submitBtn.textContent = 'Add Patient';
-                syncAgeFromDob();
-                toggleModal('patientModal');
-            });
+            const addNewBtn = document.getElementById('addNewBtn');
+            if (addNewBtn) {
+                addNewBtn.addEventListener('click', function() {
+                    document.getElementById('modalTitle').textContent = 'Add New Patient';
+                    document.getElementById('patientForm').reset();
+                    const idEl = document.getElementById('patientId');
+                    if (idEl) idEl.value = '';
+                    const submitBtn = document.getElementById('patientSubmitBtn');
+                    if (submitBtn) submitBtn.textContent = 'Add Patient';
+                    syncAgeFromDob();
+                    toggleModal('patientModal');
+                });
+            }
+            const qYes = document.getElementById('queueConfirmYesBtn');
+            if (qYes) {
+                qYes.addEventListener('click', async function() {
+                    const id = pendingQueueConfirmId;
+                    if (!id) {
+                        toggleModal('queueConfirmModal');
+                        return;
+                    }
+                    toggleModal('queueConfirmModal');
+                    pendingQueueConfirmId = null;
+                    await confirmQueueItem(id);
+                });
+            }
             const autoFillBtn = document.getElementById('autoFillAiBtn');
             if (autoFillBtn) {
                 autoFillBtn.addEventListener('click', autoFillPatientForm);
@@ -813,6 +1018,44 @@
             const patientIdRaw = (document.getElementById('patientId')?.value ?? '').toString().trim();
             const isEdit = patientIdRaw !== '' && /^\d+$/.test(patientIdRaw);
 
+            if (currentQueueEditId !== null && !isEdit) {
+                const payload = {
+                    full_name: document.getElementById('patientName').value,
+                    dob: document.getElementById('patientDob').value,
+                    sex: document.getElementById('patientSex').value,
+                    blood_type: document.getElementById('patientBloodType').value,
+                    civil_status: document.getElementById('patientCivilStatus').value,
+                    contact: document.getElementById('patientContact').value,
+                    initial_location: 'OPD',
+                    diagnosis: document.getElementById('patientDiagnosis').value,
+                    street_address: document.getElementById('patientStreet').value,
+                    barangay: document.getElementById('patientBarangay').value,
+                    city: document.getElementById('patientCity').value,
+                    province: document.getElementById('patientProvince').value,
+                    zip_code: document.getElementById('patientZip').value,
+                    emergency_contact_name: document.getElementById('emergencyName').value,
+                    emergency_contact_relationship: document.getElementById('emergencyRelationship').value,
+                    emergency_contact_phone: document.getElementById('emergencyPhone').value,
+                };
+
+                const res = await fetch('api/queue/update.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ queue_id: currentQueueEditId, payload }),
+                });
+                const json = await res.json().catch(() => null);
+                if (!res.ok || !json || !json.ok) {
+                    alert((json && json.error) ? json.error : 'Failed to update queue item');
+                    return;
+                }
+
+                toggleModal('patientModal');
+                currentQueueEditId = null;
+                await loadPatientQueue();
+                showPatientSuccess('Queue item updated successfully.');
+                return;
+            }
+
             const payload = {
                 id: isEdit ? Number(patientIdRaw) : undefined,
                 full_name: document.getElementById('patientName').value,
@@ -821,17 +1064,13 @@
                 blood_type: document.getElementById('patientBloodType').value,
                 civil_status: document.getElementById('patientCivilStatus').value,
                 contact: document.getElementById('patientContact').value,
-                email: document.getElementById('patientEmail').value,
-                philhealth_pin: document.getElementById('patientPhilhealthPin').value,
-                initial_location: document.getElementById('patientLocation').value,
+                initial_location: 'OPD',
                 diagnosis: document.getElementById('patientDiagnosis').value,
                 street_address: document.getElementById('patientStreet').value,
                 barangay: document.getElementById('patientBarangay').value,
                 city: document.getElementById('patientCity').value,
                 province: document.getElementById('patientProvince').value,
                 zip_code: document.getElementById('patientZip').value,
-                employer_name: document.getElementById('patientEmployerName').value,
-                employer_address: document.getElementById('patientEmployerAddress').value,
                 emergency_contact_name: document.getElementById('emergencyName').value,
                 emergency_contact_relationship: document.getElementById('emergencyRelationship').value,
                 emergency_contact_phone: document.getElementById('emergencyPhone').value,
@@ -895,11 +1134,11 @@
             setVal('patientCity', p.city);
             setVal('patientProvince', p.province);
             setVal('patientZip', p.zip_code);
-            setVal('patientEmployerName', p.employer_name);
-            setVal('patientEmployerAddress', p.employer_address);
             setVal('emergencyName', p.emergency_contact_name);
             setVal('emergencyRelationship', p.emergency_contact_relationship);
             setVal('emergencyPhone', p.emergency_contact_phone);
+
+            toggleModal('patientModal');
         }
 
         function calcAge(dobStr) {

@@ -621,7 +621,21 @@ $patientsInnerItems = [
         'label' => "Patient's Progress",
         'icon' => 'fas fa-list-check',
     ],
+    [
+        'href' => 'patients.php#queue',
+        'label' => 'Queue',
+        'icon' => 'fas fa-user-clock',
+    ],
 ];
+
+$hasErModule = auth_user_has_module($authUser, 'ER');
+if ($hasErModule) {
+    $patientsInnerItems = array_values(array_filter($patientsInnerItems, static function ($item) {
+        $href = (string)($item['href'] ?? '');
+        $frag = (string)(parse_url($href, PHP_URL_FRAGMENT) ?: '');
+        return $frag !== 'queue';
+    }));
+}
 
 $philhealthInnerItems = [
     [
