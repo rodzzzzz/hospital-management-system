@@ -143,6 +143,10 @@
             opacity: 0.22;
         }
 
+        .hero-bg.fallback-png {
+            background-image: url('../loginbg.png');
+        }
+
         .hero-overlay {
             background: transparent;
         }
@@ -486,6 +490,489 @@
             justify-content: flex-end;
         }
 
+        .kiosk-home-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .kiosk-home-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: #fff;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .kiosk-home-top-img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            object-position: top center;
+            position: absolute;
+            top: -30px;
+            left: 0;
+            z-index: 1;
+            border: none;
+            box-shadow: none;
+            outline: none;
+            transform: scale(1.4);
+            transform-origin: top center;
+        }
+
+        .kiosk-home-min-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: -60px;
+            left: 0;
+            z-index: 2;
+            border: none;
+            box-shadow: none;
+            outline: none;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: high-quality;
+            opacity: 0.8;
+            filter: contrast(1.15) saturate(1.1);
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        .kiosk-home-footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            background: transparent;
+            padding: 20px 30px;
+            color: #1f2937;
+            z-index: 10;
+        }
+
+        .kiosk-footer-bg-img {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: bottom center;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .kiosk-footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .kiosk-footer-slogan {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .kiosk-footer-hashtag {
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            font-size: 48px;
+            line-height: 1.05;
+            text-shadow:
+                0 1px 0 rgba(255,255,255,0.95),
+                0 2px 0 rgba(0,0,0,0.14),
+                0 3px 0 rgba(0,0,0,0.12),
+                0 10px 18px rgba(0,0,0,0.10);
+        }
+
+        .kiosk-footer-hash {
+            color: #0B6623;
+        }
+
+        .kiosk-footer-hash-dsbmmh {
+            color: #0B6623;
+        }
+
+        .kiosk-footer-hash-life {
+            color: #fbbf24;
+        }
+
+        .kiosk-footer-tagline {
+            font-size: 15px;
+            font-weight: 700;
+            color: #374151;
+            text-shadow:
+                0 1px 0 rgba(255,255,255,0.95),
+                0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .kiosk-footer-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .kiosk-footer-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 26px 46px;
+            font-weight: 800;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            transform-style: preserve-3d;
+            border-bottom: 4px solid rgba(0,0,0,0.2);
+        }
+
+        .kiosk-footer-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .kiosk-footer-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .kiosk-footer-btn:active {
+            transform: scale(0.98);
+        }
+
+        .kiosk-footer-btn-primary {
+            background: linear-gradient(180deg, #2ef01c 0%, #24E016 50%, #1ac012 100%);
+            color: #ffffff;
+            box-shadow: 
+                0 8px 0 #158f0d,
+                0 15px 20px rgba(36, 224, 22, 0.4),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+        }
+
+        .kiosk-footer-btn-primary:hover {
+            box-shadow: 
+                0 10px 0 #158f0d,
+                0 20px 30px rgba(36, 224, 22, 0.5),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+        }
+
+        .kiosk-footer-btn-primary:active {
+            box-shadow: 
+                0 4px 0 #158f0d,
+                0 8px 15px rgba(36, 224, 22, 0.4),
+                inset 0 2px 0 rgba(255,255,255,0.1);
+        }
+
+        .kiosk-footer-btn-secondary {
+            background: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+            color: #ffffff;
+            box-shadow: 
+                0 8px 0 #1e40af,
+                0 15px 20px rgba(37, 99, 235, 0.4),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+        }
+
+        .kiosk-footer-btn-secondary:hover {
+            box-shadow: 
+                0 10px 0 #1e40af,
+                0 20px 30px rgba(37, 99, 235, 0.5),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+        }
+
+        .kiosk-footer-btn-secondary:active {
+            box-shadow: 
+                0 4px 0 #1e40af,
+                0 8px 15px rgba(37, 99, 235, 0.4),
+                inset 0 2px 0 rgba(255,255,255,0.1);
+        }
+
+        .kiosk-footer-logo {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .kiosk-footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .kiosk-footer-title {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .kiosk-footer-location {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        @media (max-width: 640px) {
+            .kiosk-footer-actions {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                max-width: 520px;
+            }
+
+            .kiosk-footer-btn {
+                font-size: 18px;
+                padding: 22px 32px;
+            }
+
+            .kiosk-footer-logo {
+                width: 180px;
+                height: 180px;
+            }
+
+            .kiosk-footer-hashtag {
+                font-size: 42px;
+            }
+
+            .kiosk-footer-tagline {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .kiosk-home-footer {
+                padding: 20px;
+            }
+
+            .kiosk-footer-title {
+                font-size: 22px;
+            }
+
+            .kiosk-footer-location {
+                font-size: 18px;
+            }
+        }
+
+        .kiosk-home-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .kiosk-home-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            cursor: pointer;
+            padding-top: 120px;
+            overflow: hidden;
+        }
+
+        .kiosk-home-min-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border: none;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .kiosk-home-footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            background: transparent;
+            padding: 20px 30px;
+            color: #1f2937;
+            z-index: 10;
+        }
+
+        .kiosk-footer-bg-img {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: bottom center;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .kiosk-footer-content {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.2fr;
+            gap: 30px;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .kiosk-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .kiosk-footer-logo {
+            width: 190px;
+            height: 190px;
+            object-fit: contain;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .kiosk-footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .kiosk-footer-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            width: 100%;
+            flex-wrap: wrap;
+            margin-top: 60px;
+        }
+
+        .kiosk-footer-logos .kiosk-footer-logo {
+            width: 150px;
+            height: 150px;
+        }
+
+        .kiosk-footer-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 15px 0 0 0;
+        }
+
+        .kiosk-footer-location {
+            font-size: 20px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .kiosk-footer-center {
+            text-align: center;
+        }
+
+        .kiosk-footer-hashtag {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFD700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .kiosk-footer-tagline {
+            font-size: 13px;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+        .kiosk-footer-right {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .kiosk-footer-contact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .kiosk-footer-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .kiosk-footer-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .kiosk-footer-left {
+                justify-content: center;
+            }
+
+            .kiosk-footer-right {
+                align-items: center;
+            }
+
+            .kiosk-footer-contact {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+
+    .kiosk-footer-hashtag {
+        font-size: 42px;
+    }
+
+    .kiosk-footer-title {
+        font-size: 20px;
+    }
+
+    .kiosk-footer-location {
+        font-size: 18px;
+    }
+
+    .kiosk-footer-contact {
+        font-size: 11px;
+    }
+}
+
+.question-nav {
+    display: none;
+}
+        }
+
         .question-nav {
             display: none;
         }
@@ -677,8 +1164,8 @@
 
         /* Avatar styling for question headers */
         .question-avatar {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #dbeafe 0%, #dcfce7 100%);
             border-radius: 50%;
             display: flex;
@@ -799,8 +1286,8 @@
         }
 
         .success-circle {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border-radius: 50%;
             display: flex;
@@ -970,6 +1457,7 @@
             background: #000;
         }
 
+        /* New redesigned slide layout */
         #kioskHome .home-slideshow .slide {
             position: absolute;
             inset: 0;
@@ -978,9 +1466,113 @@
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
             will-change: opacity;
+            display: flex;
+            flex-direction: column;
         }
 
-        #kioskHome .home-slideshow .slide > img {
+        #kioskHome .home-slideshow .slide.is-active {
+            opacity: 1;
+        }
+
+        /* Slide image at top */
+        #kioskHome .home-slideshow .slide .slide-img-top {
+            width: 100%;
+            height: 55%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* Logo in middle */
+        #kioskHome .home-slideshow .slide .slide-logo-center {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border: 4px solid white;
+        }
+
+        #kioskHome .home-slideshow .slide .slide-logo-center img {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+        }
+
+        /* Bottom section with buttons */
+        #kioskHome .home-slideshow .slide .slide-bottom {
+            flex: 1;
+            background: linear-gradient(180deg, #0B6623 0%, #147a3c 35%, #2563eb 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 28px 30px 80px;
+            gap: 28px;
+        }
+
+        #kioskHome .home-slideshow .slide .slide-btn-row {
+            width: 100%;
+            max-width: 980px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 26px;
+            align-items: center;
+
+/* Gradient buttons */
+#kioskHome .home-slideshow .slide .slide-btn {
+    width: 100%;
+    max-width: none;
+    padding: 18px 48px;
+    border-radius: 20px;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+#kioskHome .home-slideshow .slide .slide-btn-primary {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    color: #0B6623;
+}
+        }
+
+        #kioskHome .home-slideshow .slide .slide-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+        }
+
+        #kioskHome .home-slideshow .slide .slide-btn-secondary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+        }
+
+        #kioskHome .home-slideshow .slide .slide-btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+        }
+
+        /* Hide old styles */
+        #kioskHome .home-slideshow .slide .slide-img,
+        #kioskHome .home-slideshow .slide .slide-overlay,
+        #kioskHome .home-slideshow .slide .slide-logo {
+            display: none !important;
+        }
+
+        #kioskHome .home-start-overlay {
+            display: none !important;
+        }
+
+        #kioskHome .home-slideshow .slide .slide-img {
             position: absolute;
             inset: 0;
             width: 100%;
@@ -989,74 +1581,46 @@
         }
 
         #kioskHome .home-slideshow .slide .slide-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.22);
-            z-index: 1;
-            pointer-events: none;
+            display: none;
         }
 
-        #kioskHome .home-slideshow .slide .slide-content-old {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 60px;
-            pointer-events: none;
+        #kioskHome .home-slideshow .slide .slide-logo {
+            display: none;
         }
 
-        #kioskHome .home-slideshow .slide .slide-content-logo {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        #kioskHome .home-slideshow .slide .slide-content-logo img {
-            width: 96px;
-            height: 96px;
-            object-fit: contain;
-        }
-
-        #kioskHome .home-slideshow .slide .slide-content-doctor {
-            width: 380px;
-            max-width: 90%;
-            margin-bottom: 16px;
-        }
-
-        #kioskHome .home-slideshow .slide .slide-content-doctor img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-        }
-
-        #kioskHome .home-slideshow .slide .slide-content-text {
-            text-align: center;
-            padding: 0 24px;
-        }
-
-        #kioskHome .home-slideshow .slide .slide-content-title {
-            font-size: 36px;
-            font-weight: 800;
-            color: #059669;
-            line-height: 1.2;
-            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9), 0 4px 20px rgba(255, 255, 255, 0.7);
-            margin-bottom: 12px;
-        }
-
-        #kioskHome .home-slideshow .slide .slide-content-subtitle {
-            font-size: 20px;
-            color: #334155;
-            text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
+        @keyframes logoPulse3D {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1) rotateY(0deg); 
+                box-shadow: 
+                    0 20px 60px rgba(0,0,0,0.3),
+                    0 0 0 8px rgba(255,255,255,0.5),
+                    inset 0 -10px 20px rgba(0,0,0,0.1),
+                    inset 0 10px 20px rgba(255,255,255,0.8);
+            }
+            25% { 
+                transform: translate(-50%, -50%) scale(1.08) rotateY(10deg); 
+                box-shadow: 
+                    0 30px 80px rgba(0,0,0,0.35),
+                    0 0 0 8px rgba(255,255,255,0.5),
+                    inset 0 -10px 20px rgba(0,0,0,0.15),
+                    inset 0 10px 20px rgba(255,255,255,0.9);
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.12) rotateY(0deg); 
+                box-shadow: 
+                    0 35px 90px rgba(0,0,0,0.4),
+                    0 0 0 10px rgba(255,255,255,0.6),
+                    inset 0 -12px 24px rgba(0,0,0,0.2),
+                    inset 0 12px 24px rgba(255,255,255,1);
+            }
+            75% { 
+                transform: translate(-50%, -50%) scale(1.08) rotateY(-10deg); 
+                box-shadow: 
+                    0 30px 80px rgba(0,0,0,0.35),
+                    0 0 0 8px rgba(255,255,255,0.5),
+                    inset 0 -10px 20px rgba(0,0,0,0.15),
+                    inset 0 10px 20px rgba(255,255,255,0.9);
+            }
         }
 
         #kioskHome .home-slideshow .slide.is-active {
@@ -1086,9 +1650,14 @@
             opacity: 1;
         }
 
-        #kioskHome .home-slideshow .home-original-slide .hero-overlay {
-            display: block;
-            background: rgba(255, 255, 255, 0.40);
+        #kioskHome .home-slideshow .home-original-slide .home-logo,
+        #kioskHome .home-slideshow .home-original-slide .home-title,
+        #kioskHome .home-slideshow .home-original-slide .home-subtitle,
+        #kioskHome .home-slideshow .home-original-slide .home-doctor,
+        #kioskHome .home-slideshow .home-original-slide .home-doctor-left,
+        #kioskHome .home-slideshow .home-original-slide .home-content,
+        #kioskHome .home-slideshow .home-original-slide [aria-hidden="true"] {
+            display: none !important;
         }
 
         #kioskHome .home-start-overlay {
@@ -1103,139 +1672,260 @@
         }
 
         #kioskHome .home-start-overlay .home-cta {
-            font-size: 40px !important;
-            padding: 2.0rem 4.0rem !important;
-            border-radius: 28px !important;
-            background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%) !important;
-            box-shadow: 0 18px 45px rgba(16, 185, 129, 0.30), 0 12px 35px rgba(59, 130, 246, 0.20) !important;
+            font-size: 44px !important;
+            padding: 2.5rem 3rem !important;
+            width: 85vw !important;
+            max-width: 900px !important;
+            border-radius: 32px !important;
+            background: #ffffff !important;
+            color: #0B6623 !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
             margin-bottom: 120px !important;
+            font-weight: 700 !important;
         }
 
         #kioskHome .home-start-overlay .home-cta:hover {
-            background: linear-gradient(90deg, #059669 0%, #2563eb 100%) !important;
+            background: #f0f0f0 !important;
+        }
+
+        #kioskHome .home-slideshow .home-original-slide ~ .home-start-overlay .home-cta,
+        #kioskHome:has(.home-original-slide.is-active) .home-start-overlay .home-cta {
+            display: none !important;
         }
 
         @media (min-width: 640px) {
             .queue-number {
-                font-size: 4.5rem;
             }
-        }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen overflow-hidden">
-    <div id="kioskCanvas" class="min-h-screen w-full bg-white overflow-hidden">
 
-                <div id="kioskHome" class="home-animate">
-                    <div class="mobile-frame w-full min-h-screen bg-white overflow-hidden flex flex-col relative">
-                        <div class="home-slideshow" aria-hidden="true">
-                            <div class="slide is-active">
-                                <img src="./Resources/img1.jpg" alt="" />
-                                <div class="slide-overlay"></div>
-                                <div class="slide-content-old">
-                                    <div class="slide-content-logo">
-                                        <img src="../logo.png" alt="Logo" />
-                                    </div>
-                                    <div class="slide-content-doctor">
-                                        <img src="./doctor.png" alt="Doctor" />
-                                    </div>
-                                    <div class="slide-content-text">
-                                        <h1 class="slide-content-title">Dr. Serapio B. Montañer Jr. Al Haj Memorial Hospital</h1>
-                                        <p class="slide-content-subtitle">Please tap below to start your patient registration.</p>
-                                    </div>
+            #kioskHome .home-slideshow .slide .slide-btn-row {
+                width: 100%;
+                max-width: 980px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 26px;
+                align-items: center;
+            }
+
+            /* Gradient buttons */
+            #kioskHome .home-slideshow .slide .slide-btn {
+                width: 100%;
+                max-width: none;
+                padding: 28px 44px;
+                border-radius: 20px;
+                border: none;
+                font-size: 26px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            }
+
+            #kioskHome .home-slideshow .slide .slide-btn-primary {
+                background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+                color: #0B6623;
+            }
+
+            #kioskHome .home-slideshow .slide .slide-btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            }
+
+            #kioskHome .home-slideshow .slide .slide-btn-secondary {
+                background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+                color: white;
+            }
+
+            #kioskHome .home-slideshow .slide .slide-btn-secondary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            }
+
+            /* Hide old styles */
+            #kioskHome .home-slideshow .slide .slide-img,
+            #kioskHome .home-slideshow .slide .slide-overlay,
+            #kioskHome .home-slideshow .slide .slide-logo {
+                display: none !important;
+            }
+
+            #kioskHome .home-start-overlay {
+                display: none !important;
+            }
+
+            #kioskHome .home-slideshow .slide .slide-img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            #kioskHome .home-slideshow .slide .slide-overlay {
+                display: none;
+            }
+
+            #kioskHome .home-slideshow .slide .slide-logo {
+                display: none;
+            }
+
+            @keyframes logoPulse3D {
+                0%, 100% { 
+                    transform: translate(-50%, -50%) scale(1) rotateY(0deg); 
+                    box-shadow: 
+                        0 20px 60px rgba(0,0,0,0.3),
+                        0 0 0 8px rgba(255,255,255,0.5),
+                        inset 0 -10px 20px rgba(0,0,0,0.1),
+                        inset 0 10px 20px rgba(255,255,255,0.8);
+                }
+                25% { 
+                    transform: translate(-50%, -50%) scale(1.08) rotateY(10deg); 
+                    box-shadow: 
+                        0 30px 80px rgba(0,0,0,0.35),
+                        0 0 0 8px rgba(255,255,255,0.5),
+                        inset 0 -10px 20px rgba(0,0,0,0.15),
+                        inset 0 10px 20px rgba(255,255,255,0.9);
+                }
+                50% { 
+                    transform: translate(-50%, -50%) scale(1.12) rotateY(0deg); 
+                    box-shadow: 
+                        0 35px 90px rgba(0,0,0,0.4),
+                        0 0 0 10px rgba(255,255,255,0.6),
+                        inset 0 -12px 24px rgba(0,0,0,0.2),
+                        inset 0 12px 24px rgba(255,255,255,1);
+                }
+                75% { 
+                    transform: translate(-50%, -50%) scale(1.08) rotateY(-10deg); 
+                    box-shadow: 
+                        0 30px 80px rgba(0,0,0,0.35),
+                        0 0 0 8px rgba(255,255,255,0.5),
+                        inset 0 -10px 20px rgba(0,0,0,0.15),
+                        inset 0 10px 20px rgba(255,255,255,0.9);
+                }
+            }
+
+            #kioskHome .home-slideshow .slide.is-active {
+                opacity: 1;
+            }
+
+            #kioskHome .home-slideshow .home-original-slide {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                transition: opacity 1.2s ease-in-out;
+                will-change: opacity;
+                z-index: 0;
+            }
+
+            #kioskHome .home-slideshow .home-original-slide.is-active {
+                opacity: 1;
+            }
+
+            #kioskHome .home-slideshow .slide.is-active {
+                opacity: 1;
+            }
+
+            #kioskHome .home-slideshow .home-original-slide .hero-bg {
+                opacity: 1;
+            }
+
+            #kioskHome .home-slideshow .home-original-slide .home-logo,
+            #kioskHome .home-slideshow .home-original-slide .home-title,
+            #kioskHome .home-slideshow .home-original-slide .home-subtitle,
+            #kioskHome .home-slideshow .home-original-slide .home-doctor,
+            #kioskHome .home-slideshow .home-original-slide .home-doctor-left,
+            #kioskHome .home-slideshow .home-original-slide .home-content,
+            #kioskHome .home-slideshow .home-original-slide [aria-hidden="true"] {
+                display: none !important;
+            }
+
+            #kioskHome .home-start-overlay {
+                position: absolute;
+                inset: 0;
+                z-index: 2;
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+                padding: 24px;
+                padding-bottom: 40px;
+            }
+
+            #kioskHome .home-start-overlay .home-cta {
+                font-size: 44px !important;
+                padding: 2.5rem 3rem !important;
+                width: 85vw !important;
+                max-width: 900px !important;
+                border-radius: 32px !important;
+                background: #ffffff !important;
+                color: #0B6623 !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
+                margin-bottom: 120px !important;
+                font-weight: 700 !important;
+            }
+
+            #kioskHome .home-start-overlay .home-cta:hover {
+                background: #f0f0f0 !important;
+            }
+
+            #kioskHome .home-slideshow .home-original-slide ~ .home-start-overlay .home-cta,
+            #kioskHome:has(.home-original-slide.is-active) .home-start-overlay .home-cta {
+                display: none !important;
+            }
+
+            @media (min-width: 640px) {
+                .queue-number {
+                    font-size: 4.5rem;
+                }
+            }
+        </style>
+    </head>
+    <body class="bg-gray-50 min-h-screen overflow-hidden">
+        <div id="kioskCanvas" class="min-h-screen w-full bg-white overflow-hidden">
+
+                    <div id="kioskHome" class="kiosk-home-wrapper">
+                    <div class="kiosk-home-main" onclick="startRegistration()">
+                        <img src="./Resources/img1.png" alt="" class="kiosk-home-top-img" />
+                        <img src="./Resources/temp.png" alt="" class="kiosk-home-min-img" />
+                    </div>
+                    <div class="kiosk-home-footer">
+                        <img src="./wave.png" alt="" class="kiosk-footer-bg-img" />
+                        <div class="kiosk-footer-content">
+                            <div class="kiosk-footer-slogan">
+                                <div class="kiosk-footer-hashtag">
+                                    <span class="kiosk-footer-hash">#</span><span class="kiosk-footer-hash-dsbmmh">DSBMMH</span><span class="kiosk-footer-hash-life">Lifesavers</span>
                                 </div>
                             </div>
-                            <div class="slide">
-                                <img src="./Resources/img2.jpg" alt="" />
-                                <div class="slide-overlay"></div>
-                                <div class="slide-content-old">
-                                    <div class="slide-content-logo">
-                                        <img src="../logo.png" alt="Logo" />
-                                    </div>
-                                    <div class="slide-content-doctor">
-                                        <img src="./doctor.png" alt="Doctor" />
-                                    </div>
-                                    <div class="slide-content-text">
-                                        <h1 class="slide-content-title">Dr. Serapio B. Montañer Jr. Al Haj Memorial Hospital</h1>
-                                        <p class="slide-content-subtitle">Please tap below to start your patient registration.</p>
-                                    </div>
+
+                            <div class="kiosk-footer-actions">
+                                <button type="button" class="kiosk-footer-btn kiosk-footer-btn-primary" onclick="startRegistration(); event.stopPropagation();">Start Registration</button>
+                                <button type="button" class="kiosk-footer-btn kiosk-footer-btn-secondary" onclick="showAlreadyRegistered(); event.stopPropagation();">Already Registered</button>
+                            </div>
+
+                            <div class="kiosk-footer-info">
+                                <h2 class="kiosk-footer-title">DR. SERAPIO B. MONTAÑER JR., AL-HAJ MEMORIAL HOSPITAL</h2>
+                                <p class="kiosk-footer-location"></p>
+                                <div class="kiosk-footer-logos">
+                                    <img src="../logo.png" alt="Hospital Logo" class="kiosk-footer-logo" />
+                                    <img src="./logo2.png" alt="Logo 2" class="kiosk-footer-logo" />
+                                    <img src="./logo3.jpg" alt="Logo 3" class="kiosk-footer-logo" />
+                                    <img src="./logo4.png" alt="Logo 4" class="kiosk-footer-logo" />
                                 </div>
                             </div>
-                            <div class="slide">
-                                <img src="./Resources/img3.jpg" alt="" />
-                                <div class="slide-overlay"></div>
-                                <div class="slide-content-old">
-                                    <div class="slide-content-logo">
-                                        <img src="../logo.png" alt="Logo" />
-                                    </div>
-                                    <div class="slide-content-doctor">
-                                        <img src="./doctor.png" alt="Doctor" />
-                                    </div>
-                                    <div class="slide-content-text">
-                                        <h1 class="slide-content-title">Dr. Serapio B. Montañer Jr. Al Haj Memorial Hospital</h1>
-                                        <p class="slide-content-subtitle">Please tap below to start your patient registration.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="home-original-slide">
-                                <div class="absolute inset-0 hero-bg"></div>
-                                <div class="absolute inset-0 hero-overlay"></div>
-                                <div class="relative h-[320px] flex-shrink-0">
-                                    <div class="absolute inset-0 home-hero"></div>
-                                </div>
-
-                                <div class="home-position relative -mt-[210px] px-8 pb-12 flex-1 overflow-y-auto no-scrollbar">
-                                    <div class="w-full">
-                                        <div class="home-portrait grid grid-cols-1 lg:grid-cols-[420px_1fr] items-center gap-10">
-                                            <div class="home-doctor-left hidden lg:flex justify-start">
-                                                <div class="relative">
-                                                    <div aria-hidden="true" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] max-w-[520px] h-[86%] rounded-[42px] bg-gradient-to-br from-white/55 via-emerald-50/35 to-sky-100/30 shadow-2xl shadow-emerald-700/10 rotate-[-8deg]"></div>
-                                                    <div aria-hidden="true" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] max-w-[520px] h-[86%] rounded-[42px] ring-1 ring-emerald-600/10 rotate-[-8deg]"></div>
-                                                    <img src="./doctor.png" alt="Doctor" class="relative w-[380px] max-w-full object-contain" />
-                                                </div>
-                                            </div>
-
-                                            <div class="home-content lg:pl-10">
-                                                <div class="mx-auto w-[140px] h-[140px] rounded-full bg-white shadow-xl flex items-center justify-center overflow-hidden home-logo">
-                                                    <img id="kioskHomeLogo" src="../logo.png" alt="Logo" class="w-[96px] h-[96px] object-contain" />
-                                                    <div id="kioskHomeLogoFallback" class="hidden w-full h-full flex items-center justify-center text-slate-400 text-sm font-semibold">LOGO</div>
-                                                </div>
-
-                                                <div class="home-doctor">
-                                                    <div class="relative inline-block w-[1080px]">
-                                                        <div aria-hidden="true" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[124%] max-w-[520px] h-[86%] rounded-[42px] bg-gradient-to-br from-white/55 via-emerald-50/35 to-sky-100/30 shadow-2xl shadow-emerald-700/10 rotate-[-8deg]"></div>
-                                                        <div aria-hidden="true" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[124%] max-w-[520px] h-[86%] rounded-[42px] ring-1 ring-emerald-600/10 rotate-[-8deg]"></div>
-                                                        <img src="./doctor.png" alt="Doctor" class="relative kiosk-home-doctor w-full max-w-none object-contain" />
-                                                    </div>
-                                                </div>
-
-                                                <div class="mt-8 text-center">
-                                                    <h1 class="text-3xl sm:text-4xl font-extrabold text-emerald-600 leading-tight home-title">Dr. Serapio B. Montañer Jr. Al Haj Memorial Hospital</h1>
-                                                    <p class="mt-4 text-base sm:text-lg text-slate-700 home-subtitle">Please tap below to start your patient registration.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="home-start-overlay">
-                            <button type="button" onclick="startRegistration()" class="home-cta inline-flex items-center justify-center px-14 py-4 rounded-2xl bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 transition-colors">Start Registration</button>
                         </div>
                     </div>
                 </div>
 
-                <div id="kioskRegistration" class="hidden">
-                <!-- Floating decorative elements -->
-                <div class="floating-medical-cross" style="top: 10%; left: 5%; animation-delay: 0s;">
-                    <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
-                </div>
-                <div class="floating-medical-cross" style="top: 60%; right: 8%; animation-delay: 2s;">
-                    <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
-                </div>
-                <div class="floating-medical-cross" style="bottom: 20%; left: 10%; animation-delay: 4s;">
-                    <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
-                </div>
+                    <div id="kioskRegistration" class="hidden">
+                    <!-- Floating decorative elements -->
+                    <div class="floating-medical-cross" style="top: 10%; left: 5%; animation-delay: 0s;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="floating-medical-cross" style="top: 60%; right: 8%; animation-delay: 2s;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="floating-medical-cross" style="bottom: 20%; left: 10%; animation-delay: 4s;">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+                    </div>
 
                 <div class="min-h-screen w-full bg-white">
                 <div class="w-full min-h-screen">
@@ -2140,65 +2830,17 @@
         function startRegistration() {
             const home = document.getElementById('kioskHome');
             const reg = document.getElementById('kioskRegistration');
-            if (!home || !reg) return;
-            home.classList.add('hidden');
+            if (!reg) return;
+            if (home) home.classList.add('hidden');
             reg.classList.remove('hidden');
             resetRegistrationFormOnly();
             resetKioskIdleTimer();
-        }
-
-        let homeSlideshowTimer = null;
-        let homeSlideshowIndex = 0;
-
-        function homeIsVisible() {
-            const home = document.getElementById('kioskHome');
-            if (!home) return false;
-            return !home.classList.contains('hidden');
-        }
-
-        function stopHomeSlideshow() {
-            if (homeSlideshowTimer) {
-                window.clearInterval(homeSlideshowTimer);
-                homeSlideshowTimer = null;
-            }
-        }
-
-        function startHomeSlideshow() {
-            const home = document.getElementById('kioskHome');
-            if (!home) return;
-
-            const slides = Array.from(home.querySelectorAll('.home-slideshow .slide, .home-slideshow .home-original-slide'));
-            if (!slides.length) return;
-
-            stopHomeSlideshow();
-
-            homeSlideshowIndex = slides.findIndex(s => s.classList.contains('is-active'));
-            if (homeSlideshowIndex < 0) homeSlideshowIndex = 0;
-
-            slides.forEach((s, i) => s.classList.toggle('is-active', i === homeSlideshowIndex));
-
-            homeSlideshowTimer = window.setInterval(() => {
-                if (!homeIsVisible()) return;
-                slides[homeSlideshowIndex].classList.remove('is-active');
-                homeSlideshowIndex = (homeSlideshowIndex + 1) % slides.length;
-                slides[homeSlideshowIndex].classList.add('is-active');
-            }, 4500);
         }
 
         (function () {
             const events = ['mousemove', 'mousedown', 'touchstart', 'touchmove', 'keydown', 'scroll', 'input', 'click'];
             const onActivity = () => resetKioskIdleTimer();
             events.forEach(ev => window.addEventListener(ev, onActivity, { passive: true }));
-        })();
-
-        (function () {
-            const img = document.getElementById('kioskHomeLogo');
-            const fallback = document.getElementById('kioskHomeLogoFallback');
-            if (!img || !fallback) return;
-            img.addEventListener('error', function () {
-                img.classList.add('hidden');
-                fallback.classList.remove('hidden');
-            });
         })();
 
         function calculateAgeFromDob(dobValue) {
@@ -2294,8 +2936,6 @@
                     updateSharedNav(1, parseInt(qNum));
                 }
             }
-
-            startHomeSlideshow();
         });
 
         // Update the shared fixed navigation bar based on current question

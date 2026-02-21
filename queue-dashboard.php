@@ -263,7 +263,7 @@
         // Load stations
         async function loadStations() {
             try {
-                const response = await fetch('/api/queue/stations');
+                const response = await fetch('api/queue/stations');
                 const data = await response.json();
                 stations = data.stations.reduce((acc, station) => {
                     acc[station.station_name] = station;
@@ -300,7 +300,7 @@
         // Refresh all queues
         async function refreshAllQueues() {
             try {
-                const response = await fetch('/api/queue/display/all');
+                const response = await fetch('api/queue/display/all');
                 const data = await response.json();
                 
                 Object.keys(data.displays).forEach(stationName => {
@@ -424,7 +424,7 @@
         async function callNext(stationName) {
             try {
                 const stationId = stations[stationName].id;
-                const response = await fetch('/api/queue/call-next', {
+                const response = await fetch('api/queue/call-next', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -457,7 +457,7 @@
                     return;
                 }
                 
-                const response = await fetch('/api/queue/complete-service', {
+                const response = await fetch('api/queue/complete-service', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -483,7 +483,7 @@
         // Get station display data
         async function getStationDisplay(stationName) {
             const stationId = stations[stationName].id;
-            const response = await fetch(`/api/queue/display/${stationId}`);
+            const response = await fetch(`api/queue/display/${stationId}`);
             return await response.json();
         }
 
@@ -532,7 +532,7 @@
             const stationId = document.getElementById('stationSelect').value;
             
             try {
-                const response = await fetch('/api/queue/add', {
+                const response = await fetch('api/queue/add', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

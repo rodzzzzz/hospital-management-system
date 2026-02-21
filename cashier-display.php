@@ -296,7 +296,7 @@ Lanao Del Sur, BARMM 9300
         // Load queue data
         async function loadQueueData() {
             try {
-                const response = await fetch('/api/queue/display/4'); // Cashier station ID is 4
+                const response = await fetch('api/queue/display/4'); // Cashier station ID is 4
                 displayData = await response.json();
                 updateDisplay();
             } catch (error) {

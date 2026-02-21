@@ -15,13 +15,6 @@ require_once __DIR__ . '/_functions.php';
 require_once __DIR__ . '/../auth/_session.php';
 
 $pdo = db();
-$currentUser = auth_current_user($pdo);
-
-if (!$currentUser) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
-}
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -30,9 +23,17 @@ $pathParts = explode('/', trim($path, '/'));
 try {
     switch ($method) {
         case 'GET':
-            handleGetRequest($pdo, $pathParts, $currentUser);
+            // GET endpoints (display, stations) are public — no auth required
+            handleGetRequest($pdo, $pathParts);
             break;
         case 'POST':
+            // POST endpoints require authentication
+            $currentUser = auth_current_user($pdo);
+            if (!$currentUser) {
+                http_response_code(401);
+                echo json_encode(['error' => 'Unauthorized']);
+                exit;
+            }
             handlePostRequest($pdo, $pathParts, $currentUser);
             break;
         default:
@@ -44,7 +45,7 @@ try {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 
-function handleGetRequest(PDO $pdo, array $pathParts, array $currentUser): void
+function handleGetRequest(PDO $pdo, array $pathParts): void
 {
     // Find the 'queue' index in the path parts
     $queueIndex = array_search('queue', $pathParts);

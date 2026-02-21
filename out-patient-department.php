@@ -5534,7 +5534,7 @@
 
         async function loadOpdQueue() {
             try {
-                const response = await fetch('/api/queue/display/1'); // OPD station ID is 1
+                const response = await fetch('api/queue/display/1'); // OPD station ID is 1
                 currentQueueData = await response.json();
                 updateQueueDisplay();
             } catch (error) {
@@ -5618,7 +5618,7 @@
             select.appendChild(dischargeOption);
             
             // Add other stations
-            fetch('/api/queue/stations')
+            fetch('api/queue/stations')
                 .then(response => response.json())
                 .then(data => {
                     data.stations.forEach(station => {
@@ -5634,7 +5634,7 @@
 
         async function callNextPatient() {
             try {
-                const response = await fetch('/api/queue/call-next', {
+                const response = await fetch('api/queue/call-next', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ station_id: 1 })
@@ -5673,7 +5673,7 @@
 
         async function recallUnavailablePatient(queueId) {
             try {
-                const response = await fetch('/api/queue/recall-unavailable', {
+                const response = await fetch('api/queue/recall-unavailable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5716,7 +5716,7 @@
         async function callNextAndMarkUnavailable() {
             try {
                 // Use the new combined API endpoint
-                const response = await fetch('/api/queue/call-next-mark-unavailable', {
+                const response = await fetch('api/queue/call-next-mark-unavailable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -5783,7 +5783,7 @@
             }
 
             try {
-                let endpoint = '/api/queue/complete-service';
+                let endpoint = 'api/queue/complete-service';
                 let body = { 
                     queue_id: currentQueueData.currently_serving.id
                 };

@@ -1417,7 +1417,7 @@
 
         async function loadCashierQueue() {
             try {
-                const response = await fetch('/api/queue/display/4'); // Cashier station ID is 4
+                const response = await fetch('api/queue/display/4'); // Cashier station ID is 4
                 currentCashierQueueData = await response.json();
                 updateCashierQueueDisplay();
             } catch (error) {
@@ -1513,7 +1513,7 @@
             select.appendChild(dischargeOption);
             
             // Add other stations
-            fetch('/api/queue/stations')
+            fetch('api/queue/stations')
                 .then(response => response.json())
                 .then(data => {
                     data.stations.forEach(station => {
@@ -1529,7 +1529,7 @@
 
         async function callNextPatient() {
             try {
-                const response = await fetch('/api/queue/call-next', {
+                const response = await fetch('api/queue/call-next', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ station_id: 4 })
@@ -1550,7 +1550,7 @@
 
         async function recallCashierUnavailablePatient(queueId) {
             try {
-                const response = await fetch('/api/queue/recall-unavailable', {
+                const response = await fetch('api/queue/recall-unavailable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1573,7 +1573,7 @@
 
         async function callNextAndMarkUnavailable() {
             try {
-                const response = await fetch('/api/queue/call-next-mark-unavailable', {
+                const response = await fetch('api/queue/call-next-mark-unavailable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1609,7 +1609,7 @@
             }
 
             try {
-                let endpoint = '/api/queue/complete-service';
+                let endpoint = 'api/queue/complete-service';
                 let body = { 
                     queue_id: currentCashierQueueData.currently_serving.id
                 };

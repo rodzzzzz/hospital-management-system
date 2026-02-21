@@ -491,7 +491,7 @@
 
         async function loadDoctorQueue() {
             try {
-                const response = await fetch('/api/queue/display/2'); // Doctor station ID is 2
+                const response = await fetch('api/queue/display/2'); // Doctor station ID is 2
                 currentDoctorQueueData = await response.json();
                 updateDoctorQueueDisplay();
             } catch (error) {
@@ -585,7 +585,7 @@
             select.appendChild(dischargeOption);
             
             // Add other stations
-            fetch('/api/queue/stations')
+            fetch('api/queue/stations')
                 .then(response => response.json())
                 .then(data => {
                     data.stations.forEach(station => {
@@ -601,7 +601,7 @@
 
         async function callNextPatient() {
             try {
-                const response = await fetch('/api/queue/call-next', {
+                const response = await fetch('api/queue/call-next', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ station_id: 2 })
@@ -622,7 +622,7 @@
 
         async function recallDoctorUnavailablePatient(queueId) {
             try {
-                const response = await fetch('/api/queue/recall-unavailable', {
+                const response = await fetch('api/queue/recall-unavailable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -645,7 +645,7 @@
 
         async function callNextAndMarkUnavailable() {
             try {
-                const response = await fetch('/api/queue/call-next-mark-unavailable', {
+                const response = await fetch('api/queue/call-next-mark-unavailable', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -681,7 +681,7 @@
             }
 
             try {
-                let endpoint = '/api/queue/complete-service';
+                let endpoint = 'api/queue/complete-service';
                 let body = { 
                     queue_id: currentDoctorQueueData.currently_serving.id
                 };

@@ -296,7 +296,7 @@ Lanao Del Sur, BARMM 9300
         // Load queue data
         async function loadQueueData() {
             try {
-                const response = await fetch('/api/queue/display/3'); // Pharmacy station ID is 3
+                const response = await fetch('api/queue/display/3'); // Pharmacy station ID is 3
                 displayData = await response.json();
                 updateDisplay();
             } catch (error) {
