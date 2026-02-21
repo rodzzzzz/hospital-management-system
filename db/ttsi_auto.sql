@@ -963,6 +963,7 @@ CREATE TABLE `patients` (
   `full_name` varchar(255) NOT NULL,
   `dob` date DEFAULT NULL,
   `sex` varchar(16) DEFAULT NULL,
+  `blood_type` varchar(16) DEFAULT NULL,
   `contact` varchar(64) DEFAULT NULL,
   `civil_status` varchar(32) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
@@ -980,9 +981,9 @@ CREATE TABLE `patients` (
   `emergency_contact_name` varchar(255) DEFAULT NULL,
   `emergency_contact_relationship` varchar(64) DEFAULT NULL,
   `emergency_contact_phone` varchar(64) DEFAULT NULL,
+  `is_new_patient` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `blood_type` varchar(16) DEFAULT NULL
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
