@@ -525,6 +525,46 @@
             outline: none;
             transform: scale(1.4);
             transform-origin: top center;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        .kiosk-home-top-img.img-1-2 {
+            top: -10px;
+            transform: scale(1.7);
+        }
+
+        .kiosk-home-top-img.img-2 {
+            top: 0px;
+            left: 75px;
+            transform: scale(1.6);
+        }
+
+        .kiosk-home-top-img.img-3 {
+            top: -5px;
+            left: -50px;
+            transform: scale(1.9);
+        }
+
+        .kiosk-home-top-img.img-4-5 {
+            top: 0px;
+            transform: scale(2.0);
+        }
+
+        .kiosk-home-top-img.img-4 {
+            top: 0px;
+            left: -25px;
+            transform: scale(2.0);
+        }
+
+        .kiosk-home-top-img.img-5 {
+            top: -10px;
+            left: 150px;
+            transform: scale(1.5) scaleY(1.3);
+        }
+
+        .kiosk-home-top-img.is-active {
+            opacity: 1;
         }
 
         .kiosk-home-min-img {
@@ -541,7 +581,7 @@
             outline: none;
             image-rendering: -webkit-optimize-contrast;
             image-rendering: high-quality;
-            opacity: 0.8;
+            opacity: 1;
             filter: contrast(1.15) saturate(1.1);
             transform: translateZ(0);
             backface-visibility: hidden;
@@ -575,7 +615,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 14px;
+            gap: 2px;
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -880,10 +920,10 @@
         }
 
         .kiosk-footer-title {
-            font-size: 20px;
+            font-size: 26px;
             font-weight: 700;
             line-height: 1.3;
-            margin: 15px 0 0 0;
+            margin: -6px 0 0 0;
         }
 
         .kiosk-footer-location {
@@ -1884,7 +1924,11 @@
 
                     <div id="kioskHome" class="kiosk-home-wrapper">
                     <div class="kiosk-home-main" onclick="startRegistration()">
-                        <img src="./Resources/img1.png" alt="" class="kiosk-home-top-img" />
+                        <img src="./Resources/img1.png" alt="" class="kiosk-home-top-img img-1-2 is-active" />
+                        <img src="./Resources/img2.png" alt="" class="kiosk-home-top-img img-2" />
+                        <img src="./Resources/img3.jpg" alt="" class="kiosk-home-top-img img-3" />
+                        <img src="./Resources/img4.PNG" alt="" class="kiosk-home-top-img img-4" />
+                        <img src="./Resources/img5.PNG" alt="" class="kiosk-home-top-img img-5" />
                         <img src="./Resources/temp.png" alt="" class="kiosk-home-min-img" />
                     </div>
                     <div class="kiosk-home-footer">
@@ -1896,13 +1940,14 @@
                                 </div>
                             </div>
 
+                            <h2 class="kiosk-footer-title">DR. SERAPIO B. MONTAÑER JR., AL-HAJ MEMORIAL HOSPITAL</h2>
+
                             <div class="kiosk-footer-actions">
                                 <button type="button" class="kiosk-footer-btn kiosk-footer-btn-primary" onclick="startRegistration(); event.stopPropagation();">Start Registration</button>
                                 <button type="button" class="kiosk-footer-btn kiosk-footer-btn-secondary" onclick="showAlreadyRegistered(); event.stopPropagation();">Already Registered</button>
                             </div>
 
                             <div class="kiosk-footer-info">
-                                <h2 class="kiosk-footer-title">DR. SERAPIO B. MONTAÑER JR., AL-HAJ MEMORIAL HOSPITAL</h2>
                                 <p class="kiosk-footer-location"></p>
                                 <div class="kiosk-footer-logos">
                                     <img src="../logo.png" alt="Hospital Logo" class="kiosk-footer-logo" />
@@ -2712,7 +2757,7 @@
                 const result = await response.json();
 
                 if (result.ok) {
-                    document.getElementById('patientCodeDisplay').textContent = `Queue No: ${result.queue_id}`;
+                    document.getElementById('patientCodeDisplay').textContent = `Queue No: ${result.queue_number}`;
                     document.querySelectorAll('.form-section').forEach(section => {
                         section.classList.remove('active');
                     });
@@ -3260,6 +3305,22 @@
                 if (btn) btn.disabled = false;
             }
         }
+
+        (function initHomeTopImageSlideshow() {
+            const slides = Array.from(document.querySelectorAll('#kioskHome .kiosk-home-top-img'));
+            if (slides.length < 2) return;
+
+            let currentIndex = 0;
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('is-active', index === 0);
+            });
+
+            setInterval(() => {
+                slides[currentIndex].classList.remove('is-active');
+                currentIndex = (currentIndex + 1) % slides.length;
+                slides[currentIndex].classList.add('is-active');
+            }, 3500);
+        })();
     </script>
 </body>
 </html>
