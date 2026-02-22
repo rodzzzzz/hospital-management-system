@@ -13,7 +13,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f8fafc;
         }
         .station-card {
             transition: all 0.3s ease;
@@ -27,6 +27,12 @@
         .station-doctor { border-left-color: #10b981; }
         .station-pharmacy { border-left-color: #f59e0b; }
         .station-cashier { border-left-color: #ef4444; }
+        .station-xray { border-left-color: #06b6d4; }
+        .station-lab { border-left-color: #14b8a6; }
+        .surface-card {
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        }
         .queue-item {
             transition: all 0.2s ease;
         }
@@ -49,19 +55,19 @@
         <?php include __DIR__ . '/includes/double-sidebar.php'; ?>
         
         <!-- Main Content -->
-        <main class="ml-16 lg:ml-80 p-8">
+        <main class="ml-16 lg:ml-80 p-6 lg:p-8">
             <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
+            <div class="bg-white surface-card p-6 flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-6">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">Queue Management Dashboard</h1>
                     <p class="text-gray-600 mt-1">Real-time patient queue monitoring across all stations</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="refreshAllQueues()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+                    <button onclick="refreshAllQueues()" class="px-4 py-3 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 flex items-center space-x-2 transition-colors">
                         <i class="fas fa-sync-alt"></i>
                         <span>Refresh</span>
                     </button>
-                    <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2">
+                    <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" class="px-4 py-3 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 flex items-center space-x-2 transition-colors">
                         <i class="fas fa-play"></i>
                         <span>Auto Refresh: ON</span>
                     </button>
@@ -69,14 +75,14 @@
             </div>
 
             <!-- Station Overview Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="stationCards">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6" id="stationCards">
                 <!-- Station cards will be dynamically loaded -->
             </div>
 
             <!-- Queue Details Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <!-- OPD Queue -->
-                <div class="station-card station-opd bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="station-card station-opd bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="bg-blue-600 text-white p-4">
                         <h3 class="text-lg font-semibold flex items-center">
                             <i class="fas fa-hospital-user mr-2"></i>
@@ -107,7 +113,7 @@
                 </div>
 
                 <!-- Doctor Queue -->
-                <div class="station-card station-doctor bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="station-card station-doctor bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="bg-green-600 text-white p-4">
                         <h3 class="text-lg font-semibold flex items-center">
                             <i class="fas fa-user-md mr-2"></i>
@@ -138,7 +144,7 @@
                 </div>
 
                 <!-- Pharmacy Queue -->
-                <div class="station-card station-pharmacy bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="station-card station-pharmacy bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="bg-yellow-600 text-white p-4">
                         <h3 class="text-lg font-semibold flex items-center">
                             <i class="fas fa-pills mr-2"></i>
@@ -169,7 +175,7 @@
                 </div>
 
                 <!-- Cashier Queue -->
-                <div class="station-card station-cashier bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="station-card station-cashier bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="bg-red-600 text-white p-4">
                         <h3 class="text-lg font-semibold flex items-center">
                             <i class="fas fa-cash-register mr-2"></i>
@@ -198,10 +204,72 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- X-Ray Queue -->
+                <div class="station-card station-xray bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="bg-cyan-600 text-white p-4">
+                        <h3 class="text-lg font-semibold flex items-center">
+                            <i class="fas fa-x-ray mr-2"></i>
+                            X-Ray
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <span class="text-sm text-gray-600">Currently Serving:</span>
+                            <div id="xray-current" class="text-lg font-semibold text-cyan-600">-</div>
+                        </div>
+                        <div class="mb-4">
+                            <span class="text-sm text-gray-600">Queue Count:</span>
+                            <span id="xray-count" class="text-lg font-semibold">0</span>
+                        </div>
+                        <div id="xray-queue" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- Queue items will be loaded here -->
+                        </div>
+                        <div class="mt-4 flex space-x-2">
+                            <button onclick="callNext('xray')" class="px-3 py-1 bg-cyan-600 text-white rounded hover:bg-cyan-700 text-sm">
+                                <i class="fas fa-bell"></i> Call Next
+                            </button>
+                            <button onclick="completeService('xray')" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                <i class="fas fa-check"></i> Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Laboratory Queue -->
+                <div class="station-card station-lab bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="bg-teal-600 text-white p-4">
+                        <h3 class="text-lg font-semibold flex items-center">
+                            <i class="fas fa-flask mr-2"></i>
+                            Laboratory
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <span class="text-sm text-gray-600">Currently Serving:</span>
+                            <div id="lab-current" class="text-lg font-semibold text-teal-600">-</div>
+                        </div>
+                        <div class="mb-4">
+                            <span class="text-sm text-gray-600">Queue Count:</span>
+                            <span id="lab-count" class="text-lg font-semibold">0</span>
+                        </div>
+                        <div id="lab-queue" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- Queue items will be loaded here -->
+                        </div>
+                        <div class="mt-4 flex space-x-2">
+                            <button onclick="callNext('lab')" class="px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700 text-sm">
+                                <i class="fas fa-bell"></i> Call Next
+                            </button>
+                            <button onclick="completeService('lab')" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                <i class="fas fa-check"></i> Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Quick Actions Panel -->
-            <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <div class="mt-6 bg-white rounded-lg shadow-sm p-6">
                 <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button onclick="showAddPatientModal()" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2">
@@ -251,6 +319,57 @@
         let refreshInterval;
         let stations = {};
         let currentQueues = {};
+
+        const STATION_META = {
+            opd: {
+                icon: 'hospital-user',
+                iconWrapClass: 'bg-blue-100 text-blue-600',
+                accentClass: 'text-blue-600',
+                buttonClass: 'bg-blue-600 hover:bg-blue-700',
+                pagePath: '/out-patient-department.php',
+                displayPath: '/opd-display.php'
+            },
+            doctor: {
+                icon: 'user-md',
+                iconWrapClass: 'bg-green-100 text-green-600',
+                accentClass: 'text-green-600',
+                buttonClass: 'bg-green-600 hover:bg-green-700',
+                pagePath: '/doctor.php',
+                displayPath: '/doctor-display.php'
+            },
+            pharmacy: {
+                icon: 'pills',
+                iconWrapClass: 'bg-yellow-100 text-yellow-600',
+                accentClass: 'text-yellow-600',
+                buttonClass: 'bg-yellow-600 hover:bg-yellow-700',
+                pagePath: '/pharmacy.php',
+                displayPath: '/pharmacy-display.php'
+            },
+            cashier: {
+                icon: 'cash-register',
+                iconWrapClass: 'bg-red-100 text-red-600',
+                accentClass: 'text-red-600',
+                buttonClass: 'bg-red-600 hover:bg-red-700',
+                pagePath: '/cashier.php',
+                displayPath: '/cashier-display.php'
+            },
+            xray: {
+                icon: 'x-ray',
+                iconWrapClass: 'bg-cyan-100 text-cyan-600',
+                accentClass: 'text-cyan-600',
+                buttonClass: 'bg-cyan-600 hover:bg-cyan-700',
+                pagePath: '/xray.php',
+                displayPath: '/xray-display.php'
+            },
+            lab: {
+                icon: 'flask',
+                iconWrapClass: 'bg-teal-100 text-teal-600',
+                accentClass: 'text-teal-600',
+                buttonClass: 'bg-teal-600 hover:bg-teal-700',
+                pagePath: '/laboratory.php',
+                displayPath: '/laboratory-display.php'
+            }
+        };
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
@@ -360,30 +479,31 @@
         function updateStationCards(displays) {
             const stationCards = document.getElementById('stationCards');
             stationCards.innerHTML = '';
-            
-            Object.keys(displays).forEach(stationName => {
+
+            const preferredOrder = ['opd', 'doctor', 'pharmacy', 'cashier', 'xray', 'lab'];
+            const stationNames = preferredOrder.filter(name => displays[name]);
+
+            Object.keys(displays).forEach(name => {
+                if (!stationNames.includes(name)) stationNames.push(name);
+            });
+
+            stationNames.forEach(stationName => {
                 const display = displays[stationName];
-                const colors = {
-                    opd: 'blue',
-                    doctor: 'green',
-                    pharmacy: 'yellow',
-                    cashier: 'red'
+                const meta = STATION_META[stationName] || {
+                    icon: 'users',
+                    iconWrapClass: 'bg-gray-100 text-gray-600',
+                    accentClass: 'text-gray-700',
+                    buttonClass: 'bg-gray-600 hover:bg-gray-700',
+                    pagePath: `/${stationName}.php`,
+                    displayPath: `/${stationName}-display.php`
                 };
-                const color = colors[stationName];
-                const icons = {
-                    opd: 'hospital-user',
-                    doctor: 'user-md',
-                    pharmacy: 'pills',
-                    cashier: 'cash-register'
-                };
-                const icon = icons[stationName];
                 
                 stationCards.innerHTML += `
-                    <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 bg-${color}-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-${icon} text-${color}-600"></i>
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center ${meta.iconWrapClass}">
+                                    <i class="fas fa-${meta.icon}"></i>
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-gray-900">${display.station.station_display_name}</h3>
@@ -394,7 +514,7 @@
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Currently Serving</span>
-                                <span class="font-semibold text-${color}-600">
+                                <span class="font-semibold ${meta.accentClass}">
                                     ${display.currently_serving ? display.currently_serving.queue_number : 'None'}
                                 </span>
                             </div>
@@ -408,7 +528,7 @@
                             </div>
                         </div>
                         <div class="mt-4 flex space-x-2">
-                            <button onclick="openDisplay('${stationName}')" class="flex-1 px-3 py-2 bg-${color}-600 text-white rounded hover:bg-${color}-700 text-sm">
+                            <button onclick="openDisplay('${stationName}')" class="flex-1 px-3 py-2 text-white rounded text-sm ${meta.buttonClass}">
                                 <i class="fas fa-tv"></i> Display
                             </button>
                             <button onclick="manageStation('${stationName}')" class="flex-1 px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
@@ -423,7 +543,13 @@
         // Call next patient
         async function callNext(stationName) {
             try {
-                const stationId = stations[stationName].id;
+                const stationData = stations[stationName];
+                if (!stationData) {
+                    showToast('Station is not available yet. Please refresh stations.', 'warning');
+                    return;
+                }
+
+                const stationId = stationData.id;
                 const response = await fetch('api/queue/call-next', {
                     method: 'POST',
                     headers: {
@@ -482,7 +608,12 @@
 
         // Get station display data
         async function getStationDisplay(stationName) {
-            const stationId = stations[stationName].id;
+            const stationData = stations[stationName];
+            if (!stationData) {
+                return { currently_serving: null, queue_count: 0, next_patients: [] };
+            }
+
+            const stationId = stationData.id;
             const response = await fetch(`api/queue/display/${stationId}`);
             return await response.json();
         }
@@ -576,12 +707,15 @@
         }
 
         function openDisplay(stationName) {
-            window.open(`/${stationName}-display.php`, '_blank');
+            const meta = STATION_META[stationName];
+            const displayPath = meta?.displayPath || `/${stationName}-display.php`;
+            window.open(displayPath, '_blank');
         }
 
         function manageStation(stationName) {
-            // Navigate to station management page
-            window.location.href = `/${stationName}.php`;
+            const meta = STATION_META[stationName];
+            const pagePath = meta?.pagePath || `/${stationName}.php`;
+            window.location.href = pagePath;
         }
 
         function showMovePatientModal() {

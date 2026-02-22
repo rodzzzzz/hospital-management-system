@@ -7,6 +7,8 @@
     <title>Doctor - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -66,58 +68,98 @@
                 </section>
 
                 <!-- Doctor Queue Section -->
-                <section id="doctorQueueSection" class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Doctor's Queue</h3>
-                            <div class="flex space-x-2">
-                                <button id="doctorCallNextBtn" onclick="callNextPatient()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                    <i class="fas fa-bell"></i> Call Next
-                                </button>
-                                <button onclick="callNextAndMarkUnavailable()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-                                    <i class="fas fa-user-slash"></i> Call Next & Mark Unavailable
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Currently Serving -->
-                        <div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                            <div class="text-sm font-medium text-gray-600 mb-1">Currently Serving:</div>
-                            <div id="doctorCurrentlyServing" class="text-lg font-semibold text-green-600">No patient being served</div>
-                            <div id="doctorStationSelection" class="mt-3 hidden">
-                                <div class="text-sm font-medium text-gray-600 mb-1">Next Destination:</div>
-                                <select id="doctorDestinationStation" class="px-3 py-1 border border-gray-300 rounded text-sm">
-                                    <option value="">Select destination...</option>
-                                </select>
-                                <button onclick="completeService()" class="ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
-                                    <i class="fas fa-check"></i> Complete
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Queue List -->
-                        <div class="space-y-2">
-                            <div class="text-sm font-medium text-gray-600 mb-2">Waiting Patients:</div>
-                            <ul id="doctorQueueList" class="space-y-2">
-                                <li class="text-center text-gray-400 py-8">No patients in queue</li>
-                            </ul>
-                        </div>
-
-                        <!-- Unavailable Patients -->
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <div class="text-sm font-medium text-gray-600 mb-2">Unavailable Patients:</div>
-                            <div id="doctorUnavailablePatientsList" class="space-y-2">
-                                <div class="text-center text-gray-400 py-2">No unavailable patients</div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <button onclick="openDisplayScreen()" class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-                                <i class="fas fa-tv"></i> Open Display Screen
+                <section id="doctorQueueSection" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                        <h3 class="text-2xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-users mr-2 text-blue-600"></i>
+                            Doctor's Queue
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="doctorCallNextBtn" onclick="callNextPatient()" class="p-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center">
+                                <i class="fas fa-bell mr-2"></i> Call Next Patient
                             </button>
                         </div>
                     </div>
+
+                    <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border-2 border-green-200">
+                        <div class="flex items-center mb-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                            <h4 class="text-lg font-semibold text-gray-800">Currently Serving</h4>
+                        </div>
+                        <div id="doctorCurrentlyServing" class="text-center py-3">
+                            <div class="text-gray-500">No patient being served</div>
+                        </div>
+                        <div id="doctorStationSelection" class="mt-4 hidden flex gap-2 justify-end">
+                            <button onclick="callNextAndMarkUnavailable()" class="p-4 bg-orange-600 text-white rounded-lg text-lg font-semibold hover:bg-orange-700 transition-colors flex items-center">
+                                <i class="fas fa-user-slash mr-2"></i> Mark Unavailable
+                            </button>
+                            <button onclick="openDoctorSendPatientModal()" class="p-4 bg-green-600 text-white rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors flex items-center">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Send to Next Station
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 p-4 flex items-center">
+                            <i class="fas fa-list-ol mr-2 text-blue-600"></i>
+                            Waiting Queue
+                        </h4>
+                        <div id="doctorQueueList" class="space-y-2">
+                            <div class="text-center py-8 text-gray-400">
+                                <i class="fas fa-users-slash text-4xl mb-2"></i>
+                                <p>No patients in queue</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 p-4 flex items-center">
+                            <i class="fas fa-user-clock mr-2 text-orange-600"></i>
+                            Unavailable Patients
+                        </h4>
+                        <div id="doctorUnavailablePatientsList" class="space-y-2">
+                            <div class="text-center py-6 text-gray-400">
+                                <i class="fas fa-check-circle text-3xl mb-2"></i>
+                                <p>No unavailable patients</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-200">
+                        <button onclick="openDisplayScreen()" class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center">
+                            <i class="fas fa-tv mr-2"></i>
+                            Open Display Screen
+                        </button>
+                    </div>
                 </section>
+
+                <!-- Send Patient Modal -->
+                <div id="doctorSendPatientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-[60]">
+                    <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] mx-4 flex flex-col">
+                        <div class="p-8 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+                            <h3 class="text-2xl font-bold text-gray-900">Send Patient to Next Station</h3>
+                            <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl p-2" onclick="closeDoctorSendPatientModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="p-8 flex-1 overflow-y-auto">
+                            <div class="mb-6">
+                                <label class="block text-lg font-semibold text-gray-700 mb-4">Select Destination Station:</label>
+                                <div id="doctorStationList" class="space-y-4"></div>
+                            </div>
+                        </div>
+                        <div class="p-8 bg-gray-50 border-t flex justify-end gap-4 flex-shrink-0">
+                            <button type="button" class="px-8 py-4 border-2 border-gray-200 rounded-lg text-gray-700 hover:bg-gray-100 text-lg font-semibold transition-colors" onclick="closeDoctorSendPatientModal()">
+                                Cancel
+                            </button>
+                            <button type="button" id="doctorConfirmSendBtn" class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                                <i class="fas fa-paper-plane mr-3"></i>
+                                Send Patient
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <section id="doctorPatientsSection" class="bg-white rounded-lg shadow-sm overflow-hidden hidden">
                     <div class="p-6 border-b border-gray-100 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -508,99 +550,259 @@
         function updateDoctorQueueDisplay() {
             if (!currentDoctorQueueData) return;
 
-            const callNextBtn = document.getElementById('doctorCallNextBtn');
-            if (callNextBtn) {
-                const disabled = !!currentDoctorQueueData.currently_serving;
-                callNextBtn.disabled = disabled;
-                callNextBtn.classList.toggle('opacity-50', disabled);
-                callNextBtn.classList.toggle('cursor-not-allowed', disabled);
-            }
-
-            // Update currently serving
             const currentlyServingDiv = document.getElementById('doctorCurrentlyServing');
             if (currentDoctorQueueData.currently_serving) {
                 currentlyServingDiv.innerHTML = `
-                    <div class="font-semibold">${currentDoctorQueueData.currently_serving.full_name}</div>
-                    <div class="text-sm text-gray-600">${currentDoctorQueueData.currently_serving.queue_number}</div>
+                    <div class="bg-white p-4 rounded-lg border border-green-300 flex items-center gap-4">
+                        <div class="relative h-16 w-16">
+                            <div class="absolute h-12 w-12 left-[calc(50%-1.5rem)] top-[calc(50%-1.5rem)] bg-green-500 rounded animate-ping"></div>
+                            <div class="relative h-full w-full bg-green-500 text-white text-2xl rounded-md flex flex-col items-center justify-center font-bold">
+                                ${currentDoctorQueueData.currently_serving.queue_number}
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-start text-left">
+                            <div class="text-2xl font-bold text-green-700 line-clamp-1">${currentDoctorQueueData.currently_serving.full_name}</div>
+                            <div class="text-sm text-gray-600">${currentDoctorQueueData.currently_serving.patient_code || ''}</div>
+                        </div>
+                    </div>
                 `;
-                
-                // Show station selection dropdown
                 document.getElementById('doctorStationSelection').classList.remove('hidden');
                 loadDoctorStationOptions();
             } else {
-                currentlyServingDiv.innerHTML = '<span class="text-gray-400">No patient being served</span>';
+                currentlyServingDiv.innerHTML = `
+                    <div class="text-gray-500">
+                        <i class="fas fa-user-slash text-3xl mb-2"></i>
+                        <p>No patient being served</p>
+                    </div>
+                `;
                 document.getElementById('doctorStationSelection').classList.add('hidden');
             }
 
-            // Update queue list
             const queueListDiv = document.getElementById('doctorQueueList');
             if (currentDoctorQueueData.next_patients && currentDoctorQueueData.next_patients.length > 0) {
-                queueListDiv.innerHTML = currentDoctorQueueData.next_patients.map((patient, index) => `
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                queueListDiv.innerHTML = currentDoctorQueueData.next_patients.map((patient) => `
+                    <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
                         <div class="flex items-center space-x-3">
-                            <span class="font-semibold text-green-600">${patient.queue_number}</span>
-                            <div>
-                                <div class="font-medium">${patient.full_name}</div>
-                                <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                            <div class="w-10 h-10 bg-blue-600 text-white rounded-md flex items-center justify-center font-bold">
+                                ${patient.queue_number}
                             </div>
-                        </div>
-                        <div class="text-sm text-gray-500">
-                            Est. ${index * 20} min
+                            <div>
+                                <div class="text-xl font-semibold text-gray-800 line-clamp-1">${patient.full_name}</div>
+                                <div class="text-sm text-gray-600">${patient.patient_code || ''}</div>
+                            </div>
                         </div>
                     </div>
                 `).join('');
             } else {
-                queueListDiv.innerHTML = '<div class="text-center text-gray-400 py-8">No patients in queue</div>';
+                queueListDiv.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-users-slash text-4xl mb-2"></i>
+                        <p>No patients in queue</p>
+                    </div>
+                `;
             }
 
-            // Update unavailable patients
             const unavailableDiv = document.getElementById('doctorUnavailablePatientsList');
             if (currentDoctorQueueData.unavailable_patients && currentDoctorQueueData.unavailable_patients.length > 0) {
                 unavailableDiv.innerHTML = currentDoctorQueueData.unavailable_patients.map(patient => `
-                    <div class="flex justify-between items-center p-2 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100" onclick="recallDoctorUnavailablePatient(${getQueueEntryId(patient)})">
+                    <div class="flex justify-between items-center p-2 bg-orange-50 rounded-lg border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors" onclick="recallDoctorUnavailablePatient(${getQueueEntryId(patient)})">
                         <div class="flex items-center space-x-3">
-                            <div>
-                                <div class="font-medium">${patient.full_name}</div>
-                                <div class="text-sm text-gray-600">${patient.patient_code}</div>
+                            <div class="w-10 h-10 bg-orange-600 text-white rounded-md flex items-center justify-center font-bold">
+                                ${patient.queue_number}
                             </div>
-                            <div class="text-sm text-orange-600">
-                                ${patient.updated_at ? new Date(patient.updated_at).toLocaleTimeString() : ''}
+                            <div>
+                                <div class="text-xl font-semibold text-gray-800 line-clamp-1">${patient.full_name}</div>
+                                <div class="text-sm text-gray-600">${patient.patient_code || ''}</div>
                             </div>
                         </div>
                     </div>
                 `).join('');
             } else {
-                unavailableDiv.innerHTML = '<div class="text-center text-gray-400 py-2">No unavailable patients</div>';
+                unavailableDiv.innerHTML = `
+                    <div class="text-center py-6 text-gray-400">
+                        <i class="fas fa-check-circle text-3xl mb-2"></i>
+                        <p>No unavailable patients</p>
+                    </div>
+                `;
+            }
+        }
+
+        function openDoctorSendPatientModal() {
+            if (!currentDoctorQueueData?.currently_serving) {
+                Toastify({
+                    text: 'Please call a patient first before sending to next station',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#F59E0B',
+                }).showToast();
+                return;
+            }
+
+            const modal = document.getElementById('doctorSendPatientModal');
+            modal.classList.remove('hidden');
+            loadDoctorStationsForModal();
+        }
+
+        function closeDoctorSendPatientModal() {
+            const modal = document.getElementById('doctorSendPatientModal');
+            modal.classList.add('hidden');
+            document.getElementById('doctorConfirmSendBtn').disabled = true;
+            document.querySelectorAll('.doctor-station-option').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-blue-500', 'bg-blue-50', 'ring-green-500', 'bg-green-50', 'shadow-lg');
+            });
+        }
+
+        function loadDoctorStationsForModal() {
+            const stationList = document.getElementById('doctorStationList');
+            stationList.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i> <p class="mt-2 text-lg">Loading stations...</p></div>';
+
+            const dischargeOption = document.createElement('div');
+            dischargeOption.className = 'doctor-station-option p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-200 transform hover:scale-[1.02]';
+            dischargeOption.onclick = () => selectDoctorStation('discharge', dischargeOption);
+            dischargeOption.innerHTML = `
+                <div class="flex items-center">
+                    <div class="w-16 h-16 bg-green-600 text-white rounded-xl flex items-center justify-center mr-6">
+                        <i class="fas fa-check text-2xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-xl font-bold text-gray-800">Complete and Discharge</div>
+                        <div class="text-base text-gray-600 mt-1">Patient consultation complete</div>
+                    </div>
+                </div>
+            `;
+
+            fetch('api/queue/stations')
+                .then(response => response.json())
+                .then(data => {
+                    stationList.innerHTML = '';
+
+                    data.stations.forEach(station => {
+                        if (station.id !== 2) {
+                            const stationOption = document.createElement('div');
+                            stationOption.className = 'doctor-station-option p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 transform hover:scale-[1.02]';
+                            stationOption.onclick = () => selectDoctorStation(station.id, stationOption);
+
+                            let icon = 'fa-arrow-right';
+                            let iconColor = 'bg-blue-600';
+                            const stationName = (station.station_display_name || '').toLowerCase();
+                            if (stationName.includes('doctor') || stationName.includes('consultation')) {
+                                icon = 'fa-user-md';
+                                iconColor = 'bg-purple-600';
+                            } else if (stationName.includes('pharmacy')) {
+                                icon = 'fa-pills';
+                                iconColor = 'bg-pink-600';
+                            } else if (stationName.includes('cashier') || stationName.includes('payment') || stationName.includes('billing')) {
+                                icon = 'fa-cash-register';
+                                iconColor = 'bg-yellow-600';
+                            } else if (stationName.includes('lab') || stationName.includes('laboratory')) {
+                                icon = 'fa-flask';
+                                iconColor = 'bg-cyan-600';
+                            } else if (stationName.includes('x-ray') || stationName.includes('radiology')) {
+                                icon = 'fa-x-ray';
+                                iconColor = 'bg-indigo-600';
+                            } else if (stationName.includes('nurse') || stationName.includes('triage')) {
+                                icon = 'fa-user-nurse';
+                                iconColor = 'bg-red-600';
+                            }
+
+                            stationOption.innerHTML = `
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 ${iconColor} text-white rounded-xl flex items-center justify-center mr-6">
+                                        <i class="fas ${icon} text-2xl"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-xl font-bold text-gray-800">${station.station_display_name}</div>
+                                        <div class="text-base text-gray-600 mt-1">Move to ${station.station_display_name}</div>
+                                    </div>
+                                </div>
+                            `;
+                            stationList.appendChild(stationOption);
+                        }
+                    });
+
+                    stationList.appendChild(dischargeOption);
+                })
+                .catch(() => {
+                    stationList.innerHTML = '<div class="text-center py-8 text-red-500"><i class="fas fa-exclamation-triangle text-3xl mb-2"></i><p class="text-lg">Failed to load stations</p></div>';
+                });
+        }
+
+        function selectDoctorStation(stationId, element) {
+            document.querySelectorAll('.doctor-station-option').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-blue-500', 'bg-blue-50', 'ring-green-500', 'bg-green-50', 'shadow-lg');
+            });
+
+            if (stationId === 'discharge') {
+                element.classList.add('ring-4', 'ring-green-500', 'bg-green-50', 'shadow-lg');
+            } else {
+                element.classList.add('ring-4', 'ring-blue-500', 'bg-blue-50', 'shadow-lg');
+            }
+
+            document.getElementById('doctorConfirmSendBtn').disabled = false;
+            document.getElementById('doctorConfirmSendBtn').onclick = () => sendDoctorPatientToStation(stationId);
+        }
+
+        async function sendDoctorPatientToStation(stationId) {
+            if (!currentDoctorQueueData?.currently_serving) return;
+
+            try {
+                let body = { queue_id: currentDoctorQueueData.currently_serving.id };
+                if (stationId !== 'discharge') {
+                    body.target_station_id = parseInt(stationId, 10);
+                }
+
+                const response = await fetch('api/queue/complete-service', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const result = await response.json();
+                const isSuccess = response.ok && (result.ok === true || result.success === true);
+                if (isSuccess) {
+                    Toastify({
+                        text: stationId === 'discharge' ? 'Patient discharged successfully' : 'Patient sent to next station',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
+
+                    closeDoctorSendPatientModal();
+                    loadDoctorQueue();
+                } else {
+                    throw new Error(result.error || result.message || 'Failed to send patient');
+                }
+            } catch (error) {
+                console.error('Error sending patient to station:', error);
+                Toastify({
+                    text: error.message || 'Failed to send patient',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
             }
         }
 
         function loadDoctorStationOptions() {
-            const select = document.getElementById('doctorDestinationStation');
-            select.innerHTML = '<option value="">Select destination...</option>';
-            
-            // Add discharge option
-            const dischargeOption = document.createElement('option');
-            dischargeOption.value = 'discharge';
-            dischargeOption.textContent = 'Complete and Discharge';
-            select.appendChild(dischargeOption);
-            
-            // Add other stations
-            fetch('api/queue/stations')
-                .then(response => response.json())
-                .then(data => {
-                    data.stations.forEach(station => {
-                        if (station.id !== 2) { // Don't show current station
-                            const option = document.createElement('option');
-                            option.value = station.id;
-                            option.textContent = station.station_display_name;
-                            select.appendChild(option);
-                        }
-                    });
-                });
+            // Compatibility function. Station selection is handled by modal.
         }
 
         async function callNextPatient() {
             try {
+                if (currentDoctorQueueData?.currently_serving) {
+                    Toastify({
+                        text: 'Please complete the current patient service before calling the next patient',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#F59E0B',
+                    }).showToast();
+                    return;
+                }
+
                 const response = await fetch('api/queue/call-next', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -609,14 +811,36 @@
                 
                 const result = await response.json();
                 if (result.success) {
-                    alert('Next patient called successfully');
+                    Toastify({
+                        text: 'Next patient called successfully',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
                     loadDoctorQueue();
                 } else {
-                    alert(result.message || 'No patients in queue');
+                    let message = result.message || 'No more patients in the waiting queue';
+                    if (message === 'There is no active transaction' || message.toLowerCase().includes('no active transaction')) {
+                        message = 'No more patients in the waiting queue';
+                    }
+                    Toastify({
+                        text: message,
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#F59E0B',
+                    }).showToast();
                 }
             } catch (error) {
                 console.error('Error calling next patient:', error);
-                alert('Error calling next patient');
+                Toastify({
+                    text: 'Error calling next patient',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
             }
         }
 
@@ -632,14 +856,32 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    alert('Patient recalled successfully');
+                    Toastify({
+                        text: 'Patient recalled successfully',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
                     loadDoctorQueue();
                 } else {
-                    alert(result.message || 'Unable to recall patient');
+                    Toastify({
+                        text: result.message || 'Unable to recall patient',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#EF4444',
+                    }).showToast();
                 }
             } catch (error) {
                 console.error('Error recalling unavailable patient:', error);
-                alert('Error recalling patient');
+                Toastify({
+                    text: 'Failed to recall patient from unavailable list',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
             }
         }
 
@@ -649,68 +891,54 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        station_id: 2
+                        station_id: 2,
+                        notes: 'Patient not available for service'
                     })
                 });
                 
                 const result = await response.json();
                 if (result.success) {
-                    alert('Next patient called and previous marked unavailable');
+                    Toastify({
+                        text: 'Next patient called and previous patient marked as unavailable',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#10B981',
+                    }).showToast();
                     loadDoctorQueue();
                 } else {
-                    alert(result.message || 'No patients in queue');
+                    let message = result.message || 'No more patients in the waiting queue';
+                    if (message === 'There is no active transaction' || message.toLowerCase().includes('no active transaction')) {
+                        message = 'No more patients in the waiting queue';
+                    }
+                    Toastify({
+                        text: message,
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#F59E0B',
+                    }).showToast();
                 }
             } catch (error) {
                 console.error('Error calling next and marking unavailable:', error);
-                alert('Error calling next patient');
+                Toastify({
+                    text: 'Error calling next patient',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    backgroundColor: '#EF4444',
+                }).showToast();
             }
         }
 
         async function completeService() {
-            if (!currentDoctorQueueData?.currently_serving) {
-                alert('No patient currently being served');
-                return;
-            }
-
-            const destinationSelect = document.getElementById('doctorDestinationStation');
-            const selectedDestination = destinationSelect.value;
-            
-            if (!selectedDestination) {
-                alert('Please select a destination station');
-                return;
-            }
-
-            try {
-                let endpoint = 'api/queue/complete-service';
-                let body = { 
-                    queue_id: currentDoctorQueueData.currently_serving.id
-                };
-                
-                if (selectedDestination !== 'discharge') {
-                    body.target_station_id = parseInt(selectedDestination);
-                }
-                
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    alert(selectedDestination === 'discharge' ? 'Patient discharged successfully' : 'Consultation completed successfully');
-                    loadDoctorQueue();
-                    
-                    // Reset selection
-                    destinationSelect.value = '';
-                    document.getElementById('doctorStationSelection').classList.add('hidden');
-                } else {
-                    alert('Error completing consultation');
-                }
-            } catch (error) {
-                console.error('Error completing service:', error);
-                alert('Error completing consultation');
-            }
+            Toastify({
+                text: 'Please use the "Send Patient" button instead',
+                duration: 3000,
+                gravity: 'top',
+                position: 'right',
+                backgroundColor: '#F59E0B',
+            }).showToast();
         }
 
         function openDisplayScreen() {

@@ -2216,7 +2216,7 @@ COMMIT;
 -- 1. Queue Stations Table
 CREATE TABLE IF NOT EXISTS `queue_stations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `station_name` enum('opd','doctor','pharmacy','cashier') NOT NULL,
+  `station_name` enum('opd','doctor','pharmacy','cashier','xray','lab') NOT NULL,
   `station_display_name` varchar(100) NOT NULL,
   `station_order` int(11) NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -2235,7 +2235,7 @@ CREATE TABLE IF NOT EXISTS `patient_queue` (
   `station_id` int(11) NOT NULL,
   `queue_number` int(11) NOT NULL,
   `queue_position` int(11) NOT NULL,
-  `status` enum('waiting','in_progress','completed','cancelled','skipped') NOT NULL DEFAULT 'waiting',
+  `status` enum('waiting','in_progress','completed','cancelled','skipped','unavailable') NOT NULL DEFAULT 'waiting',
   `arrived_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `started_at` timestamp NULL DEFAULT NULL,
   `completed_at` timestamp NULL DEFAULT NULL,
@@ -2299,7 +2299,9 @@ INSERT INTO `queue_stations` (`station_name`, `station_display_name`, `station_o
 ('opd', 'Out-Patient Department', 1),
 ('doctor', 'Doctor\'s Office', 2),
 ('pharmacy', 'Pharmacy', 3),
-('cashier', 'Cashier', 4);
+('cashier', 'Cashier', 4),
+('xray', 'X-Ray', 5),
+('lab', 'Laboratory', 6);
 
 -- Insert default settings
 INSERT INTO `queue_settings` (`station_id`, `setting_key`, `setting_value`) VALUES
@@ -2311,11 +2313,19 @@ INSERT INTO `queue_settings` (`station_id`, `setting_key`, `setting_value`) VALU
 (3, 'queue_prefix', 'PHR'),
 (4, 'average_service_time', '5'),
 (4, 'queue_prefix', 'CSH'),
+(5, 'average_service_time', '12'),
+(5, 'queue_prefix', 'XRY'),
+(6, 'average_service_time', '15'),
+(6, 'queue_prefix', 'LAB'),
 (1, 'display_refresh_interval', '10'),
 (2, 'display_refresh_interval', '10'),
 (3, 'display_refresh_interval', '10'),
 (4, 'display_refresh_interval', '10'),
+(5, 'display_refresh_interval', '10'),
+(6, 'display_refresh_interval', '10'),
 (1, 'sound_enabled', '1'),
 (2, 'sound_enabled', '1'),
 (3, 'sound_enabled', '1'),
-(4, 'sound_enabled', '1');
+(4, 'sound_enabled', '1'),
+(5, 'sound_enabled', '1'),
+(6, 'sound_enabled', '1');

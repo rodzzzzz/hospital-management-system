@@ -227,7 +227,7 @@
                 </div>
                 
                 <!-- Next 3 Patients -->
-                <div class="next-patients bg-yellow-50 border border-yellow-300">
+                <div class="next-patients bg-blue-50 border border-blue-300">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Next in Queue</h2>
                     <div id="nextPatientsList" class="patient-list flex-1">
                         <div class="no-patients">No patients in queue</div>
@@ -336,7 +336,7 @@ Lanao Del Sur, BARMM 9300
                 
                 // Update next 3 patients
                 nextPatientsListDiv.innerHTML = nextThree.map((patient, index) => `
-                    <div class="queue-item bg-yellow-100 border border-yellow-300">
+                    <div class="queue-item bg-blue-100 border border-blue-300">
                         <div class="queue-number">${patient.queue_number}</div>
                         <div class="patient-info">
                             <div class="patient-name line-clamp-1">${patient.full_name}</div>
@@ -367,7 +367,7 @@ Lanao Del Sur, BARMM 9300
         function startAutoRefresh() {
             refreshInterval = setInterval(() => {
                 loadQueueData();
-            }, 10000); // Refresh every 10 seconds
+            }, 5000); // Refresh every 5 seconds
         }
 
         // Sound notification (optional)

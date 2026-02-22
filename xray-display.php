@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Queue Display - Hospital System</title>
+    <title>X-Ray Queue Display - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -194,13 +194,12 @@
 </head>
 <body>
     <div class="display-container">
-        <!-- Header Section -->
         <div class="header-section">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-4">
                     <img src="resources/logo.png" alt="Hospital Logo" class="logo">
                 <div>
-                    <h1 class="station-title">Doctor's Office</h1>
+                    <h1 class="station-title">X-Ray Department</h1>
                     <p class="station-subtitle">Patient Queue Management System</p>
                 </div>
                 </div>
@@ -211,11 +210,8 @@
             </div>
         </div>
 
-        <!-- Queue Section -->
         <div class="queue-section">
-            <!-- Left Column -->
             <div class="left-column">
-                <!-- Currently Serving -->
                 <div class="currently-serving bg-green-100 text-green-600 border border-green-300">
                     <div class="mb-4">
                         <h2 class="text-xl font-semibold text-gray-700 mb-2">Now Serving</h2>
@@ -225,8 +221,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Next 3 Patients -->
+
                 <div class="next-patients bg-blue-50 border border-blue-300">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Next in Queue</h2>
                     <div id="nextPatientsList" class="patient-list flex-1">
@@ -234,10 +229,8 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Right Column -->
+
             <div class="right-column">
-                <!-- Remaining 6 Patients -->
                 <div class="queue-list bg-gray-100 border border-gray-300">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Waiting List</h2>
                     <div id="queueList" class="patient-list flex-1">
@@ -247,13 +240,12 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer-info">
             <div class="logo-section">
                 <div class="hospital-name">DRBMJRAH MEMORIAL HOSPITAL</div>
             </div>
             <div class="text-gray-600">
-                <i class="fas fa-phone-alt mr-2"></i>+63917 513 9979 
+                <i class="fas fa-phone-alt mr-2"></i>+63917 513 9979
                 <span class="mx-4">|</span>
                 <i class="fas fa-map-marker-alt mr-2"></i>Brgy. Mabul, Malabang
 Lanao Del Sur, BARMM 9300
@@ -265,7 +257,6 @@ Lanao Del Sur, BARMM 9300
         let displayData = null;
         let refreshInterval;
 
-        // Initialize display
         document.addEventListener('DOMContentLoaded', function() {
             updateDateTime();
             setInterval(updateDateTime, 1000);
@@ -273,30 +264,28 @@ Lanao Del Sur, BARMM 9300
             startAutoRefresh();
         });
 
-        // Update date and time
         function updateDateTime() {
             const now = new Date();
-            const timeOptions = { 
-                hour: '2-digit', 
-                minute: '2-digit', 
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
                 second: '2-digit',
-                hour12: false 
+                hour12: false
             };
-            const dateOptions = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+            const dateOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             };
-            
+
             document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
             document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
         }
 
-        // Load queue data
         async function loadQueueData() {
             try {
-                const response = await fetch('api/queue/display/2'); // Doctor station ID is 2
+                const response = await fetch('api/queue/display/5');
                 displayData = await response.json();
                 updateDisplay();
             } catch (error) {
@@ -304,11 +293,9 @@ Lanao Del Sur, BARMM 9300
             }
         }
 
-        // Update display
         function updateDisplay() {
             if (!displayData) return;
 
-            // Update currently serving
             const currentlyServingDiv = document.getElementById('currentlyServing');
             if (displayData.currently_serving) {
                 currentlyServingDiv.innerHTML = `
@@ -325,17 +312,14 @@ Lanao Del Sur, BARMM 9300
                 `;
             }
 
-            // Update queue lists
             const nextPatientsListDiv = document.getElementById('nextPatientsList');
             const queueListDiv = document.getElementById('queueList');
-            
+
             if (displayData.next_patients && displayData.next_patients.length > 0) {
-                // Split patients: first 3 go to next patients, rest to waiting list
                 const nextThree = displayData.next_patients.slice(0, 2);
                 const remainingPatients = displayData.next_patients.slice(2);
-                
-                // Update next 3 patients
-                nextPatientsListDiv.innerHTML = nextThree.map((patient, index) => `
+
+                nextPatientsListDiv.innerHTML = nextThree.map((patient) => `
                     <div class="queue-item bg-blue-100 border border-blue-300">
                         <div class="queue-number">${patient.queue_number}</div>
                         <div class="patient-info">
@@ -343,10 +327,9 @@ Lanao Del Sur, BARMM 9300
                         </div>
                     </div>
                 `).join('');
-                
-                // Update remaining patients
+
                 if (remainingPatients.length > 0) {
-                    queueListDiv.innerHTML = remainingPatients.map((patient, index) => `
+                    queueListDiv.innerHTML = remainingPatients.map((patient) => `
                         <div class="queue-item bg-gray-50 border border-gray-300">
                             <div class="queue-number">${patient.queue_number}</div>
                             <div class="patient-info">
@@ -363,48 +346,40 @@ Lanao Del Sur, BARMM 9300
             }
         }
 
-        // Auto refresh
         function startAutoRefresh() {
             refreshInterval = setInterval(() => {
                 loadQueueData();
-            }, 5000); // Refresh every 5 seconds
+            }, 5000);
         }
 
-        // Sound notification (optional)
         function playNotificationSound() {
-            // Play a subtle notification sound when queue changes
             const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE');
             audio.volume = 0.3;
-            audio.play().catch(e => console.log('Could not play sound'));
+            audio.play().catch(() => console.log('Could not play sound'));
         }
 
-        // Check for changes and play sound
         let previousQueueCount = 0;
         function checkForChanges() {
             if (displayData && displayData.queue_count !== previousQueueCount) {
                 if (displayData.queue_count > previousQueueCount) {
-                    // Patient added to queue
                     playNotificationSound();
                 }
                 previousQueueCount = displayData.queue_count;
             }
         }
 
-        // Update the display function to check for changes
         const originalUpdateDisplay = updateDisplay;
         updateDisplay = function() {
             originalUpdateDisplay();
             checkForChanges();
         };
 
-        // Keyboard shortcuts for testing
         document.addEventListener('keydown', function(e) {
             if (e.key === 'r' || e.key === 'R') {
                 loadQueueData();
             }
         });
 
-        // Fullscreen support
         document.addEventListener('dblclick', function() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
