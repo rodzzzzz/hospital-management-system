@@ -9,7 +9,19 @@ $u = auth_current_user($pdo);
 if ($u) {
     $roles = $u['roles'] ?? [];
     if (is_array($roles) && count($roles) > 0) {
-        header('Location: dashboard.php');
+        // Check if user is a doctor
+        $isDoctor = false;
+        foreach ($roles as $r) {
+            if (isset($r['module']) && $r['module'] === 'DOCTOR') {
+                $isDoctor = true;
+                break;
+            }
+        }
+        if ($isDoctor) {
+            header('Location: doctor.php');
+        } else {
+            header('Location: dashboard.php');
+        }
         exit;
     }
     header('Location: not-assigned.php');
@@ -131,7 +143,13 @@ if ($u) {
                 if (roles.length === 0) {
                     window.location.href = 'not-assigned.php';
                 } else {
-                    window.location.href = 'dashboard.php';
+                    // Check if user is a doctor
+                    const isDoctor = roles.some(r => r.module === 'DOCTOR');
+                    if (isDoctor) {
+                        window.location.href = 'doctor.php';
+                    } else {
+                        window.location.href = 'dashboard.php';
+                    }
                 }
             });
         })();

@@ -378,15 +378,89 @@ Lanao Del Sur, BARMM 9300
             audio.play().catch(e => console.log('Could not play sound'));
         }
 
+        // Announce patient name via Text-to-Speech
+        function announcePatient(name) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance('Patient ' + name + ', please proceed to the Doctor\'s Office');
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.2;
+                utterance.volume = 1;
+                
+                // Get available voices
+                let voices = window.speechSynthesis.getVoices();
+                
+                // If voices not loaded yet, wait for them
+                if (voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        voices = window.speechSynthesis.getVoices();
+                        selectFemaleVoice(utterance, voices);
+                        window.speechSynthesis.speak(utterance);
+                    };
+                } else {
+                    selectFemaleVoice(utterance, voices);
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+        }
+        
+        function selectFemaleVoice(utterance, voices) {
+            // Priority order for female voices
+            const femaleVoiceNames = [
+                'Microsoft Zira',
+                'Google US English Female',
+                'Samantha',
+                'Victoria',
+                'Karen',
+                'Moira',
+                'Tessa',
+                'female',
+                'woman'
+            ];
+            
+            // Try to find a female voice by name
+            for (const voiceName of femaleVoiceNames) {
+                const voice = voices.find(v => 
+                    v.lang.startsWith('en') && 
+                    v.name.toLowerCase().includes(voiceName.toLowerCase())
+                );
+                if (voice) {
+                    utterance.voice = voice;
+                    console.log('Using voice:', voice.name);
+                    return;
+                }
+            }
+            
+            // Fallback: use any English voice (increase pitch for more feminine sound)
+            const englishVoice = voices.find(v => v.lang.startsWith('en'));
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+                utterance.pitch = 1.5;
+                console.log('Using fallback voice with higher pitch:', englishVoice.name);
+            }
+        }
+
         // Check for changes and play sound
         let previousQueueCount = 0;
+        let previousServingName = null;
         function checkForChanges() {
-            if (displayData && displayData.queue_count !== previousQueueCount) {
-                if (displayData.queue_count > previousQueueCount) {
-                    // Patient added to queue
-                    playNotificationSound();
+            if (displayData) {
+                // Announce new serving patient via TTS
+                const currentServingName = displayData.currently_serving ? displayData.currently_serving.full_name : null;
+                if (currentServingName && currentServingName !== previousServingName) {
+                    announcePatient(currentServingName);
                 }
-                previousQueueCount = displayData.queue_count;
+                previousServingName = currentServingName;
+
+                // Play notification sound for new queue additions
+                if (displayData.queue_count !== previousQueueCount) {
+                    if (displayData.queue_count > previousQueueCount) {
+                        playNotificationSound();
+                    }
+                    previousQueueCount = displayData.queue_count;
+                }
             }
         }
 
