@@ -34,19 +34,19 @@
             gap: 2rem;
             margin: 0 auto;
             width: 100%;
-            min-height: 0;
+            height: calc(100vh - 180px);
         }
         .left-column {
             flex: 1;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
             gap: 1.5rem;
         }
         .right-column {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 1.5rem;
         }
         .currently-serving {
             background: white;
@@ -58,20 +58,21 @@
             text-align: center;
             position: relative;
             padding: 2.5rem 2rem;
-            min-height: 320px;
+            height: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
         .next-patients {
             background: white;
             border-radius: 1rem;
             padding: 1.5rem;
             overflow: hidden;
-            flex: 1;
             display: flex;
             flex-direction: column;
             position: relative;
+            height: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
         .queue-list {
-            flex: 1;
             background: white;
             border-radius: 1rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -80,7 +81,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            min-height: 0;
+            height: 100%;
         }
         .queue-list::after {
             content: '';
@@ -128,13 +129,13 @@
             margin-bottom: 0.125rem;
         }
         .serving-number {
-            font-size: 6.5rem;
+            font-size: 8rem;
             font-weight: 800;
             line-height: 1;
             position: relative;
         }
         .serving-name {
-            font-size: 2rem;
+            font-size: 2.75rem;
             font-weight: 600;
             color: #1e293b;
             margin-top: 1rem;
@@ -190,6 +191,105 @@
             font-weight: 700;
             color: #1e293b;
         }
+        .doctors-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .doctors-list {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            max-height: 300px;
+        }
+        .doctors-list-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            will-change: transform;
+        }
+        .doctor-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .doctor-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .doctor-status {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .doctor-status.available {
+            background: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        .doctor-status.busy {
+            background: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        .doctor-status.on_leave {
+            background: #6b7280;
+            box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
+        }
+        .doctor-status.offline {
+            background: #e5e7eb;
+            box-shadow: none;
+        }
+        .doctor-status.available::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .doctor-name {
+            font-size: 1.375rem;
+            font-weight: 500;
+            color: #1e293b;
+            flex: 1;
+        }
+        .doctor-status-text {
+            font-size: 1.0625rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            margin-left: 0.5rem;
+        }
+        .doctor-status-text.available {
+            color: #10b981;
+        }
+        .doctor-status-text.busy {
+            color: #f59e0b;
+        }
+        .doctor-status-text.on_leave {
+            color: #6b7280;
+        }
+        .doctor-status-text.offline {
+            color: #9ca3af;
+        }
+        .no-doctors {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -218,7 +318,7 @@
                 <!-- Currently Serving -->
                 <div class="currently-serving bg-green-100 text-green-600 border border-green-300">
                     <div class="mb-4">
-                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Now Serving</h2>
+                        <h2 class="text-2xl font-semibold text-gray-700 mb-2">Now Serving</h2>
                         <div id="currentlyServing">
                             <div class="serving-number">---</div>
                             <div class="serving-name">No patient being served</div>
@@ -237,6 +337,14 @@
             
             <!-- Right Column -->
             <div class="right-column">
+                <!-- Available Doctors -->
+                <div class="doctors-section bg-purple-50 border border-purple-300">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-3">Available Doctors</h2>
+                    <div id="doctorsList" class="doctors-list">
+                        <div class="no-doctors">Loading doctors...</div>
+                    </div>
+                </div>
+                
                 <!-- Remaining 6 Patients -->
                 <div class="queue-list bg-gray-100 border border-gray-300">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Waiting List</h2>
@@ -263,13 +371,19 @@ Lanao Del Sur, BARMM 9300
 
     <script>
         let displayData = null;
+        let doctorsData = null;
         let refreshInterval;
+        let doctorsCarouselTimeout;
+        let doctorsCarouselActive = false;
+        let doctorsCarouselToken = 0;
+        let lastDoctorsSignature = '';
 
         // Initialize display
         document.addEventListener('DOMContentLoaded', function() {
             updateDateTime();
             setInterval(updateDateTime, 1000);
             loadQueueData();
+            loadLoggedInDoctors();
             startAutoRefresh();
         });
 
@@ -302,6 +416,171 @@ Lanao Del Sur, BARMM 9300
             } catch (error) {
                 console.error('Error loading queue data:', error);
             }
+        }
+
+        // Load logged-in doctors
+        async function loadLoggedInDoctors() {
+            try {
+                const response = await fetch('api/doctor/list.php');
+                const data = await response.json();
+                if (data.ok) {
+                    doctorsData = data.doctors;
+                    updateDoctorsDisplay();
+                } else {
+                    console.error('Error loading doctors:', data.error);
+                    document.getElementById('doctorsList').innerHTML = '<div class="no-doctors">Error loading doctors</div>';
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                document.getElementById('doctorsList').innerHTML = '<div class="no-doctors">Error loading doctors</div>';
+            }
+        }
+
+        // Update doctors display
+        function updateDoctorsDisplay() {
+            const doctorsListDiv = document.getElementById('doctorsList');
+            
+            if (!doctorsData || doctorsData.length === 0) {
+                lastDoctorsSignature = '';
+                stopDoctorsCarousel();
+                doctorsListDiv.innerHTML = '<div class="no-doctors">No doctors available</div>';
+                return;
+            }
+
+            // Filter to show only available doctors
+            const availableDoctors = doctorsData.filter(doctor => doctor.status === 'available');
+            
+            if (availableDoctors.length === 0) {
+                lastDoctorsSignature = '';
+                stopDoctorsCarousel();
+                doctorsListDiv.innerHTML = '<div class="no-doctors">No doctors available</div>';
+                return;
+            }
+
+            // Sort by name
+            const sortedDoctors = availableDoctors.sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+            const doctorsSignature = sortedDoctors
+                .map(doctor => `${doctor.full_name}|${doctor.status}`)
+                .join('||');
+
+            const existingListInner = doctorsListDiv.querySelector('.doctors-list-inner');
+
+            if (doctorsSignature === lastDoctorsSignature && existingListInner && existingListInner.children.length > 0) {
+                ensureDoctorsCarouselRunning();
+                return;
+            }
+
+            lastDoctorsSignature = doctorsSignature;
+
+            doctorsListDiv.innerHTML = `
+                <div class="doctors-list-inner">
+                    ${sortedDoctors.map(doctor => `
+                        <div class="doctor-item">
+                            <div class="doctor-status ${doctor.status}"></div>
+                            <div class="doctor-name">${doctor.full_name}</div>
+                            <div class="doctor-status-text ${doctor.status}">${doctor.status.replace('_', ' ')}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            startDoctorsCarousel();
+        }
+
+        function ensureDoctorsCarouselRunning() {
+            if (!doctorsCarouselActive) {
+                startDoctorsCarousel();
+            }
+        }
+
+        function stopDoctorsCarousel() {
+            doctorsCarouselActive = false;
+            doctorsCarouselToken += 1;
+            if (doctorsCarouselTimeout) {
+                clearTimeout(doctorsCarouselTimeout);
+                doctorsCarouselTimeout = null;
+            }
+        }
+
+        function getDoctorItemStep(listElement) {
+            const firstItem = listElement.firstElementChild;
+            if (!firstItem) {
+                return 0;
+            }
+
+            const itemHeight = firstItem.getBoundingClientRect().height;
+            const styles = window.getComputedStyle(listElement);
+            const gapValue = styles.rowGap || styles.gap;
+            const gap = parseFloat(gapValue) || 0;
+
+            return itemHeight + gap;
+        }
+
+        function startDoctorsCarousel() {
+            stopDoctorsCarousel();
+
+            const doctorsListDiv = document.getElementById('doctorsList');
+            if (!doctorsListDiv) {
+                return;
+            }
+
+            const listInner = doctorsListDiv.querySelector('.doctors-list-inner');
+            if (!listInner) {
+                return;
+            }
+
+            listInner.style.transition = 'none';
+            listInner.style.transform = 'translateY(0)';
+
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
+            if (listInner.children.length <= 1) {
+                return;
+            }
+
+            doctorsCarouselActive = true;
+            const token = doctorsCarouselToken;
+
+            const advanceCarousel = () => {
+                if (!doctorsCarouselActive || token !== doctorsCarouselToken) {
+                    return;
+                }
+
+                if (listInner.children.length <= 1) {
+                    stopDoctorsCarousel();
+                    return;
+                }
+
+                const step = getDoctorItemStep(listInner);
+                if (!step) {
+                    doctorsCarouselTimeout = setTimeout(advanceCarousel, 600);
+                    return;
+                }
+
+                listInner.style.transition = 'transform 2s linear';
+                listInner.style.transform = `translateY(-${step}px)`;
+
+                listInner.addEventListener('transitionend', () => {
+                    if (!doctorsCarouselActive || token !== doctorsCarouselToken) {
+                        return;
+                    }
+
+                    listInner.style.transition = 'none';
+                    listInner.style.transform = 'translateY(0)';
+
+                    if (listInner.firstElementChild) {
+                        listInner.appendChild(listInner.firstElementChild);
+                    }
+
+                    void listInner.offsetHeight;
+                    doctorsCarouselTimeout = setTimeout(advanceCarousel, 0);
+                }, { once: true });
+            };
+
+            doctorsCarouselTimeout = setTimeout(advanceCarousel, 800);
         }
 
         // Update display
@@ -367,6 +646,7 @@ Lanao Del Sur, BARMM 9300
         function startAutoRefresh() {
             refreshInterval = setInterval(() => {
                 loadQueueData();
+                loadLoggedInDoctors();
             }, 5000); // Refresh every 5 seconds
         }
 
@@ -475,6 +755,7 @@ Lanao Del Sur, BARMM 9300
         document.addEventListener('keydown', function(e) {
             if (e.key === 'r' || e.key === 'R') {
                 loadQueueData();
+                loadLoggedInDoctors();
             }
         });
 
