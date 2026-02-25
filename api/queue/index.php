@@ -79,6 +79,34 @@ function handleGetRequest(PDO $pdo, array $pathParts): void
                 echo json_encode($displayData);
             }
             break;
+
+        case 'recent-transfers':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $transfers = getRecentTransfersFromStation($pdo, $stationId);
+            echo json_encode(['success' => true, 'transfers' => $transfers]);
+            break;
+
+        case 'pending-corrections':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $corrections = getPendingCorrections($pdo, $stationId);
+            echo json_encode(['success' => true, 'corrections' => $corrections]);
+            break;
+
+        case 'confirmed-corrections':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $corrections = getRecentConfirmedCorrections($pdo, $stationId);
+            echo json_encode(['success' => true, 'corrections' => $corrections]);
+            break;
+
         default:
             throw new Exception('Invalid endpoint');
     }
@@ -160,7 +188,33 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             $success = recallUnavailablePatient($pdo, $queueId, $currentUser['id']);
             echo json_encode(['success' => $success]);
             break;
-            
+
+        case 'report-error':
+            $queueId = (int)($input['queue_id'] ?? 0);
+            $patientId = (int)($input['patient_id'] ?? 0);
+            $wrongStationId = (int)($input['wrong_station_id'] ?? 0);
+            $correctStationId = (int)($input['correct_station_id'] ?? 0);
+            $notes = $input['notes'] ?? null;
+
+            if (!$queueId || !$patientId || !$wrongStationId || !$correctStationId) {
+                throw new Exception('queue_id, patient_id, wrong_station_id, and correct_station_id are required');
+            }
+
+            $errorLogId = reportQueueError($pdo, $queueId, $patientId, $wrongStationId, $correctStationId, $currentUser['id'], $notes);
+            echo json_encode(['success' => true, 'error_log_id' => $errorLogId]);
+            break;
+
+        case 'confirm-correction':
+            $errorLogId = (int)($input['error_log_id'] ?? 0);
+
+            if (!$errorLogId) {
+                throw new Exception('error_log_id is required');
+            }
+
+            $result = confirmQueueCorrection($pdo, $errorLogId, $currentUser['id']);
+            echo json_encode(['success' => true, 'result' => $result]);
+            break;
+
         default:
             throw new Exception('Invalid endpoint');
     }

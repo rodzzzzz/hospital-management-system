@@ -450,3 +450,217 @@ function completeServiceWithTarget(PDO $pdo, int $queueId, int $staffUserId, ?in
         throw $e;
     }
 }
+
+/**
+ * Get recent transfers originating from a station (today only)
+ * Returns each transfer enriched with the patient's current station, status, and journey trail.
+ */
+function getRecentTransfersFromStation(PDO $pdo, int $fromStationId): array
+{
+    $today = date('Y-m-d');
+    $stmt = $pdo->prepare("
+        SELECT qt.*, 
+               p.full_name, p.patient_code,
+               fs.station_display_name as from_station_name,
+               ts.station_display_name as to_station_name,
+               u.full_name as transferred_by_name
+        FROM queue_transfers qt
+        LEFT JOIN patients p ON qt.patient_id = p.id
+        LEFT JOIN queue_stations fs ON qt.from_station_id = fs.id
+        LEFT JOIN queue_stations ts ON qt.to_station_id = ts.id
+        LEFT JOIN users u ON qt.transferred_by = u.id
+        WHERE qt.from_station_id = ? AND DATE(qt.transferred_at) = ?
+        ORDER BY qt.transferred_at DESC
+        LIMIT 20
+    ");
+    $stmt->execute([$fromStationId, $today]);
+    $transfers = $stmt->fetchAll();
+
+    foreach ($transfers as &$t) {
+        // Find the patient's latest queue entry to get current station and status
+        $pqStmt = $pdo->prepare("
+            SELECT pq.id as current_queue_id, pq.station_id as current_station_id,
+                   pq.status as current_status, pq.queue_number,
+                   qs.station_display_name as current_station_name
+            FROM patient_queue pq
+            LEFT JOIN queue_stations qs ON pq.station_id = qs.id
+            WHERE pq.patient_id = ?
+            ORDER BY pq.updated_at DESC
+            LIMIT 1
+        ");
+        $pqStmt->execute([$t['patient_id']]);
+        $currentEntry = $pqStmt->fetch();
+
+        $t['current_queue_id'] = $currentEntry ? $currentEntry['current_queue_id'] : null;
+        $t['current_station_id'] = $currentEntry ? (int)$currentEntry['current_station_id'] : null;
+        $t['current_station_name'] = $currentEntry ? $currentEntry['current_station_name'] : null;
+        $t['current_status'] = $currentEntry ? $currentEntry['current_status'] : null;
+        $t['queue_number'] = $currentEntry ? $currentEntry['queue_number'] : null;
+
+        // Get the journey: all transfers for this patient after this transfer's timestamp
+        $journeyStmt = $pdo->prepare("
+            SELECT qt2.to_station_id, qs.station_display_name as station_name, qt2.transferred_at
+            FROM queue_transfers qt2
+            LEFT JOIN queue_stations qs ON qt2.to_station_id = qs.id
+            WHERE qt2.patient_id = ? AND qt2.transferred_at > ?
+            ORDER BY qt2.transferred_at ASC
+        ");
+        $journeyStmt->execute([$t['patient_id'], $t['transferred_at']]);
+        $t['journey'] = $journeyStmt->fetchAll();
+    }
+    unset($t);
+
+    return $transfers;
+}
+
+/**
+ * Report a queue error (wrong station transfer)
+ */
+function reportQueueError(PDO $pdo, int $queueId, int $patientId, int $wrongStationId, int $correctStationId, int $reportedBy, ?string $notes = null): int
+{
+    $wrongStation = getQueueStation($pdo, $wrongStationId);
+    $correctStation = getQueueStation($pdo, $correctStationId);
+    if (!$wrongStation || !$correctStation) {
+        throw new Exception("Invalid station");
+    }
+
+    $checkStmt = $pdo->prepare("
+        SELECT COUNT(*) as count FROM queue_error_log
+        WHERE queue_id = ? AND status = 'pending'
+    ");
+    $checkStmt->execute([$queueId]);
+    if ($checkStmt->fetch()['count'] > 0) {
+        throw new Exception("A pending correction already exists for this patient at this station");
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO queue_error_log
+        (queue_id, patient_id, wrong_station_id, correct_station_id, reported_by, status, notes)
+        VALUES (?, ?, ?, ?, ?, 'pending', ?)
+    ");
+    $stmt->execute([$queueId, $patientId, $wrongStationId, $correctStationId, $reportedBy, $notes]);
+    return (int)$pdo->lastInsertId();
+}
+
+/**
+ * Get pending corrections for a station (where patients were wrongly sent)
+ */
+function getPendingCorrections(PDO $pdo, int $stationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qel.*,
+               p.full_name, p.patient_code,
+               ws.station_display_name as wrong_station_name,
+               cs.station_display_name as correct_station_name,
+               u.full_name as reported_by_name,
+               pq.queue_number
+        FROM queue_error_log qel
+        LEFT JOIN patients p ON qel.patient_id = p.id
+        LEFT JOIN queue_stations ws ON qel.wrong_station_id = ws.id
+        LEFT JOIN queue_stations cs ON qel.correct_station_id = cs.id
+        LEFT JOIN users u ON qel.reported_by = u.id
+        LEFT JOIN patient_queue pq ON pq.id = qel.queue_id
+        WHERE qel.wrong_station_id = ? AND qel.status = 'pending'
+        ORDER BY qel.reported_at ASC
+    ");
+    $stmt->execute([$stationId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get recently confirmed corrections for a station (for display page announcements)
+ */
+function getRecentConfirmedCorrections(PDO $pdo, int $stationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qel.*,
+               p.full_name, p.patient_code,
+               ws.station_display_name as wrong_station_name,
+               cs.station_display_name as correct_station_name,
+               pq.queue_number
+        FROM queue_error_log qel
+        LEFT JOIN patients p ON qel.patient_id = p.id
+        LEFT JOIN queue_stations ws ON qel.wrong_station_id = ws.id
+        LEFT JOIN queue_stations cs ON qel.correct_station_id = cs.id
+        LEFT JOIN patient_queue pq ON pq.id = qel.queue_id
+        WHERE qel.wrong_station_id = ? AND qel.status = 'confirmed'
+              AND qel.confirmed_at >= NOW() - INTERVAL 30 SECOND
+        ORDER BY qel.confirmed_at DESC
+    ");
+    $stmt->execute([$stationId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Confirm a queue error correction — move patient from wrong station to correct station
+ */
+function confirmQueueCorrection(PDO $pdo, int $errorLogId, int $confirmedBy): array
+{
+    $pdo->beginTransaction();
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM queue_error_log WHERE id = ? AND status = 'pending'");
+        $stmt->execute([$errorLogId]);
+        $errorLog = $stmt->fetch();
+
+        if (!$errorLog) {
+            throw new Exception("Correction not found or already processed");
+        }
+
+        $queueId = $errorLog['queue_id'];
+        $correctStationId = $errorLog['correct_station_id'];
+
+        $positionStmt = $pdo->prepare("
+            SELECT COALESCE(MAX(queue_position), 0) + 1 as next_position
+            FROM patient_queue
+            WHERE station_id = ? AND status IN ('waiting', 'in_progress')
+        ");
+        $positionStmt->execute([$correctStationId]);
+        $nextPosition = $positionStmt->fetch()['next_position'];
+
+        $updateStmt = $pdo->prepare("
+            UPDATE patient_queue
+            SET station_id = ?,
+                queue_position = ?,
+                status = 'waiting',
+                updated_at = NOW()
+            WHERE id = ?
+        ");
+        $updateStmt->execute([$correctStationId, $nextPosition, $queueId]);
+
+        $logStmt = $pdo->prepare("
+            INSERT INTO queue_transfers
+            (patient_id, from_station_id, to_station_id, transferred_by, transfer_reason, notes)
+            VALUES (?, ?, ?, ?, 'manual', 'Queue error correction')
+        ");
+        $logStmt->execute([$errorLog['patient_id'], $errorLog['wrong_station_id'], $correctStationId, $confirmedBy]);
+
+        $confirmStmt = $pdo->prepare("
+            UPDATE queue_error_log
+            SET status = 'confirmed',
+                confirmed_by = ?,
+                confirmed_at = NOW()
+            WHERE id = ?
+        ");
+        $confirmStmt->execute([$confirmedBy, $errorLogId]);
+
+        $pdo->commit();
+
+        // Return info for display announcement
+        $patientStmt = $pdo->prepare("SELECT full_name, patient_code FROM patients WHERE id = ?");
+        $patientStmt->execute([$errorLog['patient_id']]);
+        $patient = $patientStmt->fetch();
+
+        $correctStation = getQueueStation($pdo, $correctStationId);
+
+        return [
+            'patient_name' => $patient['full_name'] ?? '',
+            'patient_code' => $patient['patient_code'] ?? '',
+            'correct_station_name' => $correctStation['station_display_name'] ?? '',
+            'error_log_id' => $errorLogId
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}

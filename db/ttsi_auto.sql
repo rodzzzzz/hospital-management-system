@@ -2294,6 +2294,34 @@ CREATE TABLE IF NOT EXISTS `queue_settings` (
   CONSTRAINT `fk_queue_settings_station` FOREIGN KEY (`station_id`) REFERENCES `queue_stations` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- 5. Queue Error Log Table (tracks wrong-station corrections)
+CREATE TABLE IF NOT EXISTS `queue_error_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `queue_id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `wrong_station_id` int(11) NOT NULL,
+  `correct_station_id` int(11) NOT NULL,
+  `reported_by` int(11) NOT NULL,
+  `confirmed_by` int(11) DEFAULT NULL,
+  `status` enum('pending','confirmed','cancelled') NOT NULL DEFAULT 'pending',
+  `reported_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `confirmed_at` timestamp NULL DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_queue_id` (`queue_id`),
+  KEY `idx_patient_id` (`patient_id`),
+  KEY `idx_wrong_station_id` (`wrong_station_id`),
+  KEY `idx_correct_station_id` (`correct_station_id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_reported_at` (`reported_at`),
+  CONSTRAINT `fk_queue_error_log_queue` FOREIGN KEY (`queue_id`) REFERENCES `patient_queue` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_queue_error_log_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_queue_error_log_wrong_station` FOREIGN KEY (`wrong_station_id`) REFERENCES `queue_stations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_queue_error_log_correct_station` FOREIGN KEY (`correct_station_id`) REFERENCES `queue_stations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_queue_error_log_reported_by` FOREIGN KEY (`reported_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_queue_error_log_confirmed_by` FOREIGN KEY (`confirmed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Insert default stations
 INSERT INTO `queue_stations` (`station_name`, `station_display_name`, `station_order`) VALUES
 ('opd', 'Out-Patient Department', 1),

@@ -210,6 +210,9 @@
                                 <button onclick="callNextPatient()" class="p-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center">
                                     <i class="fas fa-bell mr-2"></i> Call Next Patient
                                 </button>
+                                <button onclick="qecOpenReportModal()" class="p-4 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i> Report Wrong Station
+                                </button>
                             </div>
                         </div>
                         
@@ -6030,5 +6033,8 @@
         loadOpdQueue();
     </script>
     <?php include __DIR__ . '/includes/xray-results-release-js.php'; ?>
+    <?php include __DIR__ . '/includes/queue-error-correction.php'; ?>
+    <script>window.qecStationId = 1; window.qecRefreshQueue = function() { loadOpdQueue(); };</script>
+    <?php include __DIR__ . '/includes/queue-error-correction-js.php'; ?>
     </body>
     </html>
