@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 05, 2026 at 06:14 AM
+-- Generation Time: Feb 23, 2026 at 05:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,78 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `auth_tokens`
+--
+
+CREATE TABLE `auth_tokens` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token_hash` varchar(64) NOT NULL,
+  `expires_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `auth_tokens`
+--
+
+INSERT INTO `auth_tokens` (`id`, `user_id`, `token_hash`, `expires_at`, `created_at`) VALUES
+(1, 2, 'dacfc7b184b6ee2c097a070edd6e87cf409978596093d81a2e3ac443cf15804d', '2026-02-20 20:08:40', '2026-02-19 03:08:40'),
+(2, 12, '7d3b40b42a600adbc3ea0f2ccf4e84f1bd4823d3916e8191fac1f4b67a5459c8', '2026-02-20 20:50:56', '2026-02-19 03:50:56'),
+(3, 1, 'eaf381902b71d57dffba06c46af21d6d362319c5c492aabea3eb429ca0401c7b', '2026-02-20 22:05:52', '2026-02-19 05:05:52'),
+(4, 3, 'a640a116420fd1cb0a30118a4d38941b3b158c55df5bb6808a6f784926f327ff', '2026-02-20 23:30:23', '2026-02-19 06:30:23'),
+(5, 12, '2fd3bab0e48dc39aad4d4339d43db95c7d20614ec0a15156bc60961642acf18e', '2026-02-20 23:33:25', '2026-02-19 06:33:25'),
+(6, 2, '474673ccb967c41c77c7c30c0bd6cafab037f9184bea2f1346ecb3484c22f413', '2026-02-22 01:53:09', '2026-02-20 08:53:09'),
+(7, 12, '726634875b1dfafe240aac279ed62031309803d1cd81c132d5286521c7353f5f', '2026-02-22 01:57:24', '2026-02-20 08:57:24'),
+(8, 2, '15db4d62d7136797cc0fa37f4b2c7a3b7b0803443694122fa56ed9120257126e', '2026-02-22 19:46:25', '2026-02-21 02:46:25'),
+(9, 2, '199a622a1c087906495bbda5f23ecb78e21d710c2036d68a2dab0d9f0c534c07', '2026-02-22 20:25:16', '2026-02-21 03:25:16'),
+(10, 2, '9ce47e94eb8e23d36f872d4a92eb69386e7314fa32f3f2309c5a5636476964c5', '2026-02-22 21:04:31', '2026-02-21 04:04:31'),
+(11, 2, '2388801586f3fb7133007cde1e068432c3970d3d4791311db1a1f53bb56664d0', '2026-02-23 04:54:34', '2026-02-21 11:54:34'),
+(12, 2, '3cb610a4e665d59c1bfe564074328aed4f1503798c08fdfa738403fa635d3ade', '2026-02-23 04:57:55', '2026-02-21 11:57:55'),
+(13, 1, 'ad4d593620dacd2e1ae84f1e356a23577f442a2ee705d704e928d83742063ddd', '2026-02-23 10:53:21', '2026-02-21 17:53:21'),
+(14, 1, '77310fee384b40d56a17430704816f7d3df9bdb2550e583db26253dba68ce48e', '2026-02-23 10:58:42', '2026-02-21 17:58:42'),
+(15, 1, 'b74f8772207b343258b24af478387ac38ed6895812d043bb53ffe61885fe37c6', '2026-02-23 11:07:31', '2026-02-21 18:07:31'),
+(16, 1, 'fb882bd78670e05bf2738068a18cac054ce2608a19f93b29403d5cff96ac56ef', '2026-02-23 12:37:22', '2026-02-21 19:37:22'),
+(17, 2, '8314ba09b61dcf6925d71ce4de2b6c5530d144050ebb9fbf068e6e04fd61a057', '2026-02-23 12:40:08', '2026-02-21 19:40:08'),
+(18, 1, '6b7ded03e8e5597119abcb75ec27b96baee8600dad3863c8b886393084cfcd1a', '2026-02-23 12:57:47', '2026-02-21 19:57:47'),
+(19, 3, '6b94b4e626f8cd546a3436fa9c344056e91055a8a5f650f3e20a79ed13e361a7', '2026-02-23 12:58:36', '2026-02-21 19:58:36'),
+(20, 1, 'b29ccce7930cd0817458d47150213248bf4c97923a34185510a014945ef949af', '2026-02-23 13:01:04', '2026-02-21 20:01:04'),
+(21, 3, '8b80f487ebc0f4cdee4355ee44befcf399581318f6ae217a049f22f49eb1c7c3', '2026-02-23 13:01:49', '2026-02-21 20:01:49'),
+(22, 7, 'e769539702cd992c0c9ca1ff678f43abcf1371ed746bb9cb36414c16642273eb', '2026-02-23 13:03:11', '2026-02-21 20:03:11'),
+(23, 12, 'e6a88a98cfd700bbaf545fe10fdcb61a3a41198377a3525ab064d81c9123f8e9', '2026-02-23 13:05:17', '2026-02-21 20:05:17'),
+(24, 3, '07036befb7b32eaf709f69d68936154f9bdeef7443d0a15f3af3507e5870dfe5', '2026-02-23 13:08:29', '2026-02-21 20:08:29'),
+(25, 12, '4e11b3ad8a3354bb3dd0b61a18708acd77ef78beacd03272eccc99cfccbf4091', '2026-02-23 13:17:16', '2026-02-21 20:17:16'),
+(26, 1, '634d0e0930656a8783d065d4d81e531fe5ffa41b9dff95d93aa2ee8b365c21d9', '2026-02-23 18:38:05', '2026-02-22 01:38:05'),
+(27, 1, 'd69f036ac01e436f1b84f5f6d1468c819c309af1bb9763de9dc3216c3ac4cea0', '2026-02-23 20:00:16', '2026-02-22 03:00:16'),
+(28, 2, 'f974e9baa6cf1103fcca0146e8aba7259f1c8a256ca5d93da6a9b69b438d7e67', '2026-02-23 21:49:43', '2026-02-22 04:49:43'),
+(29, 2, 'd040fb4215b8e046781a130ec6d75b1081560e1d81f3a900f249cc7916112da9', '2026-02-23 21:49:52', '2026-02-22 04:49:52'),
+(30, 2, '4241e86f2902874c1586444f091db647b9b25060aabdf714c1612590a5b3c073', '2026-02-23 21:50:22', '2026-02-22 04:50:22'),
+(31, 1, '87d5ec4d55f9f8fce40ec4104821305115aaa0b4dc36cdae4b5b8422803a79ae', '2026-02-23 22:18:22', '2026-02-22 05:18:22'),
+(32, 1, '93970a082a5dfbaf0e1e305be574a6eaaf8113858ac6ed1076b5fda225987ced', '2026-02-23 22:33:57', '2026-02-22 05:33:57'),
+(33, 1, '2c47c672a5ec7adceee421bd04bc16bd8bbe6369386df36d6d5b411ae7625641', '2026-02-23 22:38:00', '2026-02-22 05:38:00'),
+(34, 8, '427b3d63584d297b1e3b8a78f46d6142be71829582250838b9aae6d063478dea', '2026-02-23 22:40:30', '2026-02-22 05:40:30'),
+(35, 2, 'fe8090dcd5dce597798424700ab87fa8d1212c469df259b89035582f7dcead6a', '2026-02-24 04:05:20', '2026-02-22 11:05:20'),
+(36, 2, '06d20598224afc726693507859a74fd7428136295c44f39a7dd166069148dec3', '2026-02-24 04:15:24', '2026-02-22 11:15:24'),
+(37, 2, '1b57d0748fa8070589eff335fa49405ef93f406cc47b7593247f852522b2c601', '2026-02-24 04:18:22', '2026-02-22 11:18:22'),
+(38, 7, 'ff0d44729205c5fc8454da9c555b92fe93e688cd5fa6c3a761f1b0dc857041e1', '2026-02-24 04:19:35', '2026-02-22 11:19:35'),
+(39, 10, '4aa6c8587ab703720dc969314768bec8ba5992c2816a30526c32c69a6ecddeac', '2026-02-24 04:23:09', '2026-02-22 11:23:09'),
+(40, 10, '9539c5806cd2b6bea64c7f818fd8138af8ff6bdffa3df23a2719567a3e28e21c', '2026-02-24 04:55:17', '2026-02-22 11:55:17'),
+(41, 1, '0a0be3c6067e89d8039721257e0f8fc0ddbe7d519af5f4ee316b2321e12a8330', '2026-02-24 05:05:41', '2026-02-22 12:05:41'),
+(42, 1, 'e317378fcc8a3bb28630003b098b8810b4d70f6c7b2fb518e2d024c39ce2a441', '2026-02-24 05:08:38', '2026-02-22 12:08:38'),
+(43, 1, '1cc53e44a4e376c24e40ec87fcd6ad7aec41325edb27f90cc9cd3c560914637c', '2026-02-24 05:09:01', '2026-02-22 12:09:01'),
+(44, 1, '6ee4fec56156eb2b3ef0f4753967cd3f6bd6f5661b8f10870a1f1cabefbba70c', '2026-02-24 11:14:12', '2026-02-22 18:14:12'),
+(45, 1, 'e6d86f0e01457c2d6a2718e0cee627b42fd457c81d72e7d4b79e08c1d23afc1e', '2026-02-24 11:20:42', '2026-02-22 18:20:42'),
+(46, 1, '76abf95a09cc489dac24d7349a5844590ed30b361c7b76c209d423dab7c6d9fd', '2026-02-24 14:06:52', '2026-02-22 21:06:52'),
+(47, 1, 'f588d8b90d85875b131995e5cc3d8e8f01781d3d10765d50aaf8851964681e89', '2026-02-24 14:08:40', '2026-02-22 21:08:40'),
+(48, 2, 'd6eafa20251ab142d1f1c2102feb993991d897a3602d0bc4153e0e5b054e6ef6', '2026-02-24 20:10:33', '2026-02-23 03:10:33'),
+(49, 2, '747aa46d44ee59930e261da6ddcd5e1de3d807e9836e992aaff52579b4e1f2fe', '2026-02-24 20:11:10', '2026-02-23 03:11:10'),
+(50, 2, 'a665b9eab91a805e36dbe3924b7d3dda6c125ca9de4d043ec9d1afec1ea5b964', '2026-02-24 20:11:12', '2026-02-23 03:11:12'),
+(51, 2, 'b6e6aad6493ba10fab706fbf6a633e6ade0ce310c40a9af99ffc7d28141b138e', '2026-02-24 20:12:10', '2026-02-23 03:12:10'),
+(52, 2, '393b2961602051296a3b3b05e2d16f18e1bb341e4a94f6220967e0af6b90ed2f', '2026-02-24 20:15:45', '2026-02-23 03:15:45');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `cashier_charges`
 --
 
@@ -37,6 +109,16 @@ CREATE TABLE `cashier_charges` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cashier_charges`
+--
+
+INSERT INTO `cashier_charges` (`id`, `source_module`, `source_id`, `patient_id`, `encounter_id`, `status`, `created_at`, `updated_at`) VALUES
+(34, 'lab_request', 27, 21, 59, 'paid', '2026-02-21 20:03:53', '2026-02-22 05:42:07'),
+(35, 'lab_request', 28, 26, 60, 'paid', '2026-02-22 05:32:23', '2026-02-22 05:41:35'),
+(36, 'opd_consultation', 5, 26, 61, 'pending_invoice', '2026-02-22 05:36:51', '2026-02-22 05:36:51'),
+(37, 'pharmacy_resit', 2, 26, 62, 'paid', '2026-02-22 05:39:33', '2026-02-22 05:41:30');
 
 -- --------------------------------------------------------
 
@@ -53,6 +135,20 @@ CREATE TABLE `cashier_charge_items` (
   `instructions` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cashier_charge_items`
+--
+
+INSERT INTO `cashier_charge_items` (`id`, `charge_id`, `medicine_id`, `medicine_name`, `qty`, `instructions`, `created_at`) VALUES
+(62, 34, NULL, 'Creatinine', 1, NULL, '2026-02-21 20:03:53'),
+(63, 34, NULL, 'Electrocardiogram (ECG)', 1, NULL, '2026-02-21 20:03:53'),
+(64, 34, NULL, 'Pregnancy Test', 1, NULL, '2026-02-21 20:03:53'),
+(65, 35, NULL, 'Creatinine', 1, NULL, '2026-02-22 05:32:23'),
+(66, 35, NULL, 'Random Blood Sugar (RBS)', 1, NULL, '2026-02-22 05:32:23'),
+(67, 36, NULL, 'Consultation Fee', 1, NULL, '2026-02-22 05:36:51'),
+(68, 37, 4, 'Amoxicillin 500mg Capsule', 2, '2x a day', '2026-02-22 05:39:33'),
+(69, 37, 5, 'Ascorbic Acid', 3, '1x a day', '2026-02-22 05:39:33');
 
 -- --------------------------------------------------------
 
@@ -71,6 +167,15 @@ CREATE TABLE `cashier_invoices` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `cashier_invoices`
+--
+
+INSERT INTO `cashier_invoices` (`id`, `charge_id`, `patient_id`, `encounter_id`, `status`, `total`, `created_at`, `updated_at`) VALUES
+(28, 34, 21, 59, 'paid', 900.00, '2026-02-21 20:03:53', '2026-02-22 05:42:07'),
+(29, 35, 26, 60, 'paid', 500.00, '2026-02-22 05:32:23', '2026-02-22 05:41:35'),
+(30, 37, 26, 62, 'paid', 88.00, '2026-02-22 05:41:30', '2026-02-22 05:41:30');
+
 -- --------------------------------------------------------
 
 --
@@ -88,6 +193,19 @@ CREATE TABLE `cashier_invoice_items` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `cashier_invoice_items`
+--
+
+INSERT INTO `cashier_invoice_items` (`id`, `invoice_id`, `medicine_id`, `description`, `qty`, `unit_price`, `subtotal`, `created_at`) VALUES
+(49, 28, NULL, 'Creatinine', 1, 300.00, 300.00, '2026-02-21 20:03:53'),
+(50, 28, NULL, 'Electrocardiogram (ECG)', 1, 300.00, 300.00, '2026-02-21 20:03:53'),
+(51, 28, NULL, 'Pregnancy Test', 1, 300.00, 300.00, '2026-02-21 20:03:53'),
+(52, 29, NULL, 'Creatinine', 1, 300.00, 300.00, '2026-02-22 05:32:24'),
+(53, 29, NULL, 'Random Blood Sugar (RBS)', 1, 200.00, 200.00, '2026-02-22 05:32:24'),
+(54, 30, 4, 'Amoxicillin 500mg Capsule', 2, 14.00, 28.00, '2026-02-22 05:41:30'),
+(55, 30, 5, 'Ascorbic Acid', 3, 20.00, 60.00, '2026-02-22 05:41:30');
+
 -- --------------------------------------------------------
 
 --
@@ -103,6 +221,15 @@ CREATE TABLE `cashier_payments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `change_amount` decimal(10,2) NOT NULL DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cashier_payments`
+--
+
+INSERT INTO `cashier_payments` (`id`, `invoice_id`, `amount`, `method`, `received_by`, `created_at`, `change_amount`) VALUES
+(17, 30, 88.00, 'cash', 'cashier@gmail.com', '2026-02-22 05:41:30', 0.00),
+(18, 29, 500.00, 'cash', 'cashier@gmail.com', '2026-02-22 05:41:35', 0.00),
+(19, 28, 900.00, 'cash', 'cashier@gmail.com', '2026-02-22 05:42:07', 0.00);
 
 -- --------------------------------------------------------
 
@@ -248,7 +375,11 @@ INSERT INTO `chat_threads` (`id`, `type`, `module_a`, `module_b`, `module`, `cre
 (14427, '', NULL, NULL, NULL, NULL, '2026-02-04 18:01:14', '2026-02-04 18:01:14'),
 (14429, '', NULL, NULL, NULL, NULL, '2026-02-04 18:01:15', '2026-02-04 18:01:15'),
 (14431, '', NULL, NULL, NULL, NULL, '2026-02-04 18:01:15', '2026-02-04 18:01:15'),
-(14444, '', NULL, NULL, NULL, NULL, '2026-02-05 04:32:09', '2026-02-05 04:32:09');
+(14444, '', NULL, NULL, NULL, NULL, '2026-02-05 04:32:09', '2026-02-05 04:32:09'),
+(14445, '', NULL, NULL, NULL, NULL, '2026-02-19 05:27:21', '2026-02-19 05:27:21'),
+(14446, '', NULL, NULL, NULL, NULL, '2026-02-19 05:27:23', '2026-02-19 05:27:23'),
+(14447, '', NULL, NULL, NULL, NULL, '2026-02-19 06:29:53', '2026-02-19 06:29:53'),
+(14448, '', NULL, NULL, NULL, NULL, '2026-02-23 03:10:13', '2026-02-23 03:10:13');
 
 -- --------------------------------------------------------
 
@@ -422,6 +553,17 @@ CREATE TABLE `encounters` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `encounters`
+--
+
+INSERT INTO `encounters` (`id`, `encounter_no`, `patient_id`, `type`, `status`, `started_at`, `ended_at`, `created_at`, `updated_at`) VALUES
+(58, 'ENC-20260221-000058', 21, 'ER', 'open', '2026-02-21 21:00:36', NULL, '2026-02-21 20:00:36', '2026-02-21 20:00:36'),
+(59, 'ENC-20260221-000059', 21, 'ER', 'open', '2026-02-21 21:02:49', NULL, '2026-02-21 20:02:49', '2026-02-21 20:02:49'),
+(60, 'ENC-20260222-000060', 26, 'OPD', 'open', '2026-02-22 06:30:15', NULL, '2026-02-22 05:30:15', '2026-02-22 05:30:15'),
+(61, 'ENC-20260222-000061', 26, 'OPD', 'open', '2026-02-22 06:36:51', NULL, '2026-02-22 05:36:51', '2026-02-22 05:36:51'),
+(62, 'ENC-20260222-000062', 26, 'PHARMACY', 'open', '2026-02-22 06:39:33', NULL, '2026-02-22 05:39:33', '2026-02-22 05:39:33');
+
 -- --------------------------------------------------------
 
 --
@@ -440,6 +582,13 @@ CREATE TABLE `er_assessment_submissions` (
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `responded_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `er_assessment_submissions`
+--
+
+INSERT INTO `er_assessment_submissions` (`id`, `encounter_id`, `patient_id`, `er_assessment_id`, `submitted_by`, `doctor_id`, `doctor_name`, `status`, `submitted_at`, `responded_at`) VALUES
+(10, 58, 21, 10, 'ER Nurse', 1, 'Doctor2', 'responded', '2026-02-21 20:00:44', '2026-02-21 20:01:23');
 
 -- --------------------------------------------------------
 
@@ -497,6 +646,13 @@ CREATE TABLE `er_doctor_feedback` (
   `status` varchar(30) NOT NULL DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `er_doctor_feedback`
+--
+
+INSERT INTO `er_doctor_feedback` (`id`, `encounter_id`, `patient_id`, `er_assessment_id`, `doctor_name`, `lab_tests_json`, `lab_note`, `feedback_at`, `status`) VALUES
+(10, 58, 21, 10, 'Doctor2', '[\"bun\",\"creatinine\",\"electrolytes\",\"pregnancy\"]', 'egev', '2026-02-21 20:01:23', 'sent');
+
 -- --------------------------------------------------------
 
 --
@@ -514,6 +670,13 @@ CREATE TABLE `er_nursing_assessments` (
   `notes` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `er_nursing_assessments`
+--
+
+INSERT INTO `er_nursing_assessments` (`id`, `encounter_id`, `patient_id`, `nurse_name`, `triage_level`, `vitals_json`, `assessment_json`, `notes`, `created_at`) VALUES
+(10, 58, 21, 'asasc', NULL, '{\"bp_sys\":\"564\",\"bp_dia\":\"45\",\"hr\":\"43\",\"rr\":\"\",\"temp\":\"45\",\"spo2\":\"34\",\"weight\":\"343\",\"height\":\"346\"}', '{\"hpi_start\":\"wecasc\",\"hpi_duration\":\"asc\",\"hpi_severity\":\"moderate\",\"hpi_associated\":\"ascasc\",\"hpi_factors\":\"ascasc\",\"pmh_diabetes\":true,\"pmh_hypertension\":true,\"pmh_asthma\":false,\"pmh_heart_disease\":false,\"pmh_other\":\"asc\",\"surgical_history\":\"asca\",\"current_medications\":\"scasc\",\"allergies_other\":\"asc\",\"family_history\":\"asca\",\"social_smoking\":\"no\",\"social_alcohol\":\"\",\"occupation\":\"ascas\"}', 'asc', '2026-02-21 20:00:36');
 
 -- --------------------------------------------------------
 
@@ -792,6 +955,14 @@ CREATE TABLE `lab_requests` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `lab_requests`
+--
+
+INSERT INTO `lab_requests` (`id`, `request_no`, `patient_id`, `encounter_id`, `source_unit`, `triage_level`, `chief_complaint`, `priority`, `vitals_json`, `notes`, `status`, `cashier_status`, `requested_by`, `doctor_id`, `requester_role`, `approved_by`, `approved_at`, `rejection_reason`, `created_at`, `updated_at`) VALUES
+(27, 'LAB-20260221-000027', 21, 59, 'ER', 1, 'dfsevs', 'stat', '{\"bp\":\"7655\",\"hr\":\"65\",\"rr\":\"5656\",\"temp\":\"6\",\"spo2\":\"544\"}', 'awdawd', 'completed', 'submitted_to_cashier', 'regrg', NULL, 'nurse_direct', 'ascasc', '2026-02-21 21:02:49', NULL, '2026-02-21 20:02:49', '2026-02-21 20:03:53'),
+(28, 'LAB-20260222-000028', 26, 60, 'OPD', 5, 'Headache', 'urgent', NULL, 'acasc', 'completed', 'submitted_to_cashier', 'OPD Nurse', NULL, 'np_pa', 'NP/PA', '2026-02-22 06:30:15', NULL, '2026-02-22 05:30:15', '2026-02-22 05:32:24');
+
 -- --------------------------------------------------------
 
 --
@@ -809,6 +980,17 @@ CREATE TABLE `lab_request_items` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `lab_request_items`
+--
+
+INSERT INTO `lab_request_items` (`id`, `request_id`, `test_code`, `test_name`, `specimen`, `status`, `created_at`, `updated_at`) VALUES
+(72, 27, 'creatinine', 'Creatinine', '', 'completed', '2026-02-21 20:02:49', '2026-02-21 20:03:53'),
+(73, 27, 'ecg', 'Electrocardiogram (ECG)', '', 'completed', '2026-02-21 20:02:49', '2026-02-21 20:03:53'),
+(74, 27, 'pregnancy', 'Pregnancy Test', '', 'completed', '2026-02-21 20:02:49', '2026-02-21 20:03:53'),
+(75, 28, 'creatinine', 'Creatinine', '', 'completed', '2026-02-22 05:30:15', '2026-02-22 05:32:23'),
+(76, 28, 'rbs', 'Random Blood Sugar (RBS)', '', 'completed', '2026-02-22 05:30:15', '2026-02-22 05:32:23');
+
 -- --------------------------------------------------------
 
 --
@@ -824,6 +1006,17 @@ CREATE TABLE `lab_results` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lab_results`
+--
+
+INSERT INTO `lab_results` (`id`, `request_item_id`, `result_text`, `released_by`, `released_at`, `created_at`, `updated_at`) VALUES
+(42, 73, 'ascas', 'Louie', '2026-02-21 21:03:53', '2026-02-21 20:03:53', '2026-02-21 20:03:53'),
+(43, 74, 'cascas', 'Louie', '2026-02-21 21:03:53', '2026-02-21 20:03:53', '2026-02-21 20:03:53'),
+(44, 72, 'CREATININE\nCREATININE: 345\nUNIT: mg/dL\nREMARKS: acasc', 'Louie', '2026-02-21 21:03:53', '2026-02-21 20:03:53', '2026-02-21 20:03:53'),
+(45, 75, 'CREATININE\nCREATININE: 100\nUNIT: mg/dL\nREMARKS: Bad', 'Raul', '2026-02-22 06:32:23', '2026-02-22 05:32:23', '2026-02-22 05:32:23'),
+(46, 76, 'RBS\nBLOOD SUGAR: 300\nUNIT: mg/dL\nREMARKS: Bad', 'Raul', '2026-02-22 06:32:23', '2026-02-22 05:32:23', '2026-02-22 05:32:23');
 
 -- --------------------------------------------------------
 
@@ -877,6 +1070,20 @@ CREATE TABLE `opd_appointments` (
   `lab_note` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `opd_appointments`
+--
+
+INSERT INTO `opd_appointments` (`id`, `patient_id`, `doctor_name`, `appointment_at`, `status`, `notes`, `created_at`, `updated_at`, `responded_at`, `approved_by_user_id`, `nursing_assessment_id`, `lab_tests_json`, `lab_note`) VALUES
+(22, 21, 'TBD', NULL, 'requested', 'Auto-created from Nursing Assessment', '2026-02-21 19:42:06', '2026-02-21 19:42:06', NULL, NULL, 2, NULL, NULL),
+(23, 6, 'TBD', NULL, 'requested', 'Auto-created from Nursing Assessment', '2026-02-22 02:58:07', '2026-02-22 02:58:07', NULL, NULL, 3, NULL, NULL),
+(24, 21, 'Doctor2', NULL, 'requested', NULL, '2026-02-22 02:58:21', '2026-02-22 02:58:21', NULL, NULL, 2, NULL, NULL),
+(25, 21, 'Doctor2', NULL, 'requested', 'wdawdasd', '2026-02-22 02:59:10', '2026-02-22 02:59:10', NULL, NULL, 2, NULL, NULL),
+(26, 6, 'Doctor2', NULL, 'requested', 'rgsrv', '2026-02-22 05:17:44', '2026-02-22 05:17:44', NULL, NULL, 3, NULL, NULL),
+(27, 26, 'TBD', NULL, 'requested', 'Auto-created from Nursing Assessment', '2026-02-22 05:25:58', '2026-02-22 05:25:58', NULL, NULL, 4, NULL, NULL),
+(28, 26, 'Doctor2', '2026-02-24 14:27:00', 'in_consultation', 'need asses', '2026-02-22 05:26:34', '2026-02-22 05:35:44', '2026-02-22 05:27:09', 1, 4, '[\"creatinine\",\"rbs\"]', NULL),
+(29, 30, 'TBD', NULL, 'requested', 'Auto-created from Nursing Assessment', '2026-02-22 19:16:21', '2026-02-22 19:16:21', NULL, NULL, 5, NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -910,6 +1117,13 @@ CREATE TABLE `opd_consultation_notes` (
   `note_text` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `opd_consultation_notes`
+--
+
+INSERT INTO `opd_consultation_notes` (`id`, `appointment_id`, `patient_id`, `doctor_user_id`, `doctor_name`, `note_text`, `created_at`) VALUES
+(5, 28, 26, 2, 'Admin', 'Patient Name: Berney BATOMBAKAL\nDate: 2026-02-24\nAge/Gender: 2006-05-24 / 19 / Male\n\n🩺 Doctor Consultation Note (SOAP Format)\n\nS – Subjective\nChief Complaint: Headeach\n\nO – Objective\nVital Signs: BP: 32  Pulse: 234  Temp: 234\nPhysical Examination Findings:\nawd\n\nA – Assessment\nPrimary Diagnosis: awd\nDifferential Diagnosis (if any): awd\n\nP – Plan\nInvestigations Ordered:\nawd\nMedications Prescribed:\nAmoxicillin, paracetmol\nTreatment/Advice:\nwadawd\nFollow-up: asc\nDoctor’s Name & Signature: doctor 2', '2026-02-22 05:36:51');
 
 -- --------------------------------------------------------
 
@@ -950,6 +1164,16 @@ CREATE TABLE `opd_nursing_assessments` (
   `assessment_json` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `opd_nursing_assessments`
+--
+
+INSERT INTO `opd_nursing_assessments` (`id`, `appointment_id`, `patient_id`, `nurse_name`, `triage_level`, `vitals_json`, `notes`, `created_at`, `assessment_json`) VALUES
+(2, 22, 21, 'Paola', NULL, '{\"bp_systolic\":\"435\",\"bp_diastolic\":\"454\",\"hr\":\"43\",\"rr\":\"345\",\"temp\":\"345\",\"spo2\":\"345\",\"weight\":\"3453\",\"height\":\"54345\"}', 'ascasc', '2026-02-21 19:42:06', '{\"hpi\":{\"start\":\"rsv\",\"duration\":\"345\",\"severity\":\"mild\",\"associated\":\"sdv\",\"factors\":\"awcc\"},\"pmh\":{\"diabetes\":true,\"hypertension\":true,\"asthma\":false,\"heart_disease\":false,\"other\":null},\"surgical_history\":\"asc\",\"current_medications\":\"asc\",\"allergies_other\":\"asc\",\"family_history\":\"asc\",\"social\":{\"smoking\":\"no\",\"alcohol\":\"yes\",\"occupation\":null},\"allergies_none\":false}'),
+(3, 23, 6, 'Paola', NULL, '{\"bp_systolic\":\"435\",\"bp_diastolic\":\"454\",\"hr\":\"43\",\"rr\":\"345\",\"temp\":\"345\",\"spo2\":\"345\",\"weight\":\"3453\",\"height\":\"54345\"}', 'ascasc', '2026-02-22 02:58:07', '{\"hpi\":{\"start\":\"rsv\",\"duration\":\"345\",\"severity\":\"mild\",\"associated\":\"sdv\",\"factors\":\"awcc\"},\"pmh\":{\"diabetes\":true,\"hypertension\":true,\"asthma\":false,\"heart_disease\":false,\"other\":null},\"surgical_history\":\"asc\",\"current_medications\":\"asc\",\"allergies_other\":\"asc\",\"family_history\":\"asc\",\"social\":{\"smoking\":\"no\",\"alcohol\":\"yes\",\"occupation\":null},\"allergies_none\":false}'),
+(4, 27, 26, 'Paola', NULL, '{\"bp_systolic\":\"3434\",\"bp_diastolic\":\"34\",\"hr\":\"45\",\"rr\":\"435\",\"temp\":\"34\",\"spo2\":\"435\",\"weight\":\"345\",\"height\":\"45\"}', 'ascasc', '2026-02-22 05:25:58', '{\"hpi\":{\"start\":\"Headache\",\"duration\":\"345\",\"severity\":\"moderate\",\"associated\":\"sdv\",\"factors\":\"asasd\"},\"pmh\":{\"diabetes\":false,\"hypertension\":false,\"asthma\":true,\"heart_disease\":false,\"other\":\"N\\/A\"},\"surgical_history\":\"none\",\"current_medications\":\"home remedy\",\"allergies_other\":\"none\",\"family_history\":\"none\",\"social\":{\"smoking\":\"yes\",\"alcohol\":\"yes\",\"occupation\":\"asc\"},\"allergies_none\":false}'),
+(5, 29, 30, 'Paola', NULL, '{\"bp_systolic\":\"43\",\"bp_diastolic\":\"34\",\"hr\":\"4545\",\"rr\":\"34\",\"temp\":\"345\",\"spo2\":\"345\",\"weight\":\"545\",\"height\":\"34\"}', 'sdasd', '2026-02-22 19:16:21', '{\"hpi\":{\"start\":\"aas\",\"duration\":\"asf\",\"severity\":\"mild\",\"associated\":\"sdv\",\"factors\":\"asd\"},\"pmh\":{\"diabetes\":true,\"hypertension\":true,\"asthma\":false,\"heart_disease\":false,\"other\":\"asd\"},\"surgical_history\":\"asd\",\"current_medications\":\"asd\",\"allergies_other\":\"asdas\",\"family_history\":\"dasd\",\"social\":{\"smoking\":\"yes\",\"alcohol\":\"yes\",\"occupation\":\"asda\"},\"allergies_none\":false}');
+
 -- --------------------------------------------------------
 
 --
@@ -961,9 +1185,10 @@ CREATE TABLE `patients` (
   `patient_code` varchar(32) DEFAULT NULL,
   `philhealth_pin` varchar(32) DEFAULT NULL,
   `full_name` varchar(255) NOT NULL,
+  `first_name` varchar(128) DEFAULT NULL,
+  `last_name` varchar(128) DEFAULT NULL,
   `dob` date DEFAULT NULL,
   `sex` varchar(16) DEFAULT NULL,
-  `blood_type` varchar(16) DEFAULT NULL,
   `contact` varchar(64) DEFAULT NULL,
   `civil_status` varchar(32) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
@@ -981,10 +1206,75 @@ CREATE TABLE `patients` (
   `emergency_contact_name` varchar(255) DEFAULT NULL,
   `emergency_contact_relationship` varchar(64) DEFAULT NULL,
   `emergency_contact_phone` varchar(64) DEFAULT NULL,
-  `is_new_patient` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `blood_type` varchar(16) DEFAULT NULL,
+  `is_new_patient` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `patients`
+--
+
+INSERT INTO `patients` (`id`, `patient_code`, `philhealth_pin`, `full_name`, `first_name`, `last_name`, `dob`, `sex`, `contact`, `civil_status`, `email`, `street_address`, `barangay`, `city`, `province`, `zip_code`, `employer_name`, `employer_address`, `patient_type`, `initial_location`, `department`, `diagnosis`, `emergency_contact_name`, `emergency_contact_relationship`, `emergency_contact_phone`, `created_at`, `updated_at`, `blood_type`, `is_new_patient`) VALUES
+(4, 'P-000004', NULL, 'Maria Garcia', 'Maria', 'Garcia', '1975-04-11', 'Male', '09780338940', 'Single', 'maria.garcia29@example.com', '227 Bonifacio St.', 'Poblacion', 'Cebu City', 'Bulacan', '6484', NULL, NULL, NULL, 'ER', NULL, 'Abdominal pain', 'Rafael Navarro', 'Spouse', '09182334783', '2026-02-19 03:28:34', '2026-02-21 11:46:49', 'B+', 0),
+(6, 'P-000006', NULL, 'John Dela Cruz', 'John', 'Dela Cruz', '1980-09-27', 'Male', '09656547666', 'Widowed', 'john.dela.cruz35@example.com', '101 Aguinaldo St.', 'Maligaya', 'Baguio', 'Metro Manila', '8944', NULL, NULL, 'PhilHealth', 'OPD', NULL, 'CKD Stage 5 / ESRD', 'Christine Fernandez', 'Parent', '09434222496', '2026-02-19 04:22:47', '2026-02-21 11:46:49', 'AB-', 0),
+(7, 'P-000007', NULL, 'Maria Bautista', 'Maria', 'Bautista', '1975-02-17', 'Male', '09233269040', 'Married', NULL, '4 Mabini St.', 'San Juan', 'Cebu City', 'Laguna', '7595', NULL, NULL, NULL, 'OPD', NULL, 'Hypertension', 'Angel Bautista', 'Friend', '09930416629', '2026-02-19 06:55:00', '2026-02-21 11:46:49', 'B-', 0),
+(8, 'P-000008', NULL, 'sdfgh', 'sdfgh', '', '2026-02-11', 'Male', '12345678902', 'Single', NULL, 'asdfg', 'asdfg', 'asdfg', 'asdfgh', '', '', '', NULL, NULL, NULL, 'sdfgh', 'asdfgh', 'Sibling', '12345123456', '2026-02-21 02:47:23', '2026-02-21 11:46:49', 'A-', 1),
+(9, 'P-000009', NULL, 'qweqwe', 'qweqwe', '', '2026-02-11', 'Male', '12312312313', 'Single', NULL, 'sdadadas', 'adsadssadsad', 'adsasdada', 'adsasda', '', '', '', NULL, NULL, NULL, 'sdasdasdas', 'adadada', 'Sibling', '12313131233', '2026-02-21 02:49:17', '2026-02-21 11:46:49', 'A-', 1),
+(10, 'P-000010', NULL, 'fghjk', 'fghjk', '', '2026-02-10', 'Male', '12345671234', 'Single', NULL, 'asdfghj', 'asdfghj', 'asdfgh', 'asdfgh', '', '', '', NULL, NULL, NULL, 'asdfghjk', 'asdfghj', 'Sibling', '12345612345', '2026-02-21 03:01:28', '2026-02-21 11:46:49', 'B+', 1),
+(11, 'P-000011', NULL, 'asdfgh', 'asdfgh', '', '2026-02-10', 'Male', '12345234563', 'Single', NULL, 'sdfghj', 'asdfghj', 'sdfghjk', 'sdfghj', '', '', '', NULL, NULL, NULL, 'dfghj', 'asdfgh', 'Sibling', '23456234562', '2026-02-21 03:06:37', '2026-02-21 11:46:49', 'A-', 1),
+(12, 'P-000012', NULL, 'asdfgh', 'asdfgh', '', '2026-02-10', 'Male', '12345234563', 'Single', NULL, 'sdfghj', 'asdfghj', 'sdfghjk', 'sdfghj', '', '', '', NULL, NULL, NULL, 'dfghj', 'asdfgh', 'Sibling', '23456234562', '2026-02-21 03:17:10', '2026-02-21 11:46:49', 'A-', 1),
+(13, 'P-000013', NULL, 'Test Drive', 'Test', 'Drive', '2026-02-25', 'Male', '09876543223', 'Single', NULL, 'df', 'fd', 'ffv', 'ffc', '', '', '', NULL, NULL, NULL, 'headache', 'dvc', 'Friend', '09876543212', '2026-02-21 04:07:44', '2026-02-21 11:46:49', 'O-', 1),
+(14, 'P-000014', NULL, 'Test Drive', 'Test', 'Drive', '2026-02-12', 'Male', '12345234563', 'Married', NULL, 'rdy', 'dry', 'dry', 'dryc', '', '', '', NULL, NULL, NULL, 'ry', 'ur', 'Child', '09876543212', '2026-02-21 08:12:16', '2026-02-21 11:46:49', 'AB-', 1),
+(15, 'P-000015', NULL, 'swysey', 'swysey', '', '2026-02-06', 'Male', '09876543215', 'Widowed', NULL, 'gd', 'hd', 'ru', 'vut', '', '', '', NULL, NULL, NULL, 'dy', 'gj', 'Other', '1234565678', '2026-02-21 08:21:02', '2026-02-21 11:46:49', 'B+', 1),
+(16, 'P-000016', NULL, 'wy', 'wy', '', '2026-02-20', 'Male', '09876543215', 'Widowed', NULL, 'dry', 'yut', 'vtiv', 'vti', '', '', '', NULL, NULL, NULL, 'ryd', 'vit', 'Child', '09876543212', '2026-02-21 08:21:53', '2026-02-21 11:46:49', 'AB-', 1),
+(21, 'P-000021', NULL, 'Paolo Flores', NULL, NULL, '2001-12-13', 'Male', '09499011968', 'Single', NULL, '147 Rizal St.', 'Bagong Silang', 'Manila', 'Bulacan', '4290', NULL, NULL, NULL, 'OPD', NULL, 'Hypertension', 'John Ramos', 'Parent', '09889654216', '2026-02-21 19:41:17', '2026-02-21 19:41:17', 'B-', 0),
+(22, 'P-000022', '', 'Joyline Joyline Torres', 'Joyline', 'Joyline Torres', '2026-02-26', 'Male', '09875345665', 'Single', NULL, 'RR', 'TT', 'YY', 'TF', '', '', '', NULL, NULL, NULL, 'TT', 'UU', 'Sibling', '09675116545', '2026-02-22 03:16:34', '2026-02-22 03:16:34', 'A-', 1),
+(24, 'P-000024', '4565-6765-7755-5676', 'JUAN DELA CRUZ', 'JUAN', 'DELA CRUZ', '2026-02-18', 'Male', '09999999999', 'Single', NULL, 'RYYYY', 'RRTG', 'RYFYU', 'RFFDY', '', '', '', NULL, NULL, NULL, 'RTYUH', '09999999999', 'Spouse', '09999999999', '2026-02-22 04:26:58', '2026-02-22 04:26:58', 'B+', 1),
+(25, 'P-000025', '6645-6754-4666-6665', 'Fj Torres', 'Fj', 'Torres', '1993-06-22', 'Male', '09464448558', 'Single', NULL, 'YY', 'JI', 'II', 'II', '', '', '', NULL, NULL, NULL, 'TTRTF', 'UUJ', 'Child', '0946444855', '2026-02-22 04:53:48', '2026-02-22 04:53:48', 'O-', 1),
+(26, 'P-000026', '6544-5665-4455-6556', 'Berney BATOMBAKAL', 'Berney', 'BATOMBAKAL', '2006-05-24', 'Male', '09875445668', '', NULL, 'GY', 'JJ', 'HU', 'II', '', '', '', NULL, NULL, NULL, 'UUUGH', 'HH', 'Child', '0987556676', '2026-02-22 05:24:21', '2026-02-22 05:24:21', 'O-', 1),
+(27, 'P-000027', '5788-8888-8888-8888', 'hjjdde kjmejmw', 'hjjdde', 'kjmejmw', '2026-02-12', 'Female', '62666777888', 'Single', NULL, 'G', 'A', 'A', 'A', '', '', '', NULL, NULL, NULL, 'R', 'A', 'Parent', '1223134656', '2026-02-22 10:57:18', '2026-02-22 10:57:18', 'A-', 1),
+(28, 'P-000028', '1211-1111-1111-1111', 'juan dela cruz', 'juan', 'dela cruz', '1974-02-22', 'Male', '09999999999', 'Single', NULL, 'Abc', 'Abc', 'Abc', 'Abc', '', '', '', NULL, NULL, NULL, 'Headache', 'Abc', 'Sibling', '09999999999', '2026-02-22 11:30:58', '2026-02-22 11:30:58', 'B+', 1),
+(30, 'P-000030', '8908-0808-9797-8787', 'Riza Bemdijo', 'Riza', 'Bemdijo', '2026-02-20', 'Female', '22222222222', 'Married', NULL, 'K', 'H', 'Y', 'H', '', '', '', NULL, NULL, NULL, 'Yuu', 'H', 'Sibling', '09999999993', '2026-02-22 18:00:58', '2026-02-22 18:00:58', 'O+', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `patient_queue`
+--
+
+CREATE TABLE `patient_queue` (
+  `id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `station_id` int(11) NOT NULL,
+  `queue_number` int(11) NOT NULL,
+  `queue_position` int(11) NOT NULL,
+  `status` enum('waiting','in_progress','completed','cancelled','skipped') NOT NULL DEFAULT 'waiting',
+  `arrived_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `started_at` timestamp NULL DEFAULT NULL,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  `staff_user_id` int(11) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `estimated_wait_minutes` int(11) DEFAULT NULL,
+  `service_duration_minutes` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `patient_queue`
+--
+
+INSERT INTO `patient_queue` (`id`, `patient_id`, `station_id`, `queue_number`, `queue_position`, `status`, `arrived_at`, `started_at`, `completed_at`, `staff_user_id`, `notes`, `estimated_wait_minutes`, `service_duration_minutes`, `created_at`, `updated_at`) VALUES
+(14, 24, 5, 1, 1, 'waiting', '2026-02-22 04:26:58', '2026-02-22 04:54:12', '2026-02-22 04:54:21', 12, NULL, NULL, NULL, '2026-02-22 04:26:58', '2026-02-22 04:54:21'),
+(15, 25, 4, 2, 1, 'completed', '2026-02-22 04:53:48', '2026-02-22 04:56:53', '2026-02-22 04:57:21', 2, NULL, NULL, NULL, '2026-02-22 04:53:48', '2026-02-22 04:57:21'),
+(16, 25, 1, 1, 1, 'completed', '2026-02-22 05:01:32', '2026-02-22 05:21:14', '2026-02-22 05:21:27', 2, NULL, NULL, NULL, '2026-02-22 05:01:32', '2026-02-22 05:21:27'),
+(17, 26, 4, 2, 1, 'in_progress', '2026-02-22 05:24:21', '2026-02-22 05:41:02', '2026-02-22 05:40:51', 8, NULL, NULL, NULL, '2026-02-22 05:24:21', '2026-02-22 05:41:02'),
+(18, 27, 1, 2, 1, 'completed', '2026-02-22 10:57:18', '2026-02-22 11:05:31', '2026-02-22 11:16:06', 2, NULL, NULL, NULL, '2026-02-22 10:57:18', '2026-02-22 11:16:06'),
+(19, 28, 1, 3, 1, 'in_progress', '2026-02-22 11:30:58', '2026-02-22 11:53:11', '2026-02-22 11:53:02', 2, NULL, NULL, NULL, '2026-02-22 11:30:58', '2026-02-22 11:53:11'),
+(20, 13, 1, 4, 1, 'waiting', '2026-02-22 12:10:15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-22 12:10:15', '2026-02-22 12:10:15'),
+(21, 30, 1, 5, 2, 'waiting', '2026-02-22 18:00:58', NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-22 18:00:58', '2026-02-22 18:00:58');
 
 -- --------------------------------------------------------
 
@@ -1007,6 +1297,13 @@ CREATE TABLE `pharmacy_consultation_notes` (
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pharmacy_consultation_notes`
+--
+
+INSERT INTO `pharmacy_consultation_notes` (`id`, `source_module`, `source_note_id`, `patient_id`, `appointment_id`, `encounter_id`, `provider_name`, `note_text`, `note_created_at`, `submitted_by_user_id`, `submitted_by_name`, `submitted_at`, `updated_at`) VALUES
+(3, 'OPD', 5, 26, 28, NULL, 'Admin', 'Patient Name: Berney BATOMBAKAL\nDate: 2026-02-24\nAge/Gender: 2006-05-24 / 19 / Male\n\n🩺 Doctor Consultation Note (SOAP Format)\n\nS – Subjective\nChief Complaint: Headeach\n\nO – Objective\nVital Signs: BP: 32  Pulse: 234  Temp: 234\nPhysical Examination Findings:\nawd\n\nA – Assessment\nPrimary Diagnosis: awd\nDifferential Diagnosis (if any): awd\n\nP – Plan\nInvestigations Ordered:\nawd\nMedications Prescribed:\nAmoxicillin, paracetmol\nTreatment/Advice:\nwadawd\nFollow-up: asc\nDoctor’s Name & Signature: doctor 2', '2026-02-22 13:36:51', 2, 'Admin', '2026-02-22 05:37:08', '2026-02-22 05:37:08');
 
 -- --------------------------------------------------------
 
@@ -1060,7 +1357,8 @@ CREATE TABLE `pharmacy_resits` (
 --
 
 INSERT INTO `pharmacy_resits` (`id`, `patient_id`, `encounter_id`, `prescribed_by`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 3, NULL, NULL, NULL, '2026-02-05 04:45:30', '2026-02-05 04:45:30');
+(1, 3, NULL, NULL, NULL, '2026-02-05 04:45:30', '2026-02-05 04:45:30'),
+(2, 26, 62, NULL, NULL, '2026-02-22 05:39:33', '2026-02-22 05:39:33');
 
 -- --------------------------------------------------------
 
@@ -1083,7 +1381,9 @@ CREATE TABLE `pharmacy_resit_items` (
 --
 
 INSERT INTO `pharmacy_resit_items` (`id`, `resit_id`, `medicine_id`, `medicine_name`, `qty`, `instructions`, `created_at`) VALUES
-(1, 1, 4, 'Amoxicillin 500mg Capsule', '10', 'asdwdawd', '2026-02-05 04:45:30');
+(1, 1, 4, 'Amoxicillin 500mg Capsule', '10', 'asdwdawd', '2026-02-05 04:45:30'),
+(2, 2, 4, 'Amoxicillin 500mg Capsule', '2', '2x a day', '2026-02-22 05:39:33'),
+(3, 2, 5, 'Ascorbic Acid', '3', '1x a day', '2026-02-22 05:39:33');
 
 -- --------------------------------------------------------
 
@@ -1157,6 +1457,101 @@ CREATE TABLE `philhealth_members` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `queue_settings`
+--
+
+CREATE TABLE `queue_settings` (
+  `id` int(11) NOT NULL,
+  `station_id` int(11) NOT NULL,
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `queue_settings`
+--
+
+INSERT INTO `queue_settings` (`id`, `station_id`, `setting_key`, `setting_value`, `created_at`, `updated_at`) VALUES
+(17, 5, 'average_service_time', '12', '2026-02-23 03:11:19', '2026-02-23 03:11:19'),
+(18, 5, 'queue_prefix', 'XRY', '2026-02-23 03:11:19', '2026-02-23 03:11:19'),
+(19, 5, 'display_refresh_interval', '10', '2026-02-23 03:11:19', '2026-02-23 03:11:19'),
+(20, 5, 'sound_enabled', '1', '2026-02-23 03:11:19', '2026-02-23 03:11:19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `queue_stations`
+--
+
+CREATE TABLE `queue_stations` (
+  `id` int(11) NOT NULL,
+  `station_name` enum('opd','doctor','pharmacy','cashier','xray','lab') NOT NULL,
+  `station_display_name` varchar(100) NOT NULL,
+  `station_order` int(11) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `queue_stations`
+--
+
+INSERT INTO `queue_stations` (`id`, `station_name`, `station_display_name`, `station_order`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'opd', 'Out-Patient Department', 1, 1, '2026-02-22 04:20:07', '2026-02-22 04:20:07'),
+(2, 'doctor', 'Doctor\'s Office', 2, 1, '2026-02-22 04:20:07', '2026-02-22 04:20:07'),
+(3, 'pharmacy', 'Pharmacy', 3, 1, '2026-02-22 04:20:07', '2026-02-22 04:20:07'),
+(4, 'cashier', 'Cashier', 4, 1, '2026-02-22 04:20:07', '2026-02-22 04:20:07'),
+(5, 'xray', 'X-Ray', 5, 1, '2026-02-22 04:20:07', '2026-02-22 04:20:07'),
+(6, 'lab', 'Laboratory', 6, 1, '2026-02-22 04:20:07', '2026-02-22 04:20:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `queue_transfers`
+--
+
+CREATE TABLE `queue_transfers` (
+  `id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `from_station_id` int(11) DEFAULT NULL,
+  `to_station_id` int(11) NOT NULL,
+  `transferred_by` int(11) NOT NULL,
+  `transfer_reason` enum('automatic','manual','completed','cancelled') NOT NULL DEFAULT 'automatic',
+  `notes` text DEFAULT NULL,
+  `transferred_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `queue_transfers`
+--
+
+INSERT INTO `queue_transfers` (`id`, `patient_id`, `from_station_id`, `to_station_id`, `transferred_by`, `transfer_reason`, `notes`, `transferred_at`) VALUES
+(3, 24, 1, 5, 12, 'manual', NULL, '2026-02-22 04:54:21'),
+(4, 25, 1, 2, 12, 'manual', NULL, '2026-02-22 04:54:28'),
+(5, 25, 2, 6, 2, 'manual', NULL, '2026-02-22 04:55:08'),
+(6, 25, 6, 3, 2, 'manual', NULL, '2026-02-22 04:56:12'),
+(7, 25, 3, 4, 2, 'manual', NULL, '2026-02-22 04:56:41'),
+(8, 26, 1, 6, 12, 'manual', NULL, '2026-02-22 05:30:42'),
+(9, 26, 6, 2, 2, 'manual', NULL, '2026-02-22 05:35:00'),
+(10, 26, 2, 3, 1, 'manual', NULL, '2026-02-22 05:38:26'),
+(11, 26, 3, 4, 2, 'manual', NULL, '2026-02-22 05:40:51'),
+(12, 28, 1, 2, 2, 'manual', NULL, '2026-02-22 11:34:29'),
+(13, 28, 2, 1, 2, 'manual', NULL, '2026-02-22 11:34:46'),
+(14, 28, 1, 2, 2, 'manual', NULL, '2026-02-22 11:37:54'),
+(15, 28, 2, 1, 2, 'manual', NULL, '2026-02-22 11:42:55'),
+(16, 28, 1, 2, 2, 'manual', NULL, '2026-02-22 11:43:29'),
+(17, 28, 2, 1, 2, 'manual', NULL, '2026-02-22 11:44:17'),
+(18, 28, 1, 2, 2, 'manual', NULL, '2026-02-22 11:47:13'),
+(19, 28, 2, 1, 2, 'manual', NULL, '2026-02-22 11:51:04'),
+(20, 28, 1, 2, 2, 'manual', NULL, '2026-02-22 11:51:54'),
+(21, 28, 2, 1, 2, 'manual', NULL, '2026-02-22 11:53:02');
 
 -- --------------------------------------------------------
 
@@ -1326,6 +1721,15 @@ INSERT INTO `xray_orders` (`id`, `patient_name`, `exam_type`, `priority`, `statu
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `auth_tokens`
+--
+ALTER TABLE `auth_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_auth_tokens_hash` (`token_hash`),
+  ADD KEY `idx_auth_tokens_expires` (`expires_at`),
+  ADD KEY `fk_auth_tokens_user` (`user_id`);
 
 --
 -- Indexes for table `cashier_charges`
@@ -1676,6 +2080,20 @@ ALTER TABLE `patients`
   ADD UNIQUE KEY `patient_code` (`patient_code`);
 
 --
+-- Indexes for table `patient_queue`
+--
+ALTER TABLE `patient_queue`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_patient_id` (`patient_id`),
+  ADD KEY `idx_station_id` (`station_id`),
+  ADD KEY `idx_queue_number` (`queue_number`),
+  ADD KEY `idx_queue_position` (`queue_position`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_arrived_at` (`arrived_at`),
+  ADD KEY `idx_station_status_position` (`station_id`,`status`,`queue_position`),
+  ADD KEY `fk_patient_queue_staff` (`staff_user_id`);
+
+--
 -- Indexes for table `pharmacy_consultation_notes`
 --
 ALTER TABLE `pharmacy_consultation_notes`
@@ -1745,6 +2163,34 @@ ALTER TABLE `philhealth_members`
   ADD UNIQUE KEY `philhealth_pin` (`philhealth_pin`);
 
 --
+-- Indexes for table `queue_settings`
+--
+ALTER TABLE `queue_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_station_setting` (`station_id`,`setting_key`),
+  ADD KEY `idx_setting_key` (`setting_key`);
+
+--
+-- Indexes for table `queue_stations`
+--
+ALTER TABLE `queue_stations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_station_name` (`station_name`),
+  ADD KEY `idx_station_order` (`station_order`),
+  ADD KEY `idx_is_active` (`is_active`);
+
+--
+-- Indexes for table `queue_transfers`
+--
+ALTER TABLE `queue_transfers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_patient_id` (`patient_id`),
+  ADD KEY `idx_from_station_id` (`from_station_id`),
+  ADD KEY `idx_to_station_id` (`to_station_id`),
+  ADD KEY `idx_transferred_by` (`transferred_by`),
+  ADD KEY `idx_transferred_at` (`transferred_at`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -1776,34 +2222,40 @@ ALTER TABLE `xray_orders`
 --
 
 --
+-- AUTO_INCREMENT for table `auth_tokens`
+--
+ALTER TABLE `auth_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
 -- AUTO_INCREMENT for table `cashier_charges`
 --
 ALTER TABLE `cashier_charges`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `cashier_charge_items`
 --
 ALTER TABLE `cashier_charge_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `cashier_invoices`
 --
 ALTER TABLE `cashier_invoices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `cashier_invoice_items`
 --
 ALTER TABLE `cashier_invoice_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `cashier_payments`
 --
 ALTER TABLE `cashier_payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `chat_files`
@@ -1821,7 +2273,7 @@ ALTER TABLE `chat_messages`
 -- AUTO_INCREMENT for table `chat_threads`
 --
 ALTER TABLE `chat_threads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14445;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14449;
 
 --
 -- AUTO_INCREMENT for table `chat_thread_members`
@@ -1857,13 +2309,13 @@ ALTER TABLE `dialysis_sessions`
 -- AUTO_INCREMENT for table `encounters`
 --
 ALTER TABLE `encounters`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `er_assessment_submissions`
 --
 ALTER TABLE `er_assessment_submissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `er_clearance_requests`
@@ -1881,13 +2333,13 @@ ALTER TABLE `er_consultation_notes`
 -- AUTO_INCREMENT for table `er_doctor_feedback`
 --
 ALTER TABLE `er_doctor_feedback`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `er_nursing_assessments`
 --
 ALTER TABLE `er_nursing_assessments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `er_ward_assignments`
@@ -1953,25 +2405,25 @@ ALTER TABLE `icu_beds`
 -- AUTO_INCREMENT for table `lab_requests`
 --
 ALTER TABLE `lab_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `lab_request_items`
 --
 ALTER TABLE `lab_request_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `lab_results`
 --
 ALTER TABLE `lab_results`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `opd_appointments`
 --
 ALTER TABLE `opd_appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `opd_billing_items`
@@ -1983,25 +2435,31 @@ ALTER TABLE `opd_billing_items`
 -- AUTO_INCREMENT for table `opd_consultation_notes`
 --
 ALTER TABLE `opd_consultation_notes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `opd_nursing_assessments`
 --
 ALTER TABLE `opd_nursing_assessments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `patient_queue`
+--
+ALTER TABLE `patient_queue`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `pharmacy_consultation_notes`
 --
 ALTER TABLE `pharmacy_consultation_notes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pharmacy_medicines`
@@ -2013,13 +2471,13 @@ ALTER TABLE `pharmacy_medicines`
 -- AUTO_INCREMENT for table `pharmacy_resits`
 --
 ALTER TABLE `pharmacy_resits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `pharmacy_resit_items`
 --
 ALTER TABLE `pharmacy_resit_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `philhealth_claims`
@@ -2032,6 +2490,24 @@ ALTER TABLE `philhealth_claims`
 --
 ALTER TABLE `philhealth_claims_draft`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `queue_settings`
+--
+ALTER TABLE `queue_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT for table `queue_stations`
+--
+ALTER TABLE `queue_stations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `queue_transfers`
+--
+ALTER TABLE `queue_transfers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -2054,6 +2530,12 @@ ALTER TABLE `xray_orders`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `auth_tokens`
+--
+ALTER TABLE `auth_tokens`
+  ADD CONSTRAINT `fk_auth_tokens_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `cashier_charges`
@@ -2194,10 +2676,33 @@ ALTER TABLE `opd_nursing_assessments`
   ADD CONSTRAINT `fk_opd_nurse_assess_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`);
 
 --
+-- Constraints for table `patient_queue`
+--
+ALTER TABLE `patient_queue`
+  ADD CONSTRAINT `fk_patient_queue_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_patient_queue_staff` FOREIGN KEY (`staff_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_patient_queue_station` FOREIGN KEY (`station_id`) REFERENCES `queue_stations` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `pharmacy_resits`
 --
 ALTER TABLE `pharmacy_resits`
   ADD CONSTRAINT `fk_pharmacy_resits_encounter` FOREIGN KEY (`encounter_id`) REFERENCES `encounters` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `queue_settings`
+--
+ALTER TABLE `queue_settings`
+  ADD CONSTRAINT `fk_queue_settings_station` FOREIGN KEY (`station_id`) REFERENCES `queue_stations` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `queue_transfers`
+--
+ALTER TABLE `queue_transfers`
+  ADD CONSTRAINT `fk_queue_transfers_from_station` FOREIGN KEY (`from_station_id`) REFERENCES `queue_stations` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_queue_transfers_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_queue_transfers_to_station` FOREIGN KEY (`to_station_id`) REFERENCES `queue_stations` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_queue_transfers_user` FOREIGN KEY (`transferred_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `user_roles`

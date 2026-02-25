@@ -38,16 +38,33 @@ try {
         $data['initial_location'] = null;
         
         try {
+            // Check if patient with this PhilHealth ID already exists
+            if (!empty($data['philhealth_pin'])) {
+                $stmt = $pdo->prepare('SELECT id, full_name, patient_code FROM patients WHERE philhealth_pin = ? LIMIT 1');
+                $stmt->execute([$data['philhealth_pin']]);
+                $existingPatient = $stmt->fetch();
+                
+                if ($existingPatient) {
+                    // Patient already exists, use their ID
+                    $patientId = (int)$existingPatient['id'];
+                    $patient = $existingPatient;
+                    error_log("Patient with PhilHealth ID already exists: ID {$patientId}");
+                    
+                    // Skip to queueing this existing patient
+                    goto queue_patient;
+                }
+            }
+            
             // Insert patient (similar to register.php logic)
             $stmt = $pdo->prepare(
                 'INSERT INTO patients (
-                    philhealth_pin, full_name, dob, sex, blood_type, contact, civil_status,
+                    philhealth_pin, full_name, first_name, last_name, dob, sex, blood_type, contact, civil_status,
                     email, street_address, barangay, city, province, zip_code,
                     employer_name, employer_address, patient_type, initial_location,
                     diagnosis, emergency_contact_name, emergency_contact_relationship,
                     emergency_contact_phone, is_new_patient
                 ) VALUES (
-                    :philhealth_pin, :full_name, :dob, :sex, :blood_type, :contact, :civil_status,
+                    :philhealth_pin, :full_name, :first_name, :last_name, :dob, :sex, :blood_type, :contact, :civil_status,
                     :email, :street_address, :barangay, :city, :province, :zip_code,
                     :employer_name, :employer_address, :patient_type, :initial_location,
                     :diagnosis, :emergency_contact_name, :emergency_contact_relationship,
@@ -58,6 +75,8 @@ try {
             $stmt->execute([
                 'philhealth_pin' => $data['philhealth_pin'] ?? null,
                 'full_name' => $data['full_name'],
+                'first_name' => $data['first_name'] ?? null,
+                'last_name' => $data['last_name'] ?? null,
                 'dob' => $data['dob'],
                 'sex' => $data['sex'],
                 'blood_type' => $data['blood_type'] ?? null,
@@ -155,6 +174,7 @@ try {
         }
     }
 
+    queue_patient:
     error_log("Found/created patient: {$patient['full_name']} (ID: {$patient['id']})");
 
     $stationName = trim((string)($data['station_name'] ?? ($data['initial_location'] ?? 'opd')));
@@ -174,12 +194,21 @@ try {
     $stationId = (int)$station['id'];
 
     // Check if patient is already in queue for this station
-    $stmt = $pdo->prepare('SELECT id FROM patient_queue WHERE patient_id = ? AND station_id = ? AND status IN ("waiting", "in_progress") LIMIT 1');
+    $stmt = $pdo->prepare('SELECT id, queue_number, queue_position FROM patient_queue WHERE patient_id = ? AND station_id = ? AND status IN ("waiting", "in_progress") LIMIT 1');
     $stmt->execute([$patientId, $stationId]);
     $existingQueue = $stmt->fetch();
     
     if ($existingQueue) {
-        json_response(['ok' => false, 'error' => 'Patient is already in queue for this station'], 409);
+        // Format station name for display (e.g., 'opd' -> 'OPD Queue')
+        $stationDisplayName = strtoupper($stationName) . ' Queue';
+        
+        json_response([
+            'ok' => false, 
+            'error' => 'Patient is already in queue for this station',
+            'queue_number' => $existingQueue['queue_number'],
+            'queue_position' => $existingQueue['queue_position'],
+            'station_name' => $stationDisplayName
+        ], 409);
     }
 
     // Get next queue number and position

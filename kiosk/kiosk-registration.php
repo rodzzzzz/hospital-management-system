@@ -451,7 +451,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            z-index: 100;
+            z-index: 40;
             background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 70%, transparent 100%);
             padding: 24px 32px 32px;
             display: flex;
@@ -483,6 +483,12 @@
         /* Hide shared nav on success screen */
         #successScreen.active ~ #sharedNav,
         body:has(#successScreen.active) #sharedNav {
+            display: none !important;
+        }
+
+        /* Hide shared nav on Already Registered screen */
+        #kioskAlreadyRegistered:not(.hidden) ~ #sharedNav,
+        body:has(#kioskAlreadyRegistered:not(.hidden)) #sharedNav {
             display: none !important;
         }
 
@@ -543,7 +549,7 @@
         .kiosk-home-top-img.img-3 {
             top: -5px;
             left: -50px;
-            transform: scale(1.9);
+            transform: scale(2.0);
         }
 
         .kiosk-home-top-img.img-4-5 {
@@ -1960,6 +1966,366 @@
                     </div>
                 </div>
 
+                    <!-- Already Registered Search Screen -->
+                    <div id="kioskAlreadyRegistered" class="hidden">
+                        <div class="min-h-screen w-full" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%);">
+                            <!-- Floating decorative elements -->
+                            <div class="floating-medical-cross" style="top: 10%; left: 5%; animation-delay: 0s;">
+                                <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+                            </div>
+                            <div class="floating-medical-cross" style="top: 60%; right: 8%; animation-delay: 2s;">
+                                <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+                            </div>
+
+                            <!-- Logo and Doctor Header Banner -->
+                            <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 px-6 sm:px-10 py-3 sm:py-5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1 max-w-xl ml-4 sm:ml-8">
+                                        <!-- Logo and Title -->
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <div class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
+                                                <img src="./kiosk.png" alt="Kiosk Logo" class="h-full w-full object-contain" />
+                                            </div>
+                                            <div class="leading-tight">
+                                                <div class="text-2xl sm:text-3xl font-extrabold text-gray-800">DSBMMH</div>
+                                                <div class="text-lg sm:text-xl font-semibold text-gray-600">MINISTRY OF HEALTH</div>
+                                            </div>
+                                        </div>
+                                        <!-- Main Title -->
+                                        <h1 class="font-bold text-gray-900 leading-tight mb-3" style="font-size: 48px !important;">
+                                            Find Your Record
+                                        </h1>
+                                        <!-- Subtitle -->
+                                        <p class="text-sm sm:text-base text-gray-600 max-w-md">
+                                            Search using your name, birthdate, or PhilHealth ID
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Doctor Image - Outside header container -->
+                            <div class="hidden sm:block absolute right-8 top-4 h-96 z-10">
+                                <img src="./doctor2.png" alt="Expert Doctor" class="h-full w-auto object-contain" />
+                            </div>
+
+                            <!-- Search Form -->
+                            <div class="px-5 sm:px-10 py-8 mt-6 relative z-10">
+                                <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12 w-full max-w-4xl mx-auto transform transition-all duration-300 hover:shadow-2xl">
+                                    <!-- First Name Input -->
+                                    <div class="mb-7">
+                                        <label class="block text-xl font-bold text-gray-500 uppercase tracking-wider mb-3">First Name</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                                <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            </div>
+                                            <input type="text" id="search_first_name" name="search_fname_kiosk" placeholder="e.g., Juan" class="w-full pl-14 pr-5 py-5 text-xl rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 hover:border-gray-300 transition-all outline-none" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Last Name Input -->
+                                    <div class="mb-7">
+                                        <label class="block text-xl font-bold text-gray-500 uppercase tracking-wider mb-3">Last Name</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                                <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            </div>
+                                            <input type="text" id="search_last_name" name="search_lname_kiosk" placeholder="e.g., Dela Cruz" class="w-full pl-14 pr-5 py-5 text-xl rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 hover:border-gray-300 transition-all outline-none" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
+                                        </div>
+                                    </div>
+
+                                    <!-- PhilHealth ID Input -->
+                                    <div class="mb-8">
+                                        <label class="block text-xl font-bold text-gray-500 uppercase tracking-wider mb-3">PhilHealth ID Number <span class="text-gray-400 font-normal normal-case">(Optional)</span></label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                                <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+                                            </div>
+                                            <input type="text" id="search_philhealth" name="search_phil_kiosk" placeholder="e.g., 01-234567890-1" class="w-full pl-14 pr-5 py-5 text-xl rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 hover:border-gray-300 transition-all outline-none" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Search Button -->
+                                    <button type="button" onclick="searchPatient()" class="w-full py-6 px-8 bg-emerald-600 text-white text-2xl font-bold rounded-2xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                                        <svg class="w-7 h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        Search Patient
+                                    </button>
+                                </div>
+
+                                <!-- Search Results Container -->
+                                <div id="searchResults" class="mt-6 w-full max-w-4xl mx-auto hidden opacity-0 transition-all duration-500 ease-out transform translate-y-4">
+                                    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8 relative overflow-hidden">
+                                        <!-- Decorative background pattern -->
+                                        <div class="absolute inset-0 opacity-5 pointer-events-none">
+                                            <div class="absolute w-32 h-32 bg-blue-500 rounded-full -top-10 -right-10"></div>
+                                            <div class="absolute w-24 h-24 bg-emerald-500 rounded-full -bottom-8 -left-8"></div>
+                                        </div>
+                                        <div class="relative z-10">
+                                        <!-- Loading State -->
+                                        <div id="searchLoading" class="hidden text-center py-10">
+                                        <div class="inline-flex items-center gap-3 text-gray-500 text-lg">
+                                            <svg class="animate-spin w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Searching...
+                                        </div>
+                                    </div>
+
+                                        <!-- No Results -->
+                                        <div id="searchNoResults" class="hidden text-center py-6">
+                                            <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-orange-50 flex items-center justify-center">
+                                                <svg class="w-16 h-16 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                                            </div>
+                                            <h3 class="text-3xl font-bold text-gray-800 mb-3">No Records Found</h3>
+                                            <p class="text-gray-500 text-xl mb-8">We couldn't find a patient matching your search.</p>
+                                            <button type="button" onclick="startRegistrationFromSearch()" class="inline-flex items-center gap-3 px-10 py-5 bg-emerald-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:bg-emerald-700 hover:shadow-xl active:scale-[0.98] transition-all">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                                Register as New Patient
+                                            </button>
+                                        </div>
+
+                                        <!-- Results List -->
+                                        <div id="searchResultsList" class="hidden space-y-4"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Info Modal -->
+                    <div id="patientInfoModal" class="hidden fixed inset-0 z-50 overflow-y-auto animate-fadeIn">
+                        <div class="flex items-center justify-center min-h-screen px-4 py-8">
+                            <!-- Background overlay with blur -->
+                            <div class="fixed inset-0 transition-all duration-300 bg-gray-900 bg-opacity-80 backdrop-blur-md" onclick="closePatientModal()"></div>
+
+                            <!-- Modal panel with enhanced design -->
+                            <div id="modalPanel" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all duration-300 max-w-2xl w-full scale-95 opacity-0">
+                                <!-- Gradient Header with Pattern -->
+                                <div class="relative bg-gradient-to-br from-blue-600 via-blue-500 to-emerald-600 px-6 py-10 sm:px-8 overflow-hidden">
+                                    <!-- Decorative circles -->
+                                    <div class="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
+                                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -ml-16 -mb-16"></div>
+                                    
+                                    <div class="relative z-10 flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-4xl font-bold text-white mb-2">Patient Information</h3>
+                                            <p class="text-blue-100 text-lg">Review details before proceeding</p>
+                                        </div>
+                                        <button onclick="closePatientModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-3 transition-all duration-200 active:scale-95">
+                                            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="px-6 py-8 sm:px-8 bg-gradient-to-b from-gray-50 to-white">
+                                    <!-- Patient Details with Enhanced Cards -->
+                                    <div class="space-y-4">
+                                        <!-- Full Name - Prominent -->
+                                        <div class="bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                            <label class="text-sm font-bold text-blue-600 uppercase tracking-wider block mb-3">Full Name</label>
+                                            <p id="modalFullName" class="text-3xl font-bold text-gray-900">-</p>
+                                        </div>
+
+                                        <!-- Date of Birth & Age -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Date of Birth</label>
+                                                <p id="modalDob" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Age</label>
+                                                <p id="modalAge" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sex & Blood Type -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Sex</label>
+                                                <p id="modalSex" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Blood Type</label>
+                                                <p id="modalBloodType" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- PhilHealth ID -->
+                                        <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-200" id="modalPhilhealthContainer">
+                                            <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">PhilHealth ID</label>
+                                            <p id="modalPhilhealth" class="text-lg font-bold text-gray-900 font-mono">-</p>
+                                        </div>
+
+                                        <!-- Patient Code -->
+                                        <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-200" id="modalPatientCodeContainer">
+                                            <label class="text-sm font-bold text-emerald-600 uppercase tracking-wider block mb-3">Patient Code</label>
+                                            <p id="modalPatientCode" class="text-3xl font-bold text-emerald-700 font-mono">-</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons with Enhanced Design -->
+                                    <div class="mt-8 flex gap-4">
+                                        <button onclick="closePatientModal()" class="flex-1 py-6 px-8 bg-white border-2 border-gray-200 text-gray-700 text-xl font-bold rounded-2xl hover:bg-gray-50 hover:border-gray-300 hover:shadow-md active:scale-[0.97] transition-all duration-200 flex items-center justify-center gap-3">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Cancel
+                                        </button>
+                                        <button onclick="confirmAndGetQueueNumber()" class="flex-1 py-6 px-8 bg-emerald-600 text-white text-xl font-bold rounded-2xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:shadow-xl active:scale-[0.97] transition-all duration-200 flex items-center justify-center gap-3 group">
+                                            <svg class="w-7 h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                            Get Queue Number
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Modal -->
+                    <div id="errorModal" class="hidden fixed inset-0 z-50 overflow-y-auto animate-fadeIn">
+                        <div class="flex items-center justify-center min-h-screen px-4 py-8">
+                            <!-- Background overlay -->
+                            <div class="fixed inset-0 transition-all duration-300 bg-gray-900 bg-opacity-80 backdrop-blur-md" onclick="closeErrorModal()"></div>
+
+                            <!-- Modal panel -->
+                            <div id="errorModalPanel" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all duration-300 max-w-xl w-full scale-95 opacity-0">
+                                <!-- Error Icon Header -->
+                                <div class="relative bg-gradient-to-br from-red-500 to-orange-600 px-8 py-12 overflow-hidden">
+                                    <!-- Decorative circles -->
+                                    <div class="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
+                                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -ml-16 -mb-16"></div>
+                                    
+                                    <div class="relative z-10 flex flex-col items-center">
+                                        <div class="w-28 h-28 rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-6">
+                                            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-4xl font-bold text-white text-center">Oops!</h3>
+                                    </div>
+                                </div>
+
+                                <div class="px-10 py-12 bg-gradient-to-b from-gray-50 to-white">
+                                    <!-- Error Message -->
+                                    <div class="text-center mb-10">
+                                        <p id="errorMessage" class="text-3xl font-bold text-gray-800 leading-relaxed mb-6">
+                                            An error occurred
+                                        </p>
+                                        <div id="errorQueueContainer" class="hidden mt-8 space-y-6">
+                                            <!-- Station Name -->
+                                            <div class="p-6 bg-blue-50 rounded-3xl border-2 border-blue-100 shadow-inner">
+                                                <p class="text-lg text-blue-600 font-bold uppercase tracking-widest mb-2">Queue Station</p>
+                                                <p id="errorStationName" class="text-4xl font-black text-blue-700">-</p>
+                                            </div>
+                                            
+                                            <!-- Queue Number -->
+                                            <div class="p-8 bg-red-50 rounded-3xl border-2 border-red-100 shadow-inner">
+                                                <p class="text-sm text-red-600 font-bold uppercase tracking-widest mb-2">Queue Number</p>
+                                                <p id="errorQueueNumber" class="text-6xl font-black text-red-700">-</p>
+                                            </div>
+                                            
+                                            <!-- Position (no container) -->
+                                            <div class="text-center">
+                                                <p class="text-sm text-gray-600 font-bold uppercase tracking-widest mb-2">Your Position in Line</p>
+                                                <p id="errorQueuePosition" class="text-6xl font-black text-gray-900">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- OK Button -->
+                                    <button onclick="closeErrorModal()" class="w-full py-8 px-10 bg-gradient-to-r from-red-500 to-orange-600 text-white text-3xl font-bold rounded-3xl shadow-lg hover:shadow-xl hover:from-red-600 hover:to-orange-700 active:scale-[0.97] transition-all duration-200">
+                                        OK
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- "Is this you?" Duplicate Check Modal -->
+                    <div id="isThisYouModal" class="hidden fixed inset-0 z-50 overflow-y-auto animate-fadeIn">
+                        <div class="flex items-center justify-center min-h-screen px-4 py-8">
+                            <!-- Background overlay with blur -->
+                            <div class="fixed inset-0 transition-all duration-300 bg-gray-900 bg-opacity-80 backdrop-blur-md"></div>
+
+                            <!-- Modal panel with enhanced design -->
+                            <div id="isThisYouModalPanel" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all duration-300 max-w-2xl w-full scale-95 opacity-0">
+                                <!-- Gradient Header with Pattern -->
+                                <div class="relative bg-gradient-to-br from-blue-600 via-blue-500 to-emerald-600 px-6 py-10 sm:px-8 overflow-hidden">
+                                    <!-- Decorative circles -->
+                                    <div class="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
+                                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -ml-16 -mb-16"></div>
+                                    
+                                    <div class="relative z-10 flex flex-col items-center">
+                                        <h3 class="text-5xl font-bold text-white text-center mb-3">Is this you?</h3>
+                                        <p class="text-white text-opacity-90 text-2xl text-center">We found a patient with the same name</p>
+                                    </div>
+                                </div>
+
+                                <div class="px-6 py-8 sm:px-8 bg-gradient-to-b from-gray-50 to-white">
+                                    <!-- Patient Details with Enhanced Cards -->
+                                    <div class="space-y-4">
+                                        <!-- Full Name - Prominent -->
+                                        <div class="bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                            <label class="text-sm font-bold text-blue-600 uppercase tracking-wider block mb-3">Full Name</label>
+                                            <p id="isThisYouFullName" class="text-3xl font-bold text-gray-900">-</p>
+                                        </div>
+
+                                        <!-- Date of Birth & Age -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Date of Birth</label>
+                                                <p id="isThisYouDob" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Age</label>
+                                                <p id="isThisYouAge" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sex & Blood Type -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Sex</label>
+                                                <p id="isThisYouSex" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                            <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200">
+                                                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider block mb-3">Blood Type</label>
+                                                <p id="isThisYouBloodType" class="text-2xl font-bold text-gray-900">-</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Patient Code -->
+                                        <div class="bg-white rounded-2xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-200">
+                                            <label class="text-sm font-bold text-emerald-600 uppercase tracking-wider block mb-3">Patient Code</label>
+                                            <p id="isThisYouPatientCode" class="text-3xl font-bold text-emerald-700 font-mono">-</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons with Enhanced Design -->
+                                    <div class="mt-8 flex flex-col gap-4">
+                                        <button onclick="confirmIsThisYou()" class="w-full py-6 px-8 bg-emerald-600 text-white text-xl font-bold rounded-2xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:shadow-xl active:scale-[0.97] transition-all duration-200 flex items-center justify-center gap-3 group">
+                                            <svg class="w-7 h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Yes, Get My Queue Number
+                                        </button>
+                                        <button onclick="continueNewRegistration()" class="w-full py-6 px-8 bg-white border-2 border-gray-200 text-gray-700 text-xl font-bold rounded-2xl hover:bg-gray-50 hover:border-gray-300 hover:shadow-md active:scale-[0.97] transition-all duration-200 flex items-center justify-center gap-3">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Cancel Registration
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="kioskRegistration" class="hidden">
                     <!-- Floating decorative elements -->
                     <div class="floating-medical-cross" style="top: 10%; left: 5%; animation-delay: 0s;">
@@ -2009,12 +2375,46 @@
 
         <!-- Step 1 Questions: Personal -->
         <div class="form-section active" id="step1" data-step="1">
-            <!-- Question 1: Full Name -->
+            <!-- Question 1: First Name -->
             <div class="question-card active" data-question="1">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
-                    <div class="w-full max-w-2xl">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
+                    <div class="w-full max-w-xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                        </div>
+                        <div class="text-center mb-8">
+                            <div class="medical-icon-container">
+                                <img src="./Resources/Whats you name.png" alt="First Name" class="h-16 w-16 object-contain" />
+                            </div>
+                            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">What is your first name?</h2>
+                            <p class="text-xl text-gray-500 mt-2">Please enter your first name</p>
+                        </div>
+                        <div class="bg-white rounded-3xl border-2 border-gray-200 p-3 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-100 transition-all shadow-lg">
+                            <input type="text" id="first_name" name="first_name" placeholder="e.g., Juan" required class="w-full rounded-2xl border-0 px-8 py-6 text-2xl text-gray-900 placeholder-gray-400 focus:ring-0" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
+                        </div>
+                        <div class="error-message text-center mt-3" id="first_name_error"></div>
+                    </div>
+                </div>
+                <div class="question-nav">
+                    <button type="button" class="btn btn-primary inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-10 py-5 text-xl text-white font-semibold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-[0.98] transition" onclick="nextQuestion()">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Last Name -->
+            <div class="question-card" data-question="2">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
+                    <div class="w-full max-w-xl">
+                        <!-- Progress dots -->
+                        <div class="progress-dots">
+                            <div class="progress-dot completed"></div>
                             <div class="progress-dot active"></div>
                             <div class="progress-dot"></div>
                             <div class="progress-dot"></div>
@@ -2024,32 +2424,33 @@
                             <div class="progress-dot"></div>
                         </div>
                         <div class="text-center mb-8">
-                            <div class="medical-icon-container" style="transform: scale(1.5); margin-bottom: 24px;">
-                                <img src="./Resources/Whats you name.png" alt="Full Name" class="h-16 w-16 object-contain" />
+                            <div class="medical-icon-container">
+                                <img src="./Resources/Whats you name.png" alt="Last Name" class="h-16 w-16 object-contain" />
                             </div>
-                            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">What is your full name?</h2>
-                            <p class="text-xl text-gray-500 mt-2">Please enter your complete name as it appears on your ID</p>
+                            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">What is your last name?</h2>
+                            <p class="text-xl text-gray-500 mt-2">Please enter your last name</p>
                         </div>
                         <div class="bg-white rounded-3xl border-2 border-gray-200 p-3 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-100 transition-all shadow-lg">
-                            <input type="text" id="full_name" name="full_name" placeholder="e.g., Juan Dela Cruz" required class="w-full rounded-2xl border-0 px-8 py-6 text-2xl text-gray-900 placeholder-gray-400 focus:ring-0" />
+                            <input type="text" id="last_name" name="last_name" placeholder="e.g., Dela Cruz" required class="w-full rounded-2xl border-0 px-8 py-6 text-2xl text-gray-900 placeholder-gray-400 focus:ring-0" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
                         </div>
-                        <div class="error-message text-center mt-3" id="full_name_error"></div>
+                        <div class="error-message text-center mt-3" id="last_name_error"></div>
                     </div>
                 </div>
                 <div class="question-nav">
+                    <button type="button" class="btn btn-secondary inline-flex items-center justify-center rounded-2xl bg-gray-100 px-8 py-5 text-xl text-gray-800 font-semibold hover:bg-gray-200 active:scale-[0.98] transition" onclick="prevQuestion()">← Back</button>
                     <button type="button" class="btn btn-primary inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-10 py-5 text-xl text-white font-semibold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-[0.98] transition" onclick="nextQuestion()">Continue →</button>
                 </div>
             </div>
 
-            <!-- Question 2: Date of Birth -->
-            <div class="question-card" data-question="2">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
-                    <div class="w-full max-w-xl">
+            <!-- Question 3: Date of Birth -->
+            <div class="question-card" data-question="3">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
+                    <div class="w-full max-w-2xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
                             <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
                             <div class="progress-dot active"></div>
-                            <div class="progress-dot"></div>
                             <div class="progress-dot"></div>
                             <div class="progress-dot"></div>
                             <div class="progress-dot"></div>
@@ -2063,7 +2464,7 @@
                             <p class="text-lg text-gray-500 mt-2">Select your date of birth</p>
                         </div>
                         <div class="bg-white rounded-3xl border-2 border-gray-200 p-2 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-100 transition-all shadow-lg">
-                            <input type="date" id="dob" name="dob" required class="w-full rounded-2xl border-0 px-6 py-5 text-xl text-gray-900 focus:ring-0" />
+                            <input type="date" id="dob" name="dob" required class="w-full rounded-2xl border-0 px-6 py-5 text-xl text-gray-900 focus:ring-0" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
                         </div>
                         <div class="mt-6 flex items-center justify-center gap-6 text-gray-600 bg-gray-50 rounded-2xl py-8 px-10">
                             <span style="font-size: 40px !important;">Your age:</span>
@@ -2078,9 +2479,9 @@
                 </div>
             </div>
 
-            <!-- Question 3: Sex -->
-            <div class="question-card" data-question="3">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+            <!-- Question 4: Sex -->
+            <div class="question-card" data-question="4">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-2xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
@@ -2118,9 +2519,9 @@
                 </div>
             </div>
 
-            <!-- Question 4: Civil Status -->
-            <div class="question-card" data-question="4">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+            <!-- Question 5: Civil Status -->
+            <div class="question-card" data-question="5">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-3xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
@@ -2165,9 +2566,9 @@
                 </div>
             </div>
 
-            <!-- Question 5: Blood Type -->
-            <div class="question-card" data-question="5">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+            <!-- Question 6: Blood Type -->
+            <div class="question-card" data-question="6">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-3xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
@@ -2223,9 +2624,9 @@
                 </div>
             </div>
 
-            <!-- Question 6: Contact Number -->
-            <div class="question-card" data-question="6">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+            <!-- Question 7: Contact Number -->
+            <div class="question-card" data-question="7">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
@@ -2245,7 +2646,7 @@
                             <p class="text-lg text-gray-500 mt-2">We'll use this to contact you if needed</p>
                         </div>
                         <div class="bg-white rounded-3xl border-2 border-gray-200 p-2 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-100 transition-all shadow-lg">
-                            <input type="tel" id="contact" name="contact" placeholder="09XX XXX XXXX" required maxlength="11" class="w-full rounded-2xl border-0 px-6 py-5 text-xl text-gray-900 placeholder-gray-400 focus:ring-0" />
+                            <input type="tel" id="contact" name="contact" placeholder="09XX XXX XXXX" required maxlength="11" class="w-full rounded-2xl border-0 px-6 py-5 text-xl text-gray-900 placeholder-gray-400 focus:ring-0" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
                         </div>
                         <div class="error-message text-center mt-3" id="contact_error"></div>
                     </div>
@@ -2256,9 +2657,9 @@
                 </div>
             </div>
 
-            <!-- Question 7: Diagnosis/Complaints -->
-            <div class="question-card" data-question="7">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+            <!-- Question 8: Diagnosis/Complaints -->
+            <div class="question-card" data-question="8">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-2xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
@@ -2285,6 +2686,43 @@
                 </div>
                 <div class="question-nav">
                     <button type="button" class="btn btn-secondary inline-flex items-center justify-center rounded-2xl bg-gray-100 px-8 py-5 text-xl text-gray-800 font-semibold hover:bg-gray-200 active:scale-[0.98] transition" onclick="prevQuestion()">← Back</button>
+                    <button type="button" class="btn btn-primary inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-10 py-5 text-xl text-white font-semibold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-[0.98] transition" onclick="nextQuestion()">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Question 9: PhilHealth ID (Optional) -->
+            <div class="question-card" data-question="9">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
+                    <div class="w-full max-w-2xl">
+                        <!-- Progress dots -->
+                        <div class="progress-dots">
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot completed"></div>
+                            <div class="progress-dot active"></div>
+                        </div>
+                        <div class="text-center mb-8">
+                            <div class="medical-icon-container">
+                                <img src="./Resources/philid.png" alt="PhilHealth ID" class="h-24 w-24 object-contain" />
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">What is your PhilHealth ID number?</h2>
+                            <p class="text-lg text-gray-500 mt-2">This is optional — skip if you don't have one</p>
+                        </div>
+                        <div class="bg-white rounded-3xl border-2 border-gray-200 p-2 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-100 transition-all shadow-lg">
+                            <input type="text" id="philhealth_pin" name="philhealth_pin" placeholder="1234-5678-9012-3456" maxlength="19" pattern="[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}" class="w-full rounded-2xl border-0 px-6 py-5 text-xl text-gray-900 placeholder-gray-400 focus:ring-0" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button type="button" class="text-emerald-600 font-semibold hover:text-emerald-800 transition text-lg" onclick="skipPhilHealth()">I don't have a PhilHealth ID — Skip →</button>
+                        </div>
+                        <div class="error-message text-center mt-3" id="philhealth_pin_error"></div>
+                    </div>
+                </div>
+                <div class="question-nav">
+                    <button type="button" class="btn btn-secondary inline-flex items-center justify-center rounded-2xl bg-gray-100 px-8 py-5 text-xl text-gray-800 font-semibold hover:bg-gray-200 active:scale-[0.98] transition" onclick="prevQuestion()">← Back</button>
                     <button type="button" class="btn btn-primary inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-10 py-5 text-xl text-white font-semibold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-[0.98] transition" onclick="finishStep1()">Continue →</button>
                 </div>
             </div>
@@ -2294,7 +2732,7 @@
         <div class="form-section" id="step2" data-step="2">
             <!-- Question 1: Street Address -->
             <div class="question-card active" data-question="1">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-2xl">
                         <div class="text-center mb-8">
                             <div class="medical-icon-container">
@@ -2317,8 +2755,8 @@
 
             <!-- Question 2: Barangay -->
             <div class="question-card" data-question="2">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
-                    <div class="w-full max-w-xl">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
+                    <div class="w-full max-w-2xl">
                         <div class="text-center mb-8">
                             <div class="medical-icon-container">
                                 <img src="./Resources/Baranggay.png" alt="Barangay" class="h-24 w-24 object-contain" />
@@ -2340,7 +2778,7 @@
 
             <!-- Question 3: City -->
             <div class="question-card" data-question="3">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
+                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-xl">
                         <div class="text-center mb-8">
                             <div class="medical-icon-container">
@@ -2505,12 +2943,15 @@
                     </div>
                     
                     <!-- Success Title with Gradient -->
-                    <h2 class="mt-8 text-4xl sm:text-5xl font-bold gradient-text mb-2">Registration Successful!</h2>
+                    <h2 id="successTitle" class="mt-8 text-4xl sm:text-5xl font-bold gradient-text mb-2">Registration Successful!</h2>
                     
                     <!-- Subtitle -->
-                    <p class="text-gray-600 text-xl sm:text-2xl mb-8">Your information has been submitted.</p>
+                    <p id="successSubtitle" class="text-gray-600 text-xl sm:text-2xl mb-8">Your information has been submitted.</p>
                     
-                    <!-- Queue Number Card with enhanced styling -->
+                    <!-- Queue Number Label (outside box) - hidden by default, shown only for already registered patients -->
+                    <p id="queueNumberLabel" class="hidden text-gray-600 text-lg font-semibold mb-3">Your Queue Number:</p>
+                    
+                    <!-- Queue Number Card with enhanced styling (only contains the number) -->
                     <div class="queue-card">
                         <div class="queue-number" id="patientCodeDisplay"></div>
                     </div>
@@ -2544,12 +2985,20 @@
         const totalSteps = 3;
 
         let kioskIdleTimer = null;
+        let lastActivityTime = Date.now();
         const KIOSK_IDLE_MS = 60000;
+        const ACTIVITY_THROTTLE_MS = 1000; // Only reset timer at most once per second
 
         function kioskIsRegistrationVisible() {
             const reg = document.getElementById('kioskRegistration');
             if (!reg) return false;
             return !reg.classList.contains('hidden');
+        }
+
+        function kioskIsAlreadyRegisteredVisible() {
+            const already = document.getElementById('kioskAlreadyRegistered');
+            if (!already) return false;
+            return !already.classList.contains('hidden');
         }
 
         function stopKioskIdleTimer() {
@@ -2560,11 +3009,33 @@
         }
 
         function resetKioskIdleTimer() {
+            const now = Date.now();
+            // Throttle: only actually reset if it's been at least 1 second since last reset
+            if (now - lastActivityTime < ACTIVITY_THROTTLE_MS) {
+                return;
+            }
+            lastActivityTime = now;
+            
             stopKioskIdleTimer();
-            if (!kioskIsRegistrationVisible()) return;
+            const isRegVisible = kioskIsRegistrationVisible();
+            const isAlreadyVisible = kioskIsAlreadyRegisteredVisible();
+            
+            console.log('resetKioskIdleTimer called - Reg visible:', isRegVisible, 'Already visible:', isAlreadyVisible);
+            
+            if (!isRegVisible && !isAlreadyVisible) {
+                console.log('Neither page visible, not starting timer');
+                return;
+            }
+            
+            console.log('Starting idle timer for', KIOSK_IDLE_MS, 'ms');
             kioskIdleTimer = window.setTimeout(() => {
+                console.log('Idle timeout fired!');
                 if (kioskIsRegistrationVisible()) {
+                    console.log('Resetting registration form');
                     resetForm();
+                } else if (kioskIsAlreadyRegisteredVisible()) {
+                    console.log('Resetting already registered form');
+                    resetAlreadyRegisteredForm();
                 }
             }, KIOSK_IDLE_MS);
         }
@@ -2723,10 +3194,53 @@
                 return el ? el.value : '';
             };
 
+            // Get first and last name separately
+            const firstName = getVal('first_name').trim();
+            const lastName = getVal('last_name').trim();
+            const fullName = `${firstName} ${lastName}`.trim();
+            const dob = getVal('dob');
+            const sex = getVal('sex');
+
+            // Final duplicate check (first+last+dob+sex) before saving
+            if (!skipDuplicateCheck) {
+                try {
+                    const checkResponse = await fetch('../api/patients/check-duplicate.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            first_name: firstName,
+                            last_name: lastName,
+                            dob: dob,
+                            sex: sex
+                        })
+                    });
+
+                    const checkResult = await checkResponse.json();
+
+                    if (checkResult.ok && checkResult.found && checkResult.exact_match) {
+                        // Exact duplicate found - show error and redirect to Already Registered
+                        showErrorModal('We found the same information in our database. Please proceed to "Already Registered Patient" to get your queue number.');
+                        
+                        // After user closes error modal, redirect to home
+                        setTimeout(() => {
+                            goBackHome();
+                        }, 3000);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking for final duplicate:', error);
+                    // Continue with registration if check fails
+                }
+            }
+
             const formData = {
-                full_name: getVal('full_name').trim(),
-                dob: getVal('dob'),
-                sex: getVal('sex'),
+                first_name: firstName,
+                last_name: lastName,
+                full_name: fullName,
+                dob: dob,
+                sex: sex,
                 blood_type: getVal('blood_type'),
                 civil_status: getVal('civil_status'),
                 contact: getVal('contact').trim(),
@@ -2742,6 +3256,7 @@
                 emergency_contact_name: getVal('emergency_contact_name').trim(),
                 emergency_contact_relationship: getVal('emergency_contact_relationship').trim(),
                 emergency_contact_phone: getVal('emergency_contact_phone').trim(),
+                philhealth_pin: getVal('philhealth_pin').trim(),
             };
 
             try {
@@ -2770,6 +3285,9 @@
                     if (stepperBar) {
                         stepperBar.style.display = 'none';
                     }
+                    
+                    // Reset skip flag for next registration
+                    skipDuplicateCheck = false;
                 } else {
                     alert('Error: ' + (result.error || 'Registration failed'));
                 }
@@ -2779,9 +3297,10 @@
         }
 
         function resetForm() {
-            const container = document.querySelector('.max-w-4xl');
-            if (container) {
-                container.querySelectorAll('input, select, textarea').forEach(el => {
+            // Reset all form inputs in the registration section
+            const regSection = document.getElementById('kioskRegistration');
+            if (regSection) {
+                regSection.querySelectorAll('input, select, textarea').forEach(el => {
                     if (el instanceof HTMLInputElement) {
                         if (el.type === 'checkbox' || el.type === 'radio') {
                             el.checked = false;
@@ -2793,37 +3312,106 @@
                     }
                 });
             }
+            
+            // Clear error messages
             document.querySelectorAll('.error-message').forEach(el => {
                 el.style.display = 'none';
                 el.textContent = '';
             });
 
+            // Clear specific fields
             const ageEl = document.getElementById('age');
             if (ageEl) ageEl.value = '';
 
             const codeEl = document.getElementById('patientCodeDisplay');
             if (codeEl) codeEl.textContent = '';
+            
+            // Reset age display
+            const ageDisplay = document.getElementById('age_display');
+            if (ageDisplay) ageDisplay.textContent = '--';
 
+            // Reset step and question state
+            currentStep = 1;
+            currentQuestion = 1;
+            
+            // Reset duplicate check flags
+            skipDuplicateCheck = false;
+            duplicatePatientData = null;
+            selectedPatientData = null;
+
+            // Reset all form sections
             document.querySelectorAll('.form-section').forEach(section => {
                 section.classList.remove('active');
             });
             const step1 = document.getElementById('step1');
             if (step1) step1.classList.add('active');
 
+            // Reset stepper bar
             const stepperBar = document.getElementById('stepperBar');
             if (stepperBar) {
                 stepperBar.style.display = '';
             }
+            
+            // Show step 1 and question 1
             showStep(1);
+            showQuestion(1, 1);
 
+            // Return to homepage
             const home = document.getElementById('kioskHome');
             const reg = document.getElementById('kioskRegistration');
-            if (home && reg) {
-                reg.classList.add('hidden');
+            const already = document.getElementById('kioskAlreadyRegistered');
+            if (home) {
+                if (reg) reg.classList.add('hidden');
+                if (already) already.classList.add('hidden');
                 home.classList.remove('hidden');
 
                 stopKioskIdleTimer();
 
+                home.classList.remove('home-animate');
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => {
+                        home.classList.add('home-animate');
+                    });
+                });
+            }
+        }
+
+        function resetAlreadyRegisteredForm() {
+            // Clear all search inputs
+            const searchFirstName = document.getElementById('search_first_name');
+            const searchLastName = document.getElementById('search_last_name');
+            const searchPhilhealth = document.getElementById('search_philhealth');
+            
+            if (searchFirstName) searchFirstName.value = '';
+            if (searchLastName) searchLastName.value = '';
+            if (searchPhilhealth) searchPhilhealth.value = '';
+            
+            // Hide search results
+            const searchResults = document.getElementById('searchResults');
+            const searchLoading = document.getElementById('searchLoading');
+            const searchNoResults = document.getElementById('searchNoResults');
+            const searchResultsList = document.getElementById('searchResultsList');
+            
+            if (searchResults) searchResults.classList.add('hidden');
+            if (searchLoading) searchLoading.classList.add('hidden');
+            if (searchNoResults) searchNoResults.classList.add('hidden');
+            if (searchResultsList) {
+                searchResultsList.classList.add('hidden');
+                searchResultsList.innerHTML = '';
+            }
+            
+            // Clear any selected patient data
+            selectedPatientData = null;
+            
+            // Return to homepage
+            const home = document.getElementById('kioskHome');
+            const already = document.getElementById('kioskAlreadyRegistered');
+            if (home) {
+                if (already) already.classList.add('hidden');
+                home.classList.remove('hidden');
+                
+                stopKioskIdleTimer();
+                
                 home.classList.remove('home-animate');
                 window.requestAnimationFrame(() => {
                     window.requestAnimationFrame(() => {
@@ -2875,17 +3463,519 @@
         function startRegistration() {
             const home = document.getElementById('kioskHome');
             const reg = document.getElementById('kioskRegistration');
+            const already = document.getElementById('kioskAlreadyRegistered');
             if (!reg) return;
             if (home) home.classList.add('hidden');
+            if (already) already.classList.add('hidden');
             reg.classList.remove('hidden');
             resetRegistrationFormOnly();
             resetKioskIdleTimer();
         }
 
+        function showAlreadyRegistered() {
+            const home = document.getElementById('kioskHome');
+            const reg = document.getElementById('kioskRegistration');
+            const already = document.getElementById('kioskAlreadyRegistered');
+            if (!already) return;
+            if (home) home.classList.add('hidden');
+            if (reg) reg.classList.add('hidden');
+            already.classList.remove('hidden');
+
+            // Clear previous search
+            document.getElementById('search_first_name').value = '';
+            document.getElementById('search_last_name').value = '';
+            document.getElementById('search_philhealth').value = '';
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('searchLoading').classList.add('hidden');
+            document.getElementById('searchNoResults').classList.add('hidden');
+            document.getElementById('searchResultsList').classList.add('hidden');
+            document.getElementById('searchResultsList').innerHTML = '';
+
+            resetKioskIdleTimer();
+        }
+
+        function backToHome() {
+            const home = document.getElementById('kioskHome');
+            const reg = document.getElementById('kioskRegistration');
+            const already = document.getElementById('kioskAlreadyRegistered');
+            if (reg) reg.classList.add('hidden');
+            if (already) already.classList.add('hidden');
+            if (home) {
+                home.classList.remove('hidden');
+                stopKioskIdleTimer();
+                home.classList.remove('home-animate');
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => {
+                        home.classList.add('home-animate');
+                    });
+                });
+            }
+        }
+
+        function startRegistrationFromSearch() {
+            const already = document.getElementById('kioskAlreadyRegistered');
+            const reg = document.getElementById('kioskRegistration');
+            if (!reg) return;
+            if (already) already.classList.add('hidden');
+            reg.classList.remove('hidden');
+            resetRegistrationFormOnly();
+            resetKioskIdleTimer();
+        }
+
+        async function searchPatient() {
+            const firstNameInput = document.getElementById('search_first_name');
+            const lastNameInput = document.getElementById('search_last_name');
+            const philhealthInput = document.getElementById('search_philhealth');
+            
+            const firstName = firstNameInput.value.trim();
+            const lastName = lastNameInput.value.trim();
+            const philhealth = philhealthInput.value.trim();
+
+            // Clear previous error states
+            firstNameInput.classList.remove('border-red-500', 'ring-red-100');
+            lastNameInput.classList.remove('border-red-500', 'ring-red-100');
+            philhealthInput.classList.remove('border-red-500', 'ring-red-100');
+
+            // Validation: Must have (first name AND last name) OR philhealth
+            const hasName = firstName && lastName;
+            const hasPhilhealth = philhealth;
+
+            if (!hasName && !hasPhilhealth) {
+                // Add red border to indicate error
+                if (!firstName) firstNameInput.classList.add('border-red-500', 'ring-4', 'ring-red-100');
+                if (!lastName) lastNameInput.classList.add('border-red-500', 'ring-4', 'ring-red-100');
+                if (!philhealth) philhealthInput.classList.add('border-red-500', 'ring-4', 'ring-red-100');
+                return;
+            }
+
+            const resultsContainer = document.getElementById('searchResults');
+            const loadingEl = document.getElementById('searchLoading');
+            const noResultsEl = document.getElementById('searchNoResults');
+            const resultsListEl = document.getElementById('searchResultsList');
+
+            // Show results container with animation
+            resultsContainer.classList.remove('hidden');
+            setTimeout(() => {
+                resultsContainer.classList.remove('opacity-0', 'translate-y-4');
+                resultsContainer.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+
+            loadingEl.classList.remove('hidden');
+            noResultsEl.classList.add('hidden');
+            resultsListEl.classList.add('hidden');
+            resultsListEl.innerHTML = '';
+
+            // Scroll to results smoothly
+            setTimeout(() => {
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+
+            try {
+                const params = new URLSearchParams();
+                if (firstName) params.append('first_name', firstName);
+                if (lastName) params.append('last_name', lastName);
+                if (philhealth) params.append('philhealth', philhealth);
+
+                const response = await fetch('../api/patients/kiosk-search.php?' + params.toString(), {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const result = await response.json();
+
+                loadingEl.classList.add('hidden');
+
+                if (result.ok && result.patients && result.patients.length > 0) {
+                    resultsListEl.classList.remove('hidden');
+                    result.patients.forEach((patient, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-white rounded-3xl shadow-lg border border-gray-100 p-5 sm:p-6 cursor-pointer hover:shadow-xl hover:border-blue-200 hover:scale-[1.02] transition-all active:scale-[0.98] opacity-0 transform translate-y-4';
+                        card.style.animationDelay = `${index * 100}ms`;
+                        card.onclick = () => selectExistingPatient(patient);
+                        
+                        // Animate card in
+                        setTimeout(() => {
+                            card.classList.remove('opacity-0', 'translate-y-4');
+                            card.classList.add('opacity-100', 'translate-y-0');
+                        }, index * 100);
+
+                        const dobFormatted = patient.dob ? new Date(patient.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+                        const age = patient.dob ? calculateAgeFromDob(patient.dob) : '';
+
+                        card.innerHTML = `
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
+                                    ${(patient.full_name || '?')[0].toUpperCase()}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-xl font-bold text-gray-900 truncate">${patient.full_name || 'Unknown'}</h4>
+                                    <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-sm text-gray-500">
+                                        <span class="inline-flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            ${dobFormatted}${age ? ' (' + age + ' yrs)' : ''}
+                                        </span>
+                                        <span class="inline-flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            ${patient.sex || 'N/A'}
+                                        </span>
+                                        ${patient.philhealth_pin ? '<span class="inline-flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>PH: ' + patient.philhealth_pin + '</span>' : ''}
+                                    </div>
+                                    ${patient.patient_code ? '<div class="mt-2"><span class="inline-block px-3 py-1 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">' + patient.patient_code + '</span></div>' : ''}
+                                </div>
+                                <div class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-blue-50 text-blue-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </div>
+                            </div>
+                        `;
+                        resultsListEl.appendChild(card);
+                    });
+                } else {
+                    noResultsEl.classList.remove('hidden');
+                }
+            } catch (error) {
+                loadingEl.classList.add('hidden');
+                noResultsEl.classList.remove('hidden');
+                console.error('Search error:', error);
+            }
+        }
+
+        let selectedPatientData = null;
+
+        function selectExistingPatient(patient) {
+            selectedPatientData = patient;
+            
+            // Populate modal with patient data
+            const modal = document.getElementById('patientInfoModal');
+            const fullName = document.getElementById('modalFullName');
+            const dob = document.getElementById('modalDob');
+            const age = document.getElementById('modalAge');
+            const sex = document.getElementById('modalSex');
+            const bloodType = document.getElementById('modalBloodType');
+            const philhealth = document.getElementById('modalPhilhealth');
+            const patientCode = document.getElementById('modalPatientCode');
+            const philhealthContainer = document.getElementById('modalPhilhealthContainer');
+            const patientCodeContainer = document.getElementById('modalPatientCodeContainer');
+            
+            // Set patient details
+            fullName.textContent = patient.full_name || 'Unknown';
+            
+            if (patient.dob) {
+                const dobDate = new Date(patient.dob);
+                dob.textContent = dobDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                const calculatedAge = calculateAgeFromDob(patient.dob);
+                age.textContent = calculatedAge ? calculatedAge + ' years' : 'N/A';
+            } else {
+                dob.textContent = 'N/A';
+                age.textContent = 'N/A';
+            }
+            
+            sex.textContent = patient.sex || 'N/A';
+            bloodType.textContent = patient.blood_type || 'N/A';
+            
+            if (patient.philhealth_pin) {
+                philhealth.textContent = patient.philhealth_pin;
+                philhealthContainer.classList.remove('hidden');
+            } else {
+                philhealthContainer.classList.add('hidden');
+            }
+            
+            if (patient.patient_code) {
+                patientCode.textContent = patient.patient_code;
+                patientCodeContainer.classList.remove('hidden');
+            } else {
+                patientCodeContainer.classList.add('hidden');
+            }
+            
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            const modalPanel = document.getElementById('modalPanel');
+            
+            // Trigger animation
+            setTimeout(() => {
+                modalPanel.classList.remove('scale-95', 'opacity-0');
+                modalPanel.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+        
+        function closePatientModal() {
+            const modal = document.getElementById('patientInfoModal');
+            const modalPanel = document.getElementById('modalPanel');
+            
+            // Animate out
+            modalPanel.classList.remove('scale-100', 'opacity-100');
+            modalPanel.classList.add('scale-95', 'opacity-0');
+            
+            // Hide after animation
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                selectedPatientData = null;
+            }, 200);
+        }
+        
+        async function confirmAndGetQueueNumber() {
+            if (!selectedPatientData) return;
+            
+            const patient = selectedPatientData;
+            
+            try {
+                // For existing patients, only send patient_id and station
+                // This will directly add them to the OPD queue waiting list
+                const formData = {
+                    patient_id: patient.id,
+                    station_name: 'opd'
+                };
+
+                // Close modal
+                closePatientModal();
+                
+                // Show loading state
+                const resultsContainer = document.getElementById('searchResults');
+                const loadingEl = document.getElementById('searchLoading');
+                loadingEl.classList.remove('hidden');
+
+                const response = await fetch('../api/queue/enqueue.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                loadingEl.classList.add('hidden');
+
+                if (result.ok) {
+                    // ... existing success logic ...
+                    const already = document.getElementById('kioskAlreadyRegistered');
+                    if (already) {
+                        already.classList.add('hidden');
+                    }
+                    
+                    const reg = document.getElementById('kioskRegistration');
+                    if (reg) {
+                        reg.classList.remove('hidden');
+                    }
+                    
+                    // Update success screen for already registered patient
+                    const successTitle = document.getElementById('successTitle');
+                    const successSubtitle = document.getElementById('successSubtitle');
+                    const queueNumberLabel = document.getElementById('queueNumberLabel');
+                    const queueDisplay = document.getElementById('patientCodeDisplay');
+                    
+                    if (successTitle) {
+                        successTitle.textContent = 'You got your queue number!';
+                    }
+                    if (successSubtitle) {
+                        successSubtitle.textContent = 'Welcome back! Please wait for your turn.';
+                    }
+                    if (queueNumberLabel) {
+                        queueNumberLabel.classList.remove('hidden');
+                    }
+                    if (queueDisplay) {
+                        queueDisplay.textContent = result.queue_number; // Only the number
+                    }
+                    
+                    document.querySelectorAll('.form-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    document.getElementById('successScreen').classList.add('active');
+                    createConfetti();
+
+                    const stepperBar = document.getElementById('stepperBar');
+                    if (stepperBar) stepperBar.style.display = 'none';
+                } else {
+                    // Special handling for "already in queue" error
+                    if (result.error === 'Patient is already in queue for this station' && result.queue_number) {
+                        showErrorModal("You already have a Queue number", {
+                            queue_number: result.queue_number,
+                            queue_position: result.queue_position,
+                            station_name: result.station_name
+                        });
+                    } else {
+                        showErrorModal(result.error || 'Failed to get queue number');
+                    }
+                }
+            } catch (error) {
+                const loadingEl = document.getElementById('searchLoading');
+                loadingEl.classList.add('hidden');
+                showErrorModal(error.message);
+            }
+        }
+        
+        function showErrorModal(message, queueData = null) {
+            const modal = document.getElementById('errorModal');
+            const modalPanel = document.getElementById('errorModalPanel');
+            const errorMessage = document.getElementById('errorMessage');
+            const queueContainer = document.getElementById('errorQueueContainer');
+            const queueDisplay = document.getElementById('errorQueueNumber');
+            const stationDisplay = document.getElementById('errorStationName');
+            const positionDisplay = document.getElementById('errorQueuePosition');
+            
+            errorMessage.textContent = message;
+            
+            if (queueData && queueData.queue_number) {
+                queueDisplay.textContent = queueData.queue_number;
+                stationDisplay.textContent = queueData.station_name || 'OPD';
+                positionDisplay.textContent = queueData.queue_position || '-';
+                queueContainer.classList.remove('hidden');
+            } else {
+                queueContainer.classList.add('hidden');
+            }
+            
+            modal.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                modalPanel.classList.remove('scale-95', 'opacity-0');
+                modalPanel.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+        
+        function closeErrorModal() {
+            const modal = document.getElementById('errorModal');
+            const modalPanel = document.getElementById('errorModalPanel');
+            
+            // Animate out
+            modalPanel.classList.remove('scale-100', 'opacity-100');
+            modalPanel.classList.add('scale-95', 'opacity-0');
+            
+            // Hide after animation
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // "Is this you?" Modal Functions
+        let duplicatePatientData = null;
+        let skipDuplicateCheck = false;
+
+        function showIsThisYouModal(patient) {
+            duplicatePatientData = patient;
+            
+            const modal = document.getElementById('isThisYouModal');
+            const modalPanel = document.getElementById('isThisYouModalPanel');
+            const fullName = document.getElementById('isThisYouFullName');
+            const dob = document.getElementById('isThisYouDob');
+            const age = document.getElementById('isThisYouAge');
+            const sex = document.getElementById('isThisYouSex');
+            const bloodType = document.getElementById('isThisYouBloodType');
+            const patientCode = document.getElementById('isThisYouPatientCode');
+
+            // Populate patient data
+            fullName.textContent = `${patient.first_name || ''} ${patient.last_name || ''}`.trim();
+            dob.textContent = patient.dob ? new Date(patient.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
+            age.textContent = patient.age ? `${patient.age} years` : '-';
+            sex.textContent = patient.sex || '-';
+            bloodType.textContent = patient.blood_type || '-';
+            patientCode.textContent = patient.patient_code || '-';
+
+            // Show modal
+            modal.classList.remove('hidden');
+            
+            // Animate in
+            setTimeout(() => {
+                modalPanel.classList.remove('scale-95', 'opacity-0');
+                modalPanel.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeIsThisYouModal() {
+            const modal = document.getElementById('isThisYouModal');
+            const modalPanel = document.getElementById('isThisYouModalPanel');
+            
+            // Animate out
+            modalPanel.classList.remove('scale-100', 'opacity-100');
+            modalPanel.classList.add('scale-95', 'opacity-0');
+            
+            // Hide after animation
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        async function confirmIsThisYou() {
+            // User confirmed it's them - proceed to get queue number
+            if (!duplicatePatientData) return;
+
+            closeIsThisYouModal();
+
+            // Use the existing queue number flow
+            selectedPatientData = duplicatePatientData;
+            await confirmAndGetQueueNumber();
+        }
+
+        function continueNewRegistration() {
+            // User clicked "Cancel Registration" - close modal and go back to home
+            closeIsThisYouModal();
+            
+            // Reset the skip flag
+            skipDuplicateCheck = false;
+            
+            // Go back to home screen
+            setTimeout(() => {
+                goBackHome();
+            }, 300);
+        }
+
+        async function checkForDuplicatePatient() {
+            const firstName = document.getElementById('first_name').value.trim();
+            const lastName = document.getElementById('last_name').value.trim();
+            const dob = document.getElementById('dob').value;
+
+            console.log('Checking for duplicate patient:', { firstName, lastName, dob });
+
+            if (!firstName || !lastName || !dob) {
+                console.log('Missing required fields for duplicate check');
+                return null;
+            }
+
+            try {
+                const requestBody = {
+                    first_name: firstName,
+                    last_name: lastName,
+                    dob: dob
+                };
+                
+                console.log('Sending duplicate check request:', requestBody);
+
+                const response = await fetch('../api/patients/check-duplicate.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+                console.log('Duplicate check result:', result);
+
+                if (result.ok && result.found) {
+                    console.log('Duplicate patient found:', result.patient);
+                    return result.patient;
+                }
+
+                console.log('No duplicate patient found');
+                return null;
+            } catch (error) {
+                console.error('Error checking for duplicate:', error);
+                return null;
+            }
+        }
+
+        function skipPhilHealth() {
+            document.getElementById('philhealth_pin').value = '';
+            finishStep1();
+        }
+
         (function () {
-            const events = ['mousemove', 'mousedown', 'touchstart', 'touchmove', 'keydown', 'scroll', 'input', 'click'];
-            const onActivity = () => resetKioskIdleTimer();
+            // Only listen to meaningful interaction events (not mousemove/scroll which fire constantly)
+            const events = ['mousedown', 'touchstart', 'keydown', 'input', 'click'];
+            const onActivity = () => {
+                console.log('Activity detected:', event.type);
+                resetKioskIdleTimer();
+            };
             events.forEach(ev => window.addEventListener(ev, onActivity, { passive: true }));
+            console.log('Idle timer event listeners attached');
         })();
 
         function calculateAgeFromDob(dobValue) {
@@ -2921,9 +4011,26 @@
             }
         });
 
+        // Auto-format PhilHealth ID with dashes (1234-5678-9012-3456)
+        document.getElementById('philhealth_pin').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove all non-digits
+            
+            // Format with dashes
+            if (value.length > 0) {
+                let formatted = '';
+                for (let i = 0; i < value.length && i < 16; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formatted += '-';
+                    }
+                    formatted += value[i];
+                }
+                e.target.value = formatted;
+            }
+        });
+
         // Question-based navigation functions
         let currentQuestion = 1;
-        let currentStepQuestions = { 1: 7, 2: 4, 3: 3 }; // Number of questions per step
+        let currentStepQuestions = { 1: 9, 2: 4, 3: 3 }; // Number of questions per step
 
         function goBackToStep(stepNum) {
             showStep(stepNum);
@@ -3016,14 +4123,30 @@
             }
         }
 
-        function nextQuestion() {
+        async function nextQuestion() {
             const step = getCurrentStep();
             const currentCard = getCurrentQuestionCard();
             const currentQNum = parseInt(currentCard?.dataset.question || 1);
 
+            console.log('nextQuestion called - Step:', step, 'Question:', currentQNum, 'skipDuplicateCheck:', skipDuplicateCheck);
+
             // Validate current question
             if (!validateCurrentQuestion(step, currentQNum)) {
+                console.log('Validation failed for current question');
                 return;
+            }
+
+            // Check for duplicate after DOB question (question 3 in step 1)
+            if (step === 1 && currentQNum === 3 && !skipDuplicateCheck) {
+                console.log('Triggering duplicate check after DOB question');
+                const duplicatePatient = await checkForDuplicatePatient();
+                if (duplicatePatient) {
+                    console.log('Showing "Is this you?" modal with patient:', duplicatePatient);
+                    showIsThisYouModal(duplicatePatient);
+                    return; // Don't proceed to next question yet
+                } else {
+                    console.log('No duplicate found, continuing to next question');
+                }
             }
 
             const maxQuestions = currentStepQuestions[step] || 1;
@@ -3078,24 +4201,30 @@
             // Step 1 validations
             if (step === 1) {
                 if (questionNum === 1) {
-                    const fullName = document.getElementById('full_name').value.trim();
-                    if (!fullName) {
-                        showError('full_name', 'Please enter your full name');
+                    const firstName = document.getElementById('first_name').value.trim();
+                    if (!firstName) {
+                        showError('first_name', 'Please enter your first name');
                         isValid = false;
                     }
                 } else if (questionNum === 2) {
+                    const lastName = document.getElementById('last_name').value.trim();
+                    if (!lastName) {
+                        showError('last_name', 'Please enter your last name');
+                        isValid = false;
+                    }
+                } else if (questionNum === 3) {
                     const dob = document.getElementById('dob').value;
                     if (!dob) {
                         showError('dob', 'Please select your date of birth');
                         isValid = false;
                     }
-                } else if (questionNum === 3) {
+                } else if (questionNum === 4) {
                     const sex = document.getElementById('sex').value;
                     if (!sex) {
                         showError('sex', 'Please select your sex');
                         isValid = false;
                     }
-                } else if (questionNum === 6) {
+                } else if (questionNum === 7) {
                     const contact = document.getElementById('contact').value.trim();
                     if (!contact) {
                         showError('contact', 'Please enter your contact number');
@@ -3104,11 +4233,21 @@
                         showError('contact', 'Please enter a valid 11-digit number');
                         isValid = false;
                     }
-                } else if (questionNum === 7) {
+                } else if (questionNum === 8) {
                     const diagnosis = document.getElementById('diagnosis').value.trim();
                     if (!diagnosis) {
                         showError('diagnosis', 'Please describe your symptoms');
                         isValid = false;
+                    }
+                } else if (questionNum === 9) {
+                    const philhealth = document.getElementById('philhealth_pin').value.trim();
+                    if (philhealth) {
+                        // Validate format: 1234-5678-9012-3456
+                        const philhealthPattern = /^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$/;
+                        if (!philhealthPattern.test(philhealth)) {
+                            showError('philhealth_pin', 'Invalid PhilHealth ID format');
+                            isValid = false;
+                        }
                     }
                 }
             }

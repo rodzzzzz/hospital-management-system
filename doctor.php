@@ -1,3 +1,15 @@
+<?php
+require_once __DIR__ . '/api/_db.php';
+require_once __DIR__ . '/api/auth/_session.php';
+
+$pdo = db();
+$authUser = auth_current_user($pdo);
+
+if (!$authUser || !auth_user_has_module($authUser, 'DOCTOR')) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,61 +24,41 @@
 </head>
 
 <body class="bg-gray-50">
-    <div class="flex h-screen">
-        <?php include __DIR__ . '/includes/double-sidebar.php'; ?>
-
-        <main class="ml-16 lg:ml-80 flex-1 overflow-auto">
-            <header class="bg-white p-6 flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <h1 class="text-2xl font-semibold">Doctor</h1>
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <img src="logo.png" alt="Logo" class="h-8 w-auto mr-3">
+                        <h1 class="text-2xl font-semibold text-gray-900">Doctor Portal</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-bell text-gray-500"></i>
+                        </button>
+                        <?php include __DIR__ . '/includes/profile-dropdown.php'; ?>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <button class="p-2 rounded-full hover:bg-gray-100">
-                        <i class="fas fa-bell text-gray-500"></i>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Inner Navigation Tabs -->
+            <div class="px-6 pt-4 bg-white border-b border-gray-200">
+                <nav class="flex space-x-1" id="doctorInnerNav">
+                    <button onclick="switchDoctorTab('queue')" id="tabBtnQueue" class="px-5 py-3 text-sm font-semibold rounded-t-lg border-b-2 border-blue-600 text-blue-600 bg-blue-50 transition-colors">
+                        <i class="fas fa-users mr-2"></i>Queue
                     </button>
-                    <?php include __DIR__ . '/includes/profile-dropdown.php'; ?>
-                </div>
-            </header>
+                    <button onclick="switchDoctorTab('findings')" id="tabBtnFindings" class="px-5 py-3 text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-notes-medical mr-2"></i>Patient's Findings
+                    </button>
+                </nav>
+            </div>
 
-            <div class="p-6 space-y-6">
-                <section id="doctorLabRequestsSection" class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">Lab Requests</h3>
-                            <p class="text-sm text-gray-600 mt-1">Track lab request progress and view request forms.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <select id="doctorLabStatus" class="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All statuses</option>
-                                <option value="pending_approval" selected>Pending Approval</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="collected">Collected</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                            <button id="doctorRefreshLab" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Refresh</button>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Request</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Triage</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tests</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="doctorLabTbody" class="bg-white divide-y divide-gray-200"></tbody>
-                        </table>
-                    </div>
-                </section>
-
+            <!-- Queue Tab Content -->
+            <div id="doctorTabQueue" class="p-6 space-y-6">
                 <!-- Doctor Queue Section -->
                 <section id="doctorQueueSection" class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
@@ -164,6 +156,42 @@
                     </div>
                 </div>
 
+            </div>
+
+            <!-- Patient's Findings Tab Content -->
+            <div id="doctorTabFindings" class="p-6 space-y-6 hidden">
+                <!-- Patient's Findings Section -->
+                <section class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900"><i class="fas fa-notes-medical mr-2 text-blue-600"></i>Patient's Findings</h3>
+                            <p class="text-sm text-gray-600 mt-1">View lab tests, nurse assessments, and x-ray results for each patient.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input id="findingsPatientSearch" type="text" class="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search patient name / code">
+                            <button id="findingsRefreshBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lab Tests</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assessments</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="findingsPatientsTbody" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- OLD Patients Section (hidden, kept for backward compat) -->
+            <div class="hidden">
                 <section id="doctorPatientsSection" class="bg-white rounded-lg shadow-sm overflow-hidden hidden">
                     <div class="p-6 border-b border-gray-100 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
@@ -226,8 +254,74 @@
         </div>
     </div>
 
+    <!-- Combined Patient Findings Modal -->
+    <div id="findingsAllModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-40 transition-all duration-300 ease-in-out">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-[95vw] mx-2 h-[95vh] flex flex-col transform transition-all duration-500 ease-out scale-95 opacity-0" id="findingsModalContainer">
+            <!-- Header with Close All Button -->
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-notes-medical mr-2 text-blue-600"></i>Patient's Medical Findings</h2>
+                <button type="button" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 flex items-center" onclick="closeAllFindings()">
+                    <i class="fas fa-times mr-2"></i>Close All
+                </button>
+            </div>
+            
+            <!-- Three Modal Content Areas -->
+            <div class="flex-1 flex gap-4 p-4 overflow-hidden">
+                <!-- Lab Tests Modal -->
+                <div class="flex-1 bg-white rounded-lg shadow-sm flex flex-col transform transition-all duration-300 hover:shadow-md" id="labModalCard">
+                    <div class="p-4 flex items-center justify-between flex-shrink-0 bg-cyan-50">
+                        <h3 class="text-lg font-semibold text-gray-900"><i class="fas fa-flask mr-2 text-cyan-600"></i>Lab Test Results</h3>
+                        <button type="button" class="px-3 py-1 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200" onclick="expandModal('lab')">
+                            <i class="fas fa-expand mr-1"></i>View All
+                        </button>
+                    </div>
+                    <div id="findingsLabContent" class="p-4 flex-1 overflow-y-auto text-sm"></div>
+                </div>
+                
+                <!-- Nurse Assessment Modal -->
+                <div class="flex-1 bg-white rounded-lg shadow-sm flex flex-col transform transition-all duration-300 hover:shadow-md" id="nurseModalCard">
+                    <div class="p-4 flex items-center justify-between flex-shrink-0 bg-red-50">
+                        <h3 class="text-lg font-semibold text-gray-900"><i class="fas fa-user-nurse mr-2 text-red-600"></i>Nurse Assessment</h3>
+                        <button type="button" class="px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200" onclick="expandModal('nurse')">
+                            <i class="fas fa-expand mr-1"></i>View All
+                        </button>
+                    </div>
+                    <div id="findingsNurseContent" class="p-4 flex-1 overflow-y-auto text-sm"></div>
+                </div>
+                
+                <!-- X-ray Results Modal -->
+                <div class="flex-1 bg-white rounded-lg shadow-sm flex flex-col transform transition-all duration-300 hover:shadow-md" id="xrayModalCard">
+                    <div class="p-4 flex items-center justify-between flex-shrink-0 bg-indigo-50">
+                        <h3 class="text-lg font-semibold text-gray-900"><i class="fas fa-x-ray mr-2 text-indigo-600"></i>X-ray Results</h3>
+                        <button type="button" class="px-3 py-1 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200" onclick="expandModal('xray')">
+                            <i class="fas fa-expand mr-1"></i>View All
+                        </button>
+                    </div>
+                    <div id="findingsXrayContent" class="p-4 flex-1 overflow-y-auto text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expanded Modal for Individual View -->
+    <div id="expandedModal" class="fixed inset-0 hidden items-center justify-center z-50 transition-all duration-300 ease-in-out backdrop-blur-sm bg-black/20">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-7xl mx-2 h-[95vh] flex flex-col transform transition-all duration-500 ease-out scale-95 opacity-0" id="expandedModalContainer">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+                <h3 id="expandedModalTitle" class="text-xl font-bold text-gray-900"></h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors duration-200" onclick="closeExpandedModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="expandedModalContent" class="p-6 flex-1 overflow-y-auto"></div>
+            <div class="p-4 bg-gray-50 border-t flex justify-end flex-shrink-0">
+                <button type="button" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200" onclick="closeExpandedModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function toggleModal(id) {
+            // Legacy function - kept for backward compatibility with existing modals
             const el = document.getElementById(id);
             if (!el) return;
             if (el.classList.contains('hidden')) {
@@ -238,6 +332,33 @@
                 el.classList.remove('flex');
             }
         }
+        
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            const allModal = document.getElementById('findingsAllModal');
+            const expandedModal = document.getElementById('expandedModal');
+            
+            if (e.target === allModal) {
+                closeAllFindings();
+            }
+            if (e.target === expandedModal) {
+                closeExpandedModal();
+            }
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const allModal = document.getElementById('findingsAllModal');
+                const expandedModal = document.getElementById('expandedModal');
+                
+                if (!expandedModal.classList.contains('hidden')) {
+                    closeExpandedModal();
+                } else if (!allModal.classList.contains('hidden')) {
+                    closeAllFindings();
+                }
+            }
+        });
 
         function escapeHtml(s) {
             return (s ?? '').toString()
@@ -953,6 +1074,515 @@
         
         // Initial load
         loadDoctorQueue();
+
+        // ===================== Tab Switching =====================
+        function switchDoctorTab(tab) {
+            const queueTab = document.getElementById('doctorTabQueue');
+            const findingsTab = document.getElementById('doctorTabFindings');
+            const btnQueue = document.getElementById('tabBtnQueue');
+            const btnFindings = document.getElementById('tabBtnFindings');
+
+            const activeClasses = ['border-blue-600', 'text-blue-600', 'bg-blue-50'];
+            const inactiveClasses = ['border-transparent', 'text-gray-500'];
+
+            if (tab === 'findings') {
+                queueTab.classList.add('hidden');
+                findingsTab.classList.remove('hidden');
+                btnQueue.classList.remove(...activeClasses);
+                btnQueue.classList.add(...inactiveClasses);
+                btnFindings.classList.remove(...inactiveClasses);
+                btnFindings.classList.add(...activeClasses);
+                loadFindingsPatients();
+            } else {
+                findingsTab.classList.add('hidden');
+                queueTab.classList.remove('hidden');
+                btnFindings.classList.remove(...activeClasses);
+                btnFindings.classList.add(...inactiveClasses);
+                btnQueue.classList.remove(...inactiveClasses);
+                btnQueue.classList.add(...activeClasses);
+            }
+        }
+
+        // ===================== Findings Patient List =====================
+        async function loadFindingsPatients() {
+            const tbody = document.getElementById('findingsPatientsTbody');
+            if (!tbody) return;
+
+            const q = (document.getElementById('findingsPatientSearch')?.value ?? '').toString().trim();
+            const url = 'api/patients/list.php' + (q ? ('?q=' + encodeURIComponent(q)) : '');
+
+            tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i><p class="mt-2">Loading patients...</p></td></tr>';
+
+            try {
+                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const json = await res.json().catch(() => null);
+                if (!res.ok || !json || !json.ok) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-400">Failed to load patients</td></tr>';
+                    return;
+                }
+
+                const rows = Array.isArray(json.patients) ? json.patients : [];
+                if (rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">No patients found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = rows.map(p => {
+                    const chip = patientTypeChip(p.patient_type);
+                    const labInfo = p.lab_status ? `<span class="px-2 py-0.5 text-xs rounded-full ${statusChip(p.lab_status).cls}">${statusChip(p.lab_status).label}</span>` : '<span class="text-xs text-gray-400">None</span>';
+                    return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">${escapeHtml(p.full_name || '')}</div>
+                                <div class="text-xs text-gray-500">${escapeHtml(p.sex || '')}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">${escapeHtml(p.patient_code || ('P-' + String(p.id)))}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs rounded-full ${chip.cls}">${escapeHtml(chip.label)}</span>
+                            </td>
+                            <td class="px-6 py-4">${labInfo}</td>
+                            <td class="px-6 py-4">
+                                <span class="text-xs text-gray-500">${escapeHtml(p.progress_status || '')}</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700" onclick="openPatientFindings(${Number(p.id)}, '${escapeHtml(p.full_name || '')}')">
+                                    <i class="fas fa-eye mr-1"></i>View
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-400">Error loading patients</td></tr>';
+            }
+        }
+
+        let findingsSearchTimer = null;
+        const findingsSearchInput = document.getElementById('findingsPatientSearch');
+        if (findingsSearchInput) {
+            findingsSearchInput.addEventListener('input', () => {
+                if (findingsSearchTimer) clearTimeout(findingsSearchTimer);
+                findingsSearchTimer = setTimeout(loadFindingsPatients, 300);
+            });
+        }
+        
+        const findingsRefreshBtn = document.getElementById('findingsRefreshBtn');
+        if (findingsRefreshBtn) {
+            findingsRefreshBtn.addEventListener('click', loadFindingsPatients);
+        }
+
+        // ===================== Open Combined Modal =====================
+        let currentPatientId = null;
+        let currentPatientName = null;
+        
+        async function openPatientFindings(patientId, patientName) {
+            console.log('Opening findings for patient:', patientId, patientName);
+            
+            // Show modal with animation
+            const modal = document.getElementById('findingsAllModal');
+            const container = document.getElementById('findingsModalContainer');
+            
+            if (!modal || !container) {
+                console.error('Modal elements not found');
+                return;
+            }
+            
+            // Set current patient after validation
+            currentPatientId = patientId;
+            currentPatientName = patientName;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Trigger animation after a brief delay
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            // Load all data
+            try {
+                await loadFindingsLab(patientId);
+                await loadFindingsNurse(patientId);
+                await loadFindingsXray(patientName); // Display-only, no actual loading
+            } catch (error) {
+                console.error('Error loading findings:', error);
+            }
+        }
+        
+        function closeAllFindings() {
+            const modal = document.getElementById('findingsAllModal');
+            const container = document.getElementById('findingsModalContainer');
+            const expandedModal = document.getElementById('expandedModal');
+            
+            // Animate out
+            container.classList.add('scale-95', 'opacity-0');
+            container.classList.remove('scale-100', 'opacity-100');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                expandedModal.classList.add('hidden');
+                expandedModal.classList.remove('flex');
+            }, 300);
+        }
+        
+        function expandModal(type) {
+            const expandedModal = document.getElementById('expandedModal');
+            const expandedContainer = document.getElementById('expandedModalContainer');
+            const expandedTitle = document.getElementById('expandedModalTitle');
+            const expandedContent = document.getElementById('expandedModalContent');
+            
+            // Get the content from the appropriate modal
+            let title = '';
+            let content = '';
+            
+            if (type === 'lab') {
+                title = '<i class="fas fa-flask mr-2 text-cyan-600"></i>Lab Test Results - Detailed View';
+                content = document.getElementById('findingsLabContent').innerHTML;
+            } else if (type === 'nurse') {
+                title = '<i class="fas fa-user-nurse mr-2 text-red-600"></i>Nurse Assessment - Detailed View';
+                content = document.getElementById('findingsNurseContent').innerHTML;
+            } else if (type === 'xray') {
+                title = '<i class="fas fa-x-ray mr-2 text-indigo-600"></i>X-ray Results - Detailed View';
+                content = document.getElementById('findingsXrayContent').innerHTML;
+            }
+            
+            // Set the content
+            expandedTitle.innerHTML = title;
+            expandedContent.innerHTML = content;
+            
+            // Show the expanded modal
+            expandedModal.classList.remove('hidden');
+            expandedModal.classList.add('flex');
+            
+            // Trigger animation after a brief delay
+            setTimeout(() => {
+                expandedContainer.classList.remove('scale-95', 'opacity-0');
+                expandedContainer.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+        
+        function closeExpandedModal() {
+            const expandedModal = document.getElementById('expandedModal');
+            const expandedContainer = document.getElementById('expandedModalContainer');
+            
+            expandedContainer.classList.add('scale-95', 'opacity-0');
+            expandedContainer.classList.remove('scale-100', 'opacity-100');
+            
+            setTimeout(() => {
+                expandedModal.classList.add('hidden');
+                expandedModal.classList.remove('flex');
+            }, 300);
+        }
+
+        // ===================== Lab Tests Modal =====================
+        async function loadFindingsLab(patientId) {
+            const content = document.getElementById('findingsLabContent');
+            const viewAllBtn = document.querySelector('#labModalCard button[onclick="expandModal(\'lab\')"]');
+            
+            content.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-cyan-500"></i><p class="mt-2 text-gray-500">Loading lab results...</p></div>';
+            viewAllBtn.style.display = 'none'; // Hide initially
+
+            try {
+                const res = await fetch('api/lab/list_requests.php?patient_id=' + patientId, { headers: { 'Accept': 'application/json' } });
+                const json = await res.json().catch(() => null);
+
+                if (!res.ok || !json || !json.ok || !Array.isArray(json.requests) || json.requests.length === 0) {
+                    content.innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-flask text-3xl mb-2"></i><p>No lab test records found for this patient.</p></div>';
+                    viewAllBtn.style.display = 'none'; // Keep hidden when no data
+                    return;
+                }
+
+                content.innerHTML = json.requests.map(r => {
+                    const chip = statusChip(r.status);
+                    return `
+                        <div class="mb-3 border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition-shadow duration-200">
+                            <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-800">${escapeHtml(r.request_no || '#' + r.id)}</span>
+                                    <span class="ml-2 text-xs text-gray-500">${escapeHtml(new Date(r.created_at).toLocaleDateString())}</span>
+                                </div>
+                                <span class="px-2 py-0.5 text-xs rounded-full ${chip.cls}">${chip.label}</span>
+                            </div>
+                            <div class="p-3 space-y-1">
+                                <p class="text-xs"><strong>Tests:</strong> ${escapeHtml(r.tests || 'N/A')}</p>
+                                <p class="text-xs"><strong>Complaint:</strong> ${escapeHtml((r.chief_complaint || 'N/A').substring(0, 50))}${(r.chief_complaint || '').length > 50 ? '...' : ''}</p>
+                                <p class="text-xs"><strong>Triage:</strong> ${escapeHtml(triageLabel(r.triage_level) || 'N/A')}</p>
+                                ${r.released_by ? `<p class="text-xs text-green-600"><i class="fas fa-check-circle mr-1"></i>Released by ${escapeHtml(r.released_by)}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                viewAllBtn.style.display = 'inline-flex'; // Show when data is available
+            } catch (e) {
+                content.innerHTML = '<div class="text-center py-8 text-red-400"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p>Failed to load lab results.</p></div>';
+                viewAllBtn.style.display = 'none'; // Hide on error
+            }
+        }
+
+        // ===================== Nurse Assessment Modal =====================
+        async function loadFindingsNurse(patientId) {
+            const content = document.getElementById('findingsNurseContent');
+            const viewAllBtn = document.querySelector('#nurseModalCard button[onclick="expandModal(\'nurse\')"]');
+            
+            content.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-red-400"></i><p class="mt-2 text-gray-500">Loading nurse assessments...</p></div>';
+            viewAllBtn.style.display = 'none'; // Hide initially
+
+            try {
+                const res = await fetch('api/opd_assessment/list.php?patient_id=' + patientId, { headers: { 'Accept': 'application/json' } });
+                const json = await res.json().catch(() => null);
+                
+                console.log('Nurse assessment response:', json); // Debug log
+
+                if (!res.ok || !json || !json.ok) {
+                    content.innerHTML = '<div class="text-center py-8 text-red-400"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p>Failed to load nurse assessments. Status: ' + res.status + '</p></div>';
+                    viewAllBtn.style.display = 'none';
+                    return;
+                }
+                
+                if (!Array.isArray(json.assessments) || json.assessments.length === 0) {
+                    content.innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-user-nurse text-3xl mb-2"></i><p>No nurse assessment records found for this patient.</p></div>';
+                    viewAllBtn.style.display = 'none'; // Keep hidden when no data
+                    return;
+                }
+
+                content.innerHTML = json.assessments.map(a => {
+                    let vitals = null;
+                    let assessment = null;
+                    try { vitals = a.vitals_json ? JSON.parse(a.vitals_json) : null; } catch(e) {}
+                    try { assessment = a.assessment_json ? JSON.parse(a.assessment_json) : null; } catch(e) {}
+                    
+                    const pmh = (assessment && assessment.pmh && typeof assessment.pmh === 'object') ? assessment.pmh : {};
+                    const hpi = (assessment && assessment.hpi && typeof assessment.hpi === 'object') ? assessment.hpi : {};
+                    const social = (assessment && assessment.social && typeof assessment.social === 'object') ? assessment.social : {};
+
+                    // Render vitals in grid format like OPD
+                    const renderVitals = (v) => {
+                        if (!v || typeof v !== 'object') return '<div class="text-gray-500">No vitals recorded.</div>';
+                        const bpSys = (v.bp_systolic ?? '').toString();
+                        const bpDia = (v.bp_diastolic ?? '').toString();
+                        const bp = (bpSys && bpDia) ? (bpSys + '/' + bpDia) : (bpSys || bpDia ? (bpSys + '/' + bpDia) : '');
+                        const items = [
+                            ['BP', bp],
+                            ['HR', v.hr],
+                            ['RR', v.rr],
+                            ['Temp', v.temp],
+                            ['SpO₂', v.spo2],
+                            ['Weight', v.weight],
+                            ['Height', v.height],
+                        ].filter(x => x[1] !== null && x[1] !== undefined && String(x[1]).trim() !== '');
+                        if (!items.length) return '<div class="text-gray-500">No vitals recorded.</div>';
+                        return '<div class="grid grid-cols-3 gap-4">' + items.map(([k, val]) => {
+                            return `<div><span class="font-semibold text-gray-700">${escapeHtml(k)}:</span> <span class="text-gray-900">${escapeHtml(String(val))}</span></div>`;
+                        }).join('') + '</div>';
+                    };
+
+                    return `
+                        <div class="mb-6 bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 bg-gray-50 border-b flex items-center justify-between">
+                                <div>
+                                    <span class="font-semibold text-gray-800">Assessment #${a.id}</span>
+                                    <span class="ml-3 text-gray-500">${escapeHtml(new Date(a.created_at).toLocaleString())}</span>
+                                </div>
+                                ${a.triage_level ? `<span class="px-3 py-1 rounded-full bg-orange-100 text-orange-800">${escapeHtml(triageLabel(a.triage_level))}</span>` : ''}
+                            </div>
+                            <div class="p-6 space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="font-semibold text-gray-800 mb-3">Patient</div>
+                                        <div class="text-gray-900">${escapeHtml(a.full_name || '')}</div>
+                                        <div class="text-gray-500">${escapeHtml(a.patient_code || '')}</div>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="font-semibold text-gray-800 mb-3">Assessment</div>
+                                        <div class="text-gray-500"><span class="font-semibold text-gray-700">When:</span> ${escapeHtml(new Date(a.created_at).toLocaleString())}</div>
+                                        <div class="text-gray-500"><span class="font-semibold text-gray-700">Nurse:</span> ${escapeHtml(a.nurse_name || '-')}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="section-title text-gray-700 mb-3 pb-2 border-b">Vitals</div>
+                                    ${renderVitals(vitals)}
+                                </div>
+                                
+                                ${hpi && (hpi.start || hpi.duration || hpi.severity || hpi.associated) ? `
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="section-title text-gray-700 mb-3 pb-2 border-b">History of Present Illness</div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        ${hpi.start ? `<div><span class="font-semibold text-gray-700">Start:</span> <span class="text-gray-900">${escapeHtml(hpi.start)}</span></div>` : ''}
+                                        ${hpi.duration ? `<div><span class="font-semibold text-gray-700">Duration/Frequency:</span> <span class="text-gray-900">${escapeHtml(hpi.duration)}</span></div>` : ''}
+                                        ${hpi.severity ? `<div><span class="font-semibold text-gray-700">Severity:</span> <span class="text-gray-900">${escapeHtml(hpi.severity)}</span></div>` : ''}
+                                        ${hpi.associated ? `<div><span class="font-semibold text-gray-700">Associated Symptoms:</span> <span class="text-gray-900">${escapeHtml(hpi.associated)}</span></div>` : ''}
+                                    </div>
+                                    ${hpi.factors ? `<div class="mt-3"><span class="font-semibold text-gray-700">Aggravating/Relieving:</span> <span class="text-gray-900">${escapeHtml(hpi.factors)}</span></div>` : ''}
+                                </div>
+                                ` : ''}
+                                
+                                ${pmh && (pmh.diabetes || pmh.hypertension || pmh.asthma || pmh.heart_disease || pmh.other) ? `
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="section-title text-gray-700 mb-3 pb-2 border-b">Past Medical History</div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <div><span class="font-semibold text-gray-700">Diabetes:</span> <span class="text-gray-900">${pmh.diabetes ? 'Yes' : 'No'}</span></div>
+                                        <div><span class="font-semibold text-gray-700">Hypertension:</span> <span class="text-gray-900">${pmh.hypertension ? 'Yes' : 'No'}</span></div>
+                                        <div><span class="font-semibold text-gray-700">Asthma:</span> <span class="text-gray-900">${pmh.asthma ? 'Yes' : 'No'}</span></div>
+                                        <div><span class="font-semibold text-gray-700">Heart Disease:</span> <span class="text-gray-900">${pmh.heart_disease ? 'Yes' : 'No'}</span></div>
+                                    </div>
+                                    ${pmh.other ? `<div class="mt-3"><span class="font-semibold text-gray-700">Other:</span> <span class="text-gray-900">${escapeHtml(pmh.other)}</span></div>` : ''}
+                                </div>
+                                ` : ''}
+                                
+                                ${a.notes ? `
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="section-title text-gray-700 mb-3 pb-2 border-b">Notes</div>
+                                    <div class="text-gray-900">${escapeHtml(a.notes)}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                viewAllBtn.style.display = 'inline-flex'; // Show when data is available
+            } catch (e) {
+                content.innerHTML = '<div class="text-center py-8 text-red-400"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p>Failed to load nurse assessments.</p></div>';
+                viewAllBtn.style.display = 'none'; // Hide on error
+            }
+        }
+
+        // ===================== X-ray Results Modal (Display Only) =====================
+        async function loadFindingsXray(patientName) {
+            const content = document.getElementById('findingsXrayContent');
+            const viewAllBtn = document.querySelector('#xrayModalCard button[onclick="expandModal(\'xray\')"]');
+            
+            // X-ray section is display-only, no API calls
+            viewAllBtn.style.display = 'none'; // Always hidden for display-only
+            
+            content.innerHTML = `
+                <div class="text-center py-8 text-gray-400">
+                    <i class="fas fa-x-ray text-3xl mb-3 text-indigo-300"></i>
+                    <p class="text-sm font-medium text-gray-500 mb-2">X-ray Results</p>
+                    <p class="text-xs text-gray-400">Display only - No functional data</p>
+                    <div class="mt-4 bg-indigo-50 rounded-lg p-3 text-left max-w-sm mx-auto">
+                        <div class="text-xs text-indigo-700">
+                            <p class="font-semibold mb-1">Sample X-ray Record</p>
+                            <p><strong>Exam:</strong> Chest X-ray</p>
+                            <p><strong>Status:</strong> For display purposes</p>
+                            <p><strong>Note:</strong> This section is non-functional</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInUp {
+                from {
+                    transform: translateY(30px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            .animate-slide-in {
+                animation: slideInUp 0.3s ease-out;
+            }
+            
+            .animate-fade-in {
+                animation: fadeIn 0.2s ease-out;
+            }
+            
+            #labModalCard:hover, #nurseModalCard:hover, #xrayModalCard:hover {
+                transform: translateY(-2px);
+            }
+            
+        /* Remove maximized styles since we're using separate expanded modal */
+            
+            /* Expanded Modal - Large Font Styles - Make ALL text consistent */
+            #expandedModal * {
+                font-size: 1.125rem !important;
+            }
+            
+            #expandedModal h3 {
+                font-size: 1.75rem !important;
+            }
+            
+            #expandedModal .font-semibold {
+                font-weight: 600 !important;
+            }
+            
+            #expandedModal .section-title {
+                font-weight: 500 !important;
+                color: #374151 !important;
+            }
+            
+            #expandedModal .p-4 {
+                padding: 2rem !important;
+            }
+            
+            #expandedModal .p-6 {
+                padding: 2.5rem !important;
+            }
+            
+            #expandedModal .gap-2 {
+                gap: 1rem !important;
+            }
+            
+            #expandedModal .gap-4 {
+                gap: 1.5rem !important;
+            }
+            
+            #expandedModal .mb-2 {
+                margin-bottom: 1rem !important;
+            }
+            
+            #expandedModal .mb-4 {
+                margin-bottom: 2rem !important;
+            }
+            
+            #expandedModal .space-y-4 > * {
+                margin-top: 1.5rem !important;
+                margin-bottom: 1.5rem !important;
+            }
+            
+            #expandedModal .grid-cols-2 {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
+            
+            #expandedModal button {
+                font-size: 1.125rem !important;
+                padding: 0.75rem 1.5rem !important;
+            }
+            
+            #expandedModal i.fas {
+                font-size: 1.5rem !important;
+            }
+            
+            #expandedModal .rounded-lg {
+                border-radius: 1rem !important;
+            }
+            
+            #expandedModal .font-semibold {
+                font-weight: 700 !important;
+            }
+            
+            #expandedModal .text-gray-500 {
+                color: #6b7280 !important;
+            }
+        
+        
+        `;
+        document.head.appendChild(style);
     </script>
     <?php include __DIR__ . '/includes/queue-error-correction.php'; ?>
     <script>window.qecStationId = 2; window.qecRefreshQueue = function() { loadDoctorQueue(); };</script>
