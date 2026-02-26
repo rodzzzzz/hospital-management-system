@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/_functions.php';
 require_once __DIR__ . '/../auth/_session.php';
+require_once __DIR__ . '/../websocket/_broadcast.php';
 
 $pdo = db();
 
@@ -28,7 +29,7 @@ try {
             break;
         case 'POST':
             // POST endpoints require authentication
-            $currentUser = auth_current_user($pdo);
+            $currentUser = auth_current_user_optional_token($pdo);
             if (!$currentUser) {
                 http_response_code(401);
                 echo json_encode(['error' => 'Unauthorized']);
@@ -59,6 +60,25 @@ function handleGetRequest(PDO $pdo, array $pathParts): void
         case 'stations':
             $stations = getAllQueueStations($pdo);
             echo json_encode(['stations' => $stations]);
+            break;
+
+        case 'list':
+            $stationIdentifier = $pathParts[$queueIndex + 2] ?? '';
+            if ($stationIdentifier === '') {
+                throw new Exception('Station identifier required');
+            }
+
+            $station = getQueueStation($pdo, $stationIdentifier);
+            if (!$station) {
+                throw new Exception('Station not found');
+            }
+
+            $queue = getStationQueueList($pdo, (int)$station['id']);
+            echo json_encode([
+                'ok' => true,
+                'station' => $station,
+                'queue' => $queue,
+            ]);
             break;
             
         case 'display':
@@ -133,6 +153,7 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             }
             
             $queueId = addPatientToQueue($pdo, $patientId, $stationId, $currentUser['id']);
+            broadcastQueueUpdate('patient-added', [$stationId], ['queue_id' => $queueId, 'station_id' => $stationId]);
             echo json_encode(['success' => true, 'queue_id' => $queueId]);
             break;
             
@@ -145,6 +166,7 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             
             $patient = callNextPatient($pdo, $stationId, $currentUser['id']);
             if ($patient) {
+                broadcastQueueUpdate('call-next', [$stationId], ['patient' => $patient, 'station_id' => $stationId]);
                 echo json_encode(['success' => true, 'patient' => $patient]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'No patients in queue']);
@@ -159,7 +181,15 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
                 throw new Exception('Queue ID required');
             }
             
+            $queue = $pdo->prepare('SELECT station_id FROM patient_queue WHERE id = ?');
+            $queue->execute([$queueId]);
+            $queueData = $queue->fetch();
+            
             $success = completeServiceWithTarget($pdo, $queueId, $currentUser['id'], $targetStationId);
+            if ($success && $queueData) {
+                $affectedStations = $targetStationId ? [$queueData['station_id'], $targetStationId] : [$queueData['station_id']];
+                broadcastQueueUpdate('service-completed', $affectedStations, ['queue_id' => $queueId, 'target_station_id' => $targetStationId]);
+            }
             echo json_encode(['success' => $success]);
             break;
             
@@ -172,6 +202,7 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             
             $patient = callNextAndMarkUnavailable($pdo, $stationId, $currentUser['id']);
             if ($patient) {
+                broadcastQueueUpdate('mark-unavailable', [$stationId], ['patient' => $patient, 'station_id' => $stationId]);
                 echo json_encode(['success' => true, 'patient' => $patient]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'No patients in queue']);
@@ -186,6 +217,14 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             }
             
             $success = recallUnavailablePatient($pdo, $queueId, $currentUser['id']);
+            if ($success) {
+                $queue = $pdo->prepare('SELECT station_id FROM patient_queue WHERE id = ?');
+                $queue->execute([$queueId]);
+                $queueData = $queue->fetch();
+                if ($queueData) {
+                    broadcastQueueUpdate('recall-unavailable', [$queueData['station_id']], ['queue_id' => $queueId]);
+                }
+            }
             echo json_encode(['success' => $success]);
             break;
 
@@ -201,6 +240,12 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             }
 
             $errorLogId = reportQueueError($pdo, $queueId, $patientId, $wrongStationId, $correctStationId, $currentUser['id'], $notes);
+            
+            $correctionData = getPendingCorrections($pdo, $wrongStationId);
+            if (!empty($correctionData)) {
+                broadcastCorrectionAlert($wrongStationId, $correctionData[0]);
+            }
+            
             echo json_encode(['success' => true, 'error_log_id' => $errorLogId]);
             break;
 
@@ -212,6 +257,10 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
             }
 
             $result = confirmQueueCorrection($pdo, $errorLogId, $currentUser['id']);
+            if ($result) {
+                $affectedStations = [$result['wrong_station_id'], $result['correct_station_id']];
+                broadcastQueueUpdate('correction-confirmed', $affectedStations, ['result' => $result]);
+            }
             echo json_encode(['success' => true, 'result' => $result]);
             break;
 

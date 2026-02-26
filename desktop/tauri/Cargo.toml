@@ -1,0 +1,13 @@
+[package]
+name = "hospital-hms"
+version = "1.0.0"
+edition = "2021"
+description = "Hospital Management System - Desktop App"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }

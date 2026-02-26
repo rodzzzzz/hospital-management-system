@@ -52,7 +52,7 @@ function getNextQueuePosition(PDO $pdo, int $stationId): int
     $stmt = $pdo->prepare("
         SELECT MAX(queue_position) as max_position 
         FROM patient_queue 
-        WHERE station_id = ? AND status IN ('waiting', 'in_progress')
+        WHERE station_id = ? AND status IN ('waiting', 'queued', 'in_progress')
     ");
     $stmt->execute([$stationId]);
     $result = $stmt->fetch();
@@ -122,7 +122,7 @@ function callNextAndMarkUnavailable(PDO $pdo, int $stationId, int $staffUserId):
             SELECT pq.*, p.full_name, p.patient_code
             FROM patient_queue pq
             LEFT JOIN patients p ON pq.patient_id = p.id
-            WHERE pq.station_id = ? AND pq.status = 'waiting'
+            WHERE pq.station_id = ? AND pq.status IN ('waiting', 'queued')
             ORDER BY pq.queue_position ASC
             LIMIT 1
         ");
@@ -147,7 +147,7 @@ function callNextAndMarkUnavailable(PDO $pdo, int $stationId, int $staffUserId):
         $reorderStmt = $pdo->prepare("
             UPDATE patient_queue 
             SET queue_position = queue_position - 1
-            WHERE station_id = ? AND status = 'waiting' AND queue_position > ?
+            WHERE station_id = ? AND status IN ('waiting', 'queued') AND queue_position > ?
         ");
         $reorderStmt->execute([$stationId, $currentlyServing['queue_position']]);
         
@@ -199,7 +199,7 @@ function callNextPatient(PDO $pdo, int $stationId, int $staffUserId): ?array
             SELECT pq.*, p.full_name, p.patient_code
             FROM patient_queue pq
             LEFT JOIN patients p ON pq.patient_id = p.id
-            WHERE pq.station_id = ? AND pq.status = 'waiting'
+            WHERE pq.station_id = ? AND pq.status IN ('waiting', 'queued')
             ORDER BY pq.queue_position ASC
             LIMIT 1
         ");
@@ -233,6 +233,70 @@ function callNextPatient(PDO $pdo, int $stationId, int $staffUserId): ?array
 }
 
 /**
+ * Get queue list for a station (staff monitor view)
+ * Normalizes DB status `in_progress` to `serving` for frontend compatibility.
+ */
+function getStationQueueList(PDO $pdo, int $stationId): array
+{
+    $station = getQueueStation($pdo, $stationId);
+    if (!$station) {
+        throw new Exception('Station not found');
+    }
+
+    $stmt = $pdo->prepare(" 
+        SELECT
+            pq.id,
+            pq.queue_number,
+            pq.status,
+            pq.created_at,
+            pq.started_at,
+            pq.updated_at,
+            p.full_name AS patient_name,
+            p.full_name,
+            p.patient_code
+        FROM patient_queue pq
+        LEFT JOIN patients p ON pq.patient_id = p.id
+        WHERE pq.station_id = ?
+          AND pq.status IN ('in_progress', 'waiting', 'queued', 'unavailable')
+        ORDER BY
+            CASE
+                WHEN pq.status = 'in_progress' THEN 1
+                WHEN pq.status IN ('waiting', 'queued') THEN 2
+                WHEN pq.status = 'unavailable' THEN 3
+                ELSE 4
+            END,
+            pq.queue_position ASC,
+            pq.created_at ASC
+    ");
+    $stmt->execute([$stationId]);
+    $rows = $stmt->fetchAll();
+
+    $queue = [];
+    foreach ($rows as $r) {
+        $status = (string)($r['status'] ?? '');
+        if ($status === 'in_progress') {
+            $status = 'serving';
+        } elseif ($status === 'queued') {
+            $status = 'waiting';
+        }
+
+        $queue[] = [
+            'id' => (int)$r['id'],
+            'queue_number' => (int)$r['queue_number'],
+            'patient_name' => (string)($r['patient_name'] ?? ''),
+            'full_name' => (string)($r['full_name'] ?? ''),
+            'patient_code' => (string)($r['patient_code'] ?? ''),
+            'status' => $status,
+            'created_at' => $r['created_at'],
+            'started_at' => $r['started_at'],
+            'updated_at' => $r['updated_at'],
+        ];
+    }
+
+    return $queue;
+}
+
+/**
  * Get display data for station screen
  */
 function getStationDisplayData(PDO $pdo, int $stationId): array
@@ -250,7 +314,7 @@ function getStationDisplayData(PDO $pdo, int $stationId): array
         SELECT pq.*, p.full_name, p.patient_code
         FROM patient_queue pq
         LEFT JOIN patients p ON pq.patient_id = p.id
-        WHERE pq.station_id = ? AND pq.status = 'waiting'
+        WHERE pq.station_id = ? AND pq.status IN ('waiting', 'queued')
         ORDER BY pq.queue_position ASC
         LIMIT 10
     ");
@@ -264,7 +328,7 @@ function getStationDisplayData(PDO $pdo, int $stationId): array
     $stmt = $pdo->prepare("
         SELECT COUNT(*) as count
         FROM patient_queue 
-        WHERE station_id = ? AND status = 'waiting'
+        WHERE station_id = ? AND status IN ('waiting', 'queued')
     ");
     $stmt->execute([$stationId]);
     $queueCount = $stmt->fetch()['count'];
@@ -324,7 +388,7 @@ function recallUnavailablePatient(PDO $pdo, int $queueId, int $staffUserId): boo
         $positionStmt = $pdo->prepare("
             SELECT COALESCE(MAX(queue_position), 0) + 1 as next_position
             FROM patient_queue 
-            WHERE station_id = ? AND status = 'waiting'
+            WHERE station_id = ? AND status IN ('waiting', 'queued')
         ");
         $positionStmt->execute([$queue['station_id']]);
         $nextPosition = $positionStmt->fetch()['next_position'];
@@ -405,7 +469,7 @@ function completeServiceWithTarget(PDO $pdo, int $queueId, int $staffUserId, ?in
             $positionStmt = $pdo->prepare("
                 SELECT COALESCE(MAX(queue_position), 0) + 1 as next_position
                 FROM patient_queue 
-                WHERE station_id = ? AND status IN ('waiting', 'in_progress')
+                WHERE station_id = ? AND status IN ('waiting', 'queued', 'in_progress')
             ");
             $positionStmt->execute([$targetStationId]);
             $nextPosition = $positionStmt->fetch()['next_position'];
@@ -613,7 +677,7 @@ function confirmQueueCorrection(PDO $pdo, int $errorLogId, int $confirmedBy): ar
         $positionStmt = $pdo->prepare("
             SELECT COALESCE(MAX(queue_position), 0) + 1 as next_position
             FROM patient_queue
-            WHERE station_id = ? AND status IN ('waiting', 'in_progress')
+            WHERE station_id = ? AND status IN ('waiting', 'queued', 'in_progress')
         ");
         $positionStmt->execute([$correctStationId]);
         $nextPosition = $positionStmt->fetch()['next_position'];
