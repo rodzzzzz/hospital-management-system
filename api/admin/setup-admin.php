@@ -1,7 +1,10 @@
 <?php
+require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../auth/_session.php';
 require_once __DIR__ . '/../users/_tables.php';
+
+cors_headers();
 
 auth_session_start();
 

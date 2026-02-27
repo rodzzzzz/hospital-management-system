@@ -3204,7 +3204,7 @@
             // Final duplicate check (first+last+dob+sex) before saving
             if (!skipDuplicateCheck) {
                 try {
-                    const checkResponse = await fetch('../api/patients/check-duplicate.php', {
+                    const checkResponse = await fetch('../../api/patients/check-duplicate.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -3260,7 +3260,7 @@
             };
 
             try {
-                const response = await fetch('../api/queue/enqueue.php', {
+                const response = await fetch('../../api/queue/enqueue.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3576,7 +3576,7 @@
                 if (lastName) params.append('last_name', lastName);
                 if (philhealth) params.append('philhealth', philhealth);
 
-                const response = await fetch('../api/patients/kiosk-search.php?' + params.toString(), {
+                const response = await fetch('../../api/patients/kiosk-search.php?' + params.toString(), {
                     headers: { 'Accept': 'application/json' }
                 });
                 const result = await response.json();
@@ -3731,7 +3731,7 @@
                 const loadingEl = document.getElementById('searchLoading');
                 loadingEl.classList.remove('hidden');
 
-                const response = await fetch('../api/queue/enqueue.php', {
+                const response = await fetch('../../api/queue/enqueue.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3938,7 +3938,7 @@
                 
                 console.log('Sending duplicate check request:', requestBody);
 
-                const response = await fetch('../api/patients/check-duplicate.php', {
+                const response = await fetch('../../api/patients/check-duplicate.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4405,7 +4405,7 @@
             if (btn) btn.disabled = true;
 
             try {
-                const res = await fetch('../api/patients/autofill.php', { headers: { 'Accept': 'application/json' } });
+                const res = await fetch('../../api/patients/autofill.php', { headers: { 'Accept': 'application/json' } });
                 const json = await res.json().catch(() => null);
                 if (!res.ok || !json || !json.ok || !json.patient) {
                     alert((json && json.error) ? json.error : 'Failed to autofill');

@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../queue/_functions.php';
+
+cors_headers();
 
 echo "<h1>Refresh Patient Queue - OPD</h1>";
 echo "<p>This script will clear the current patient_queue table and add all patients to the OPD station with fresh queue numbers.</p>";
