@@ -83,3 +83,42 @@ function broadcastCorrectionAlert(int $wrongStationId, array $correction): void
     $rooms = ["queue-{$wrongStationId}"];
     broadcastWebSocketEvent('correction_alert', 'new_correction', $rooms, $correction);
 }
+
+/**
+ * Broadcast queue return request alert (Reverse QEC)
+ * Notifies the origin station (Station A) that a receiving station filed a return request
+ * 
+ * @param int $originStationId Station that originally sent the patient
+ * @param array $requestData Return request data
+ */
+function broadcastReturnRequestAlert(int $originStationId, array $requestData): void
+{
+    $rooms = ["queue-{$originStationId}"];
+    broadcastWebSocketEvent('return_request_alert', 'new_return_request', $rooms, $requestData);
+}
+
+/**
+ * Broadcast queue return request response (confirm/reject)
+ * Notifies the requesting station (Station B) of the origin station's decision
+ * 
+ * @param int $requestingStationId Station that filed the return request
+ * @param array $responseData Response data including type (confirmed/rejected)
+ */
+function broadcastReturnResponse(int $requestingStationId, array $responseData): void
+{
+    $rooms = ["queue-{$requestingStationId}"];
+    broadcastWebSocketEvent('return_request_response', 'return_response', $rooms, $responseData);
+}
+
+/**
+ * Broadcast acknowledgement that Station B has seen a rejection.
+ * Notifies Station A (origin station).
+ *
+ * @param int $originStationId Station that rejected the return request
+ * @param array $ackData Acknowledgement payload
+ */
+function broadcastReturnRejectionAcknowledged(int $originStationId, array $ackData): void
+{
+    $rooms = ["queue-{$originStationId}"];
+    broadcastWebSocketEvent('return_request_ack', 'rejection_acknowledged', $rooms, $ackData);
+}

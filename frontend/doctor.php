@@ -70,8 +70,8 @@ if (!$authUser || !auth_user_has_module($authUser, 'DOCTOR')) {
                             <button id="doctorCallNextBtn" onclick="callNextPatient()" class="p-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center">
                                 <i class="fas fa-bell mr-2"></i> Call Next Patient
                             </button>
-                            <button onclick="qecOpenReportModal()" class="p-4 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors flex items-center">
-                                <i class="fas fa-exclamation-triangle mr-2"></i> Report Wrong Station
+                            <button onclick="queueErrorReportOpen()" class="p-4 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i> Report Queue Error
                             </button>
                         </div>
                     </div>
@@ -1601,9 +1601,13 @@ if (!$authUser || !auth_user_has_module($authUser, 'DOCTOR')) {
         `;
         document.head.appendChild(style);
     </script>
+    <?php include __DIR__ . '/includes/queue-error-report-modal.php'; ?>
     <?php include __DIR__ . '/includes/queue-error-correction.php'; ?>
     <script>window.qecStationId = 2; window.qecRefreshQueue = function() { loadDoctorQueue(); };</script>
     <?php include __DIR__ . '/includes/queue-error-correction-js.php'; ?>
+    <?php include __DIR__ . '/includes/queue-return-request.php'; ?>
+    <script>window.qrrStationId = 2; window.qrrRefreshQueue = function() { loadDoctorQueue(); };</script>
+    <?php include __DIR__ . '/includes/queue-return-request-js.php'; ?>
 </body>
 
 </html>

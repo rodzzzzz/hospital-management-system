@@ -490,5 +490,7 @@ Lanao Del Sur, BARMM 9300
     </script>
     <script>window.qecDisplayStationId = 4;</script>
     <?php include __DIR__ . '/includes/queue-error-correction-display.php'; ?>
+    <script>window.qrrDisplayStationId = 4;</script>
+    <?php include __DIR__ . '/includes/queue-return-request-display.php'; ?>
 </body>
 </html>
