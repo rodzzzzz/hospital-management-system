@@ -5,6 +5,7 @@ require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../_response.php';
 require_once __DIR__ . '/_tables.php';
+require_once __DIR__ . '/../websocket/_broadcast.php';
 
 cors_headers();
 require_method('POST');
@@ -252,6 +253,18 @@ try {
     $patient = $stmt->fetch();
 
     $pdo->commit();
+
+    // Broadcast queue update via WebSocket
+    $stmtStation = $pdo->prepare('SELECT station_id FROM patient_queue WHERE id = :id LIMIT 1');
+    $stmtStation->execute(['id' => $queueId]);
+    $queueStation = $stmtStation->fetch();
+    if ($queueStation) {
+        broadcastQueueUpdate('queue-confirmed', [(int)$queueStation['station_id']], [
+            'queue_id' => $queueId,
+            'station_id' => (int)$queueStation['station_id'],
+            'patient_id' => $patientId,
+        ]);
+    }
 
     json_response([
         'ok' => true,

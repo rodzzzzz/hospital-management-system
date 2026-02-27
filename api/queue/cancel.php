@@ -5,6 +5,7 @@ require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../_response.php';
 require_once __DIR__ . '/_tables.php';
+require_once __DIR__ . '/../websocket/_broadcast.php';
 
 cors_headers();
 require_method('POST');
@@ -25,8 +26,21 @@ try {
     $pdo = db();
     ensure_patient_queue_table($pdo);
 
-    $stmt = $pdo->prepare('UPDATE patient_queue SET status = \"cancelled\" WHERE id = :id AND status = \"queued\"');
+    // Get station_id before cancelling so we can broadcast
+    $stmtInfo = $pdo->prepare('SELECT station_id FROM patient_queue WHERE id = :id LIMIT 1');
+    $stmtInfo->execute(['id' => $queueId]);
+    $queueInfo = $stmtInfo->fetch();
+
+    $stmt = $pdo->prepare('UPDATE patient_queue SET status = "cancelled" WHERE id = :id AND status = "queued"');
     $stmt->execute(['id' => $queueId]);
+
+    // Broadcast queue update via WebSocket
+    if ($queueInfo && $stmt->rowCount() > 0) {
+        broadcastQueueUpdate('queue-cancelled', [(int)$queueInfo['station_id']], [
+            'queue_id' => $queueId,
+            'station_id' => (int)$queueInfo['station_id'],
+        ]);
+    }
 
     json_response(['ok' => true]);
 } catch (Throwable $e) {

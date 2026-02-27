@@ -12,7 +12,7 @@ declare(strict_types=1);
  */
 function broadcastWebSocketEvent(string $type, string $event, array $rooms, array $payload): bool
 {
-    $wsServerUrl = getenv('WS_BROADCAST_URL') ?: 'http://localhost:8081/broadcast';
+    $wsServerUrl = getenv('WS_BROADCAST_URL') ?: 'http://127.0.0.1:8081/broadcast';
     
     $data = [
         'type' => $type,
@@ -26,8 +26,9 @@ function broadcastWebSocketEvent(string $type, string $event, array $rooms, arra
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 2000);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 1000);
     
     $result = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

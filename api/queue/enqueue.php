@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../_response.php';
+require_once __DIR__ . '/../websocket/_broadcast.php';
 
 cors_headers();
 require_method('POST');
@@ -195,8 +196,8 @@ try {
     
     $stationId = (int)$station['id'];
 
-    // Check if patient is already in queue for this station
-    $stmt = $pdo->prepare('SELECT id, queue_number, queue_position FROM patient_queue WHERE patient_id = ? AND station_id = ? AND status IN ("waiting", "in_progress") LIMIT 1');
+    // Check if patient is already in queue for this station (today only — queue resets daily)
+    $stmt = $pdo->prepare('SELECT id, queue_number, queue_position FROM patient_queue WHERE patient_id = ? AND station_id = ? AND status IN ("waiting", "in_progress") AND DATE(arrived_at) = CURDATE() LIMIT 1');
     $stmt->execute([$patientId, $stationId]);
     $existingQueue = $stmt->fetch();
     
@@ -239,6 +240,7 @@ try {
         'queue_id' => $queueId,
         'queue_number' => $queueNumber,
         'queue_position' => $queuePosition,
+        'station_id' => $stationId,
         'station_name' => $stationName,
         'patient' => $patient,
     ];
@@ -250,6 +252,15 @@ try {
             'message' => 'Patient registered and queued successfully via kiosk',
         ];
     }
+
+    // Broadcast queue update via WebSocket so display screens refresh instantly
+    broadcastQueueUpdate('patient-enqueued', [$stationId], [
+        'queue_id' => $queueId,
+        'queue_number' => $queueNumber,
+        'station_id' => $stationId,
+        'station_name' => $stationName,
+        'patient_name' => $patient['full_name'] ?? '',
+    ]);
 
     json_response($response);
 } catch (Throwable $e) {

@@ -7,6 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <?php require_once __DIR__ . '/../config.php'; ?>
+    <script>
+        window.API_BASE_URL = <?php echo json_encode(rtrim(API_BASE_URL, '/')); ?>;
+        window.WS_URL = <?php echo json_encode(defined('WS_URL') ? WS_URL : 'ws://localhost:8080'); ?>;
+    </script>
+    <?php include __DIR__ . '/../includes/websocket-client.php'; ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * {
@@ -2956,6 +2962,15 @@
                         <div class="queue-number" id="patientCodeDisplay"></div>
                     </div>
                     
+                    <!-- Live Queue Position -->
+                    <div id="kioskQueuePosition" class="hidden mt-6">
+                        <p class="text-gray-500 text-base font-semibold uppercase tracking-widest mb-1">Your Position in Line</p>
+                        <p id="kioskQueuePositionNumber" class="text-5xl font-black text-indigo-700 transition-all duration-300">-</p>
+                        <div id="kioskWsStatus" class="mt-2 flex items-center justify-center gap-2 text-sm text-gray-400">
+                            <span class="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Live updates
+                        </div>
+                    </div>
+                    
                     <!-- Wait message -->
                     <p class="mt-8 text-gray-600 text-lg sm:text-xl font-medium">Please wait for your turn.</p>
                     
@@ -2986,6 +3001,91 @@
 
         let kioskIdleTimer = null;
         let lastActivityTime = Date.now();
+
+        // ===================== WebSocket Queue Position Tracking =====================
+        let _kioskQueueStationId = null;
+        let _kioskQueueNumber = null;
+        let _kioskWsHandler = null;
+
+        function kioskStartQueueTracking(stationId, queueNumber, queuePosition) {
+            _kioskQueueStationId = stationId;
+            _kioskQueueNumber = queueNumber;
+
+            // Show position UI
+            const posEl = document.getElementById('kioskQueuePosition');
+            const posNumEl = document.getElementById('kioskQueuePositionNumber');
+            if (posEl && posNumEl && queuePosition) {
+                posNumEl.textContent = queuePosition;
+                posEl.classList.remove('hidden');
+            }
+
+            // Subscribe to station room for live updates
+            if (typeof HospitalWS !== 'undefined') {
+                HospitalWS.subscribe('queue-' + stationId);
+                HospitalWS.subscribe('global');
+
+                _kioskWsHandler = function() {
+                    kioskRefreshQueuePosition();
+                };
+                HospitalWS.on('queue_update', _kioskWsHandler);
+                HospitalWS.on('fallback_poll', _kioskWsHandler);
+            }
+        }
+
+        function kioskStopQueueTracking() {
+            if (_kioskWsHandler && typeof HospitalWS !== 'undefined') {
+                HospitalWS.off('queue_update', _kioskWsHandler);
+                HospitalWS.off('fallback_poll', _kioskWsHandler);
+                _kioskWsHandler = null;
+            }
+            _kioskQueueStationId = null;
+            _kioskQueueNumber = null;
+
+            const posEl = document.getElementById('kioskQueuePosition');
+            if (posEl) posEl.classList.add('hidden');
+        }
+
+        async function kioskRefreshQueuePosition() {
+            if (!_kioskQueueStationId || !_kioskQueueNumber) return;
+            try {
+                const apiBase = (typeof window.API_BASE_URL !== 'undefined') ? window.API_BASE_URL : '../../api';
+                const response = await fetch(apiBase + '/queue/display/' + _kioskQueueStationId);
+                const data = await response.json();
+
+                // Find our queue number's position in the waiting list
+                let position = null;
+                if (data && data.next_patients) {
+                    for (let i = 0; i < data.next_patients.length; i++) {
+                        if (data.next_patients[i].queue_number == _kioskQueueNumber) {
+                            position = i + 1;
+                            break;
+                        }
+                    }
+                }
+                // Check if currently being served
+                if (data && data.currently_serving && data.currently_serving.queue_number == _kioskQueueNumber) {
+                    position = 0;
+                }
+
+                const posNumEl = document.getElementById('kioskQueuePositionNumber');
+                const posEl = document.getElementById('kioskQueuePosition');
+                if (posNumEl && posEl) {
+                    if (position === 0) {
+                        posNumEl.textContent = "It's your turn!";
+                        posNumEl.classList.add('text-green-600');
+                        posNumEl.classList.remove('text-indigo-700');
+                    } else if (position !== null) {
+                        posNumEl.textContent = position;
+                        posNumEl.classList.remove('text-green-600');
+                        posNumEl.classList.add('text-indigo-700');
+                    }
+                    posEl.classList.remove('hidden');
+                }
+            } catch (e) {
+                // Silently ignore fetch errors on kiosk
+            }
+        }
+        // ===================== End WebSocket Queue Position Tracking =====================
         const KIOSK_IDLE_MS = 60000;
         const ACTIVITY_THROTTLE_MS = 1000; // Only reset timer at most once per second
 
@@ -3204,7 +3304,7 @@
             // Final duplicate check (first+last+dob+sex) before saving
             if (!skipDuplicateCheck) {
                 try {
-                    const checkResponse = await fetch('../../api/patients/check-duplicate.php', {
+                    const checkResponse = await fetch(window.API_BASE_URL + '/patients/check-duplicate.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -3260,7 +3360,7 @@
             };
 
             try {
-                const response = await fetch('../../api/queue/enqueue.php', {
+                const response = await fetch(window.API_BASE_URL + '/queue/enqueue.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3286,6 +3386,9 @@
                         stepperBar.style.display = 'none';
                     }
                     
+                    // Start real-time queue position tracking via WebSocket
+                    kioskStartQueueTracking(result.station_id || 1, result.queue_number, result.queue_position);
+                    
                     // Reset skip flag for next registration
                     skipDuplicateCheck = false;
                 } else {
@@ -3297,6 +3400,9 @@
         }
 
         function resetForm() {
+            // Stop WebSocket queue tracking
+            kioskStopQueueTracking();
+
             // Reset all form inputs in the registration section
             const regSection = document.getElementById('kioskRegistration');
             if (regSection) {
@@ -3576,7 +3682,7 @@
                 if (lastName) params.append('last_name', lastName);
                 if (philhealth) params.append('philhealth', philhealth);
 
-                const response = await fetch('../../api/patients/kiosk-search.php?' + params.toString(), {
+                const response = await fetch(window.API_BASE_URL + '/patients/kiosk-search.php?' + params.toString(), {
                     headers: { 'Accept': 'application/json' }
                 });
                 const result = await response.json();
@@ -3731,7 +3837,7 @@
                 const loadingEl = document.getElementById('searchLoading');
                 loadingEl.classList.remove('hidden');
 
-                const response = await fetch('../../api/queue/enqueue.php', {
+                const response = await fetch(window.API_BASE_URL + '/queue/enqueue.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3783,6 +3889,9 @@
 
                     const stepperBar = document.getElementById('stepperBar');
                     if (stepperBar) stepperBar.style.display = 'none';
+
+                    // Start real-time queue position tracking via WebSocket
+                    kioskStartQueueTracking(result.station_id || 1, result.queue_number, result.queue_position);
                 } else {
                     // Special handling for "already in queue" error
                     if (result.error === 'Patient is already in queue for this station' && result.queue_number) {
@@ -3938,7 +4047,7 @@
                 
                 console.log('Sending duplicate check request:', requestBody);
 
-                const response = await fetch('../../api/patients/check-duplicate.php', {
+                const response = await fetch(window.API_BASE_URL + '/patients/check-duplicate.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4405,7 +4514,7 @@
             if (btn) btn.disabled = true;
 
             try {
-                const res = await fetch('../../api/patients/autofill.php', { headers: { 'Accept': 'application/json' } });
+                const res = await fetch(window.API_BASE_URL + '/patients/autofill.php', { headers: { 'Accept': 'application/json' } });
                 const json = await res.json().catch(() => null);
                 if (!res.ok || !json || !json.ok || !json.patient) {
                     alert((json && json.error) ? json.error : 'Failed to autofill');
