@@ -70,109 +70,6 @@
                     </div>
                 </div>
 
-                <!-- Bed Configuration Section -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-800">Bed Configuration</h2>
-                        <button type="button" id="btnAddRoom" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Room
-                        </button>
-                    </div>
-                    
-                    <!-- Ward Tabs -->
-                    <div class="border-b border-gray-200 mb-4">
-                        <nav class="-mb-px flex space-x-8">
-                            <button type="button" class="ward-tab active py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-ward="icu">
-                                ICU
-                            </button>
-                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="pedia">
-                                Pediatrics
-                            </button>
-                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="obgyne">
-                                OB-GYN
-                            </button>
-                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="surgical">
-                                Surgical
-                            </button>
-                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="medical">
-                                Medical
-                            </button>
-                        </nav>
-                    </div>
-
-                    <!-- Bed Grid -->
-                    <div id="bedGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        <!-- Beds will be loaded here -->
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button type="button" id="btnBulkClean" class="flex items-center justify-center px-4 py-3 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition-colors">
-                            <i class="fas fa-broom mr-2"></i>
-                            Mark All Available as Clean
-                        </button>
-                        <button type="button" id="btnBulkMaintenance" class="flex items-center justify-center px-4 py-3 bg-orange-100 text-orange-800 rounded-lg hover:bg-orange-200 transition-colors">
-                            <i class="fas fa-tools mr-2"></i>
-                            Schedule Maintenance
-                        </button>
-                        <button type="button" id="btnExportBeds" class="flex items-center justify-center px-4 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-file-export mr-2"></i>
-                            Export Bed Report
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Availability Section -->
-            <section id="availability" class="bed-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Bed Availability</h2>
-                            <p class="text-sm text-gray-600 mt-1">View available beds by ward and room type.</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <select class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Wards</option>
-                                <option value="pedia">Pediatrics</option>
-                                <option value="obgyne">OB-GYN</option>
-                                <option value="surgical">Surgical</option>
-                                <option value="medical">Medical</option>
-                            </select>
-                            <select class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Room Types</option>
-                                <option value="ward">Ward</option>
-                                <option value="semi-private">Semi-Private</option>
-                                <option value="private">Private</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-bed text-4xl mb-3"></i>
-                        <p class="text-sm">Bed availability list will appear here.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Room Transfers Section -->
-            <section id="transfers" class="bed-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Room Transfers</h2>
-                            <p class="text-sm text-gray-600 mt-1">Manage patient room and ward transfers.</p>
-                        </div>
-                        <button type="button" id="btnNewTransfer" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-right-left mr-2"></i>New Transfer
-                        </button>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-right-left text-4xl mb-3"></i>
-                        <p class="text-sm">No pending room transfers.</p>
-                    </div>
-                </div>
             </section>
 
             <!-- Housekeeping Status Section -->
@@ -194,24 +91,6 @@
                 </div>
             </section>
 
-            <!-- Occupancy Reports Section -->
-            <section id="reports" class="bed-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Occupancy Reports</h2>
-                            <p class="text-sm text-gray-600 mt-1">Bed occupancy statistics and trends.</p>
-                        </div>
-                        <button type="button" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                            <i class="fas fa-file-export mr-2"></i>Export
-                        </button>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-file-alt text-4xl mb-3"></i>
-                        <p class="text-sm">Occupancy reports will appear here.</p>
-                    </div>
-                </div>
-            </section>
         </main>
     </div>
 

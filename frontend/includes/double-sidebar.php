@@ -164,25 +164,13 @@ $navItems = [
         'href' => 'admissions.php',
         'label' => 'Admissions',
         'icon' => 'fas fa-bed-pulse',
-        'active_pages' => ['admissions.php'],
+        'active_pages' => ['admissions.php', 'bed-management.php', 'discharge.php'],
     ],
     [
         'href' => 'ward-management.php',
         'label' => 'Ward Management',
         'icon' => 'fas fa-hospital',
         'active_pages' => ['ward-management.php'],
-    ],
-    [
-        'href' => 'bed-management.php',
-        'label' => 'Bed Management',
-        'icon' => 'fas fa-bed',
-        'active_pages' => ['bed-management.php'],
-    ],
-    [
-        'href' => 'discharge.php',
-        'label' => 'Discharge',
-        'icon' => 'fas fa-door-open',
-        'active_pages' => ['discharge.php'],
     ],
     [
         'href' => 'dialysis.php',
@@ -731,6 +719,8 @@ $philhealthInnerItems = [
 
 $admissionsPages = [
     'admissions.php',
+    'bed-management.php',
+    'discharge.php',
 ];
 
 $admissionsInnerItems = [
@@ -740,29 +730,23 @@ $admissionsInnerItems = [
         'icon' => 'fas fa-chart-line',
     ],
     [
-        'href' => 'admissions.php#registration',
-        'label' => 'Patient Registration',
-        'icon' => 'fas fa-user-plus',
+        'href' => 'bed-management.php#housekeeping',
+        'label' => 'Housekeeping',
+        'icon' => 'fas fa-broom',
     ],
     [
-        'href' => 'admissions.php#queue',
-        'label' => 'Admission Queue',
-        'icon' => 'fas fa-users-line',
+        'type' => 'separator',
+        'label' => 'Discharge',
     ],
     [
-        'href' => 'admissions.php#pre-admission',
-        'label' => 'Pre-admission',
-        'icon' => 'fas fa-clipboard-check',
+        'href' => 'discharge.php#dashboard',
+        'label' => 'Discharge Dashboard',
+        'icon' => 'fas fa-door-open',
     ],
     [
-        'href' => 'admissions.php#bed-assignment',
-        'label' => 'Bed Assignment',
-        'icon' => 'fas fa-bed',
-    ],
-    [
-        'href' => 'admissions.php#insurance',
-        'label' => 'Insurance Verification',
-        'icon' => 'fas fa-shield-halved',
+        'href' => 'discharge.php#planning',
+        'label' => 'Discharge Planning',
+        'icon' => 'fas fa-clipboard-list',
     ],
 ];
 
@@ -828,74 +812,6 @@ $wardInnerItems = [
     ],
 ];
 
-$bedPages = [
-    'bed-management.php',
-];
-
-$bedInnerItems = [
-    [
-        'href' => 'bed-management.php#overview',
-        'label' => 'Bed Overview',
-        'icon' => 'fas fa-chart-line',
-    ],
-    [
-        'href' => 'bed-management.php#availability',
-        'label' => 'Availability',
-        'icon' => 'fas fa-bed',
-    ],
-    [
-        'href' => 'bed-management.php#transfers',
-        'label' => 'Room Transfers',
-        'icon' => 'fas fa-right-left',
-    ],
-    [
-        'href' => 'bed-management.php#housekeeping',
-        'label' => 'Housekeeping Status',
-        'icon' => 'fas fa-broom',
-    ],
-    [
-        'href' => 'bed-management.php#reports',
-        'label' => 'Occupancy Reports',
-        'icon' => 'fas fa-file-alt',
-    ],
-];
-
-$dischargePages = [
-    'discharge.php',
-];
-
-$dischargeInnerItems = [
-    [
-        'href' => 'discharge.php#dashboard',
-        'label' => 'Dashboard',
-        'icon' => 'fas fa-chart-line',
-    ],
-    [
-        'href' => 'discharge.php#planning',
-        'label' => 'Discharge Planning',
-        'icon' => 'fas fa-clipboard-list',
-    ],
-    [
-        'href' => 'discharge.php#orders',
-        'label' => 'Discharge Orders',
-        'icon' => 'fas fa-file-medical',
-    ],
-    [
-        'href' => 'discharge.php#instructions',
-        'label' => 'Patient Instructions',
-        'icon' => 'fas fa-file-lines',
-    ],
-    [
-        'href' => 'discharge.php#followup',
-        'label' => 'Follow-up Schedule',
-        'icon' => 'fas fa-calendar-check',
-    ],
-    [
-        'href' => 'discharge.php#clearance',
-        'label' => 'Final Clearance',
-        'icon' => 'fas fa-circle-check',
-    ],
-];
 
 $erPages = [
     'er.php',
@@ -1557,6 +1473,11 @@ $opdInnerItems = [
                     <nav id="admissions-inner-nav">
                         <ul class="space-y-1">
                             <?php foreach ($admissionsInnerItems as $inner): ?>
+                                <?php if (isset($inner['type']) && $inner['type'] === 'separator'): ?>
+                                <li class="pt-3 pb-1">
+                                    <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-3"><?php echo htmlspecialchars($inner['label'], ENT_QUOTES); ?></div>
+                                </li>
+                                <?php else: ?>
                                 <?php
                                 $innerHref = (string)($inner['href'] ?? '');
                                 $innerFragment = (string)(parse_url($innerHref, PHP_URL_FRAGMENT) ?: '');
@@ -1568,6 +1489,7 @@ $opdInnerItems = [
                                         <span class="font-medium"><?php echo htmlspecialchars($inner['label'], ENT_QUOTES); ?></span>
                                     </a>
                                 </li>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </ul>
                     </nav>
@@ -1582,48 +1504,6 @@ $opdInnerItems = [
                                 $innerHref = (string)($inner['href'] ?? '');
                                 $innerFragment = (string)(parse_url($innerHref, PHP_URL_FRAGMENT) ?: '');
                                 $innerClass = 'ward-inner-link flex items-center gap-x-3 px-3 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors duration-200';
-                                ?>
-                                <li>
-                                    <a href="<?php echo htmlspecialchars($innerHref, ENT_QUOTES); ?>" data-hash="<?php echo htmlspecialchars($innerFragment, ENT_QUOTES); ?>" class="<?php echo $innerClass; ?>">
-                                        <i class="<?php echo htmlspecialchars($inner['icon'], ENT_QUOTES); ?> w-5 text-center"></i>
-                                        <span class="font-medium"><?php echo htmlspecialchars($inner['label'], ENT_QUOTES); ?></span>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </nav>
-                </div>
-            <?php elseif (in_array($current, $bedPages, true)): ?>
-                <div class="pt-4">
-                    <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-2 pb-2">Bed Management</div>
-                    <nav id="bed-inner-nav">
-                        <ul class="space-y-1">
-                            <?php foreach ($bedInnerItems as $inner): ?>
-                                <?php
-                                $innerHref = (string)($inner['href'] ?? '');
-                                $innerFragment = (string)(parse_url($innerHref, PHP_URL_FRAGMENT) ?: '');
-                                $innerClass = 'bed-inner-link flex items-center gap-x-3 px-3 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors duration-200';
-                                ?>
-                                <li>
-                                    <a href="<?php echo htmlspecialchars($innerHref, ENT_QUOTES); ?>" data-hash="<?php echo htmlspecialchars($innerFragment, ENT_QUOTES); ?>" class="<?php echo $innerClass; ?>">
-                                        <i class="<?php echo htmlspecialchars($inner['icon'], ENT_QUOTES); ?> w-5 text-center"></i>
-                                        <span class="font-medium"><?php echo htmlspecialchars($inner['label'], ENT_QUOTES); ?></span>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </nav>
-                </div>
-            <?php elseif (in_array($current, $dischargePages, true)): ?>
-                <div class="pt-4">
-                    <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-2 pb-2">Discharge</div>
-                    <nav id="discharge-inner-nav">
-                        <ul class="space-y-1">
-                            <?php foreach ($dischargeInnerItems as $inner): ?>
-                                <?php
-                                $innerHref = (string)($inner['href'] ?? '');
-                                $innerFragment = (string)(parse_url($innerHref, PHP_URL_FRAGMENT) ?: '');
-                                $innerClass = 'discharge-inner-link flex items-center gap-x-3 px-3 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors duration-200';
                                 ?>
                                 <li>
                                     <a href="<?php echo htmlspecialchars($innerHref, ENT_QUOTES); ?>" data-hash="<?php echo htmlspecialchars($innerFragment, ENT_QUOTES); ?>" class="<?php echo $innerClass; ?>">
@@ -3041,19 +2921,16 @@ $opdInnerItems = [
             p = (p.split('?')[0] || '').split('#')[0];
             return (p || '').replace(/^.*\//, '');
         }
-        if (getPage() !== 'admissions.php') {
-            nav.querySelectorAll('a.admissions-inner-link[data-hash]').forEach(function (a) {
-                a.className = 'admissions-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-gray-200';
-            });
-            return;
-        }
         function setActiveFromHash() {
             var h = '';
             try { h = (window.location.hash || '').toString().replace(/^#/, ''); } catch (e0) { h = ''; }
             if (!h) h = 'dashboard';
             nav.querySelectorAll('a.admissions-inner-link[data-hash]').forEach(function (a) {
                 var target = (a.getAttribute('data-hash') || '').toString();
-                a.className = 'admissions-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ' + (target === h ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
+                var href = a.getAttribute('href') || '';
+                var isCurrentPage = href.includes(getPage() + '#');
+                var isActive = isCurrentPage && target === h;
+                a.className = 'admissions-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ' + (isActive ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
             });
         }
         setActiveFromHash();
@@ -3090,61 +2967,4 @@ $opdInnerItems = [
         nav.addEventListener('click', function () { window.setTimeout(setActiveFromHash, 0); });
     })();
 
-    (function () {
-        var nav = document.getElementById('bed-inner-nav');
-        if (!nav) return;
-        function getPage() {
-            var p = '';
-            try { p = (window.location && window.location.pathname ? window.location.pathname : '').toString(); } catch (e0) { p = ''; }
-            p = (p.split('?')[0] || '').split('#')[0];
-            return (p || '').replace(/^.*\//, '');
-        }
-        if (getPage() !== 'bed-management.php') {
-            nav.querySelectorAll('a.bed-inner-link[data-hash]').forEach(function (a) {
-                a.className = 'bed-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-gray-200';
-            });
-            return;
-        }
-        function setActiveFromHash() {
-            var h = '';
-            try { h = (window.location.hash || '').toString().replace(/^#/, ''); } catch (e0) { h = ''; }
-            if (!h) h = 'overview';
-            nav.querySelectorAll('a.bed-inner-link[data-hash]').forEach(function (a) {
-                var target = (a.getAttribute('data-hash') || '').toString();
-                a.className = 'bed-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ' + (target === h ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
-            });
-        }
-        setActiveFromHash();
-        window.addEventListener('hashchange', setActiveFromHash);
-        nav.addEventListener('click', function () { window.setTimeout(setActiveFromHash, 0); });
-    })();
-
-    (function () {
-        var nav = document.getElementById('discharge-inner-nav');
-        if (!nav) return;
-        function getPage() {
-            var p = '';
-            try { p = (window.location && window.location.pathname ? window.location.pathname : '').toString(); } catch (e0) { p = ''; }
-            p = (p.split('?')[0] || '').split('#')[0];
-            return (p || '').replace(/^.*\//, '');
-        }
-        if (getPage() !== 'discharge.php') {
-            nav.querySelectorAll('a.discharge-inner-link[data-hash]').forEach(function (a) {
-                a.className = 'discharge-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-gray-200';
-            });
-            return;
-        }
-        function setActiveFromHash() {
-            var h = '';
-            try { h = (window.location.hash || '').toString().replace(/^#/, ''); } catch (e0) { h = ''; }
-            if (!h) h = 'dashboard';
-            nav.querySelectorAll('a.discharge-inner-link[data-hash]').forEach(function (a) {
-                var target = (a.getAttribute('data-hash') || '').toString();
-                a.className = 'discharge-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ' + (target === h ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
-            });
-        }
-        setActiveFromHash();
-        window.addEventListener('hashchange', setActiveFromHash);
-        nav.addEventListener('click', function () { window.setTimeout(setActiveFromHash, 0); });
-    })();
 </script>

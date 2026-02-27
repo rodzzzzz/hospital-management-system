@@ -38,11 +38,11 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-500">Pending Queue</p>
-                                <p class="text-2xl font-bold text-gray-900 mt-1" id="statPendingQueue">—</p>
+                                <p class="text-sm text-gray-500">Total Beds</p>
+                                <p class="text-2xl font-bold text-gray-900 mt-1" id="statTotalBeds">—</p>
                             </div>
-                            <div class="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-users-line text-yellow-600 text-xl"></i>
+                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-bed text-blue-600 text-xl"></i>
                             </div>
                         </div>
                     </div>
@@ -60,13 +60,72 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-500">Pre-admissions</p>
-                                <p class="text-2xl font-bold text-gray-900 mt-1" id="statPreAdmissions">—</p>
+                                <p class="text-sm text-gray-500">Occupied</p>
+                                <p class="text-2xl font-bold text-red-600 mt-1" id="statOccupied">—</p>
                             </div>
-                            <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-clipboard-check text-purple-600 text-xl"></i>
+                            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-person-bed text-red-600 text-xl"></i>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <button type="button" id="btnBulkClean" class="flex items-center justify-center px-4 py-3 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition-colors">
+                            <i class="fas fa-broom mr-2"></i>
+                            Mark All Available as Clean
+                        </button>
+                        <button type="button" id="btnBulkMaintenance" class="flex items-center justify-center px-4 py-3 bg-orange-100 text-orange-800 rounded-lg hover:bg-orange-200 transition-colors">
+                            <i class="fas fa-tools mr-2"></i>
+                            Schedule Maintenance
+                        </button>
+                        <button type="button" id="btnExportBeds" class="flex items-center justify-center px-4 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-file-export mr-2"></i>
+                            Export Bed Report
+                        </button>
+                        <button type="button" id="btnNewTransfer" class="flex items-center justify-center px-4 py-3 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors">
+                            <i class="fas fa-right-left mr-2"></i>
+                            Room Transfer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bed Configuration Section -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Bed Configuration</h2>
+                        <button type="button" id="btnAddRoom" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Add Room
+                        </button>
+                    </div>
+                    
+                    <!-- Ward Tabs -->
+                    <div class="border-b border-gray-200 mb-4">
+                        <nav class="-mb-px flex space-x-8">
+                            <button type="button" class="ward-tab active py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-ward="icu">
+                                ICU
+                            </button>
+                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="pedia">
+                                Pediatrics
+                            </button>
+                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="obgyne">
+                                OB-GYN
+                            </button>
+                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="surgical">
+                                Surgical
+                            </button>
+                            <button type="button" class="ward-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-ward="medical">
+                                Medical
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Bed Grid -->
+                    <div id="bedGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <!-- Beds will be loaded here -->
                     </div>
                 </div>
 
@@ -79,152 +138,53 @@
                 </div>
             </section>
 
-            <!-- Patient Registration Section -->
-            <section id="registration" class="admissions-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Patient Registration</h2>
-                            <p class="text-sm text-gray-600 mt-1">Register a new patient for admission.</p>
-                        </div>
-                        <button type="button" id="btnNewPatient" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-user-plus mr-2"></i>New Patient
-                        </button>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-user-plus text-4xl mb-3"></i>
-                        <p class="text-sm">Patient registration form coming soon.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Admission Queue Section -->
-            <section id="queue" class="admissions-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Admission Queue</h2>
-                            <p class="text-sm text-gray-600 mt-1">Patients waiting for ward assignment.</p>
-                        </div>
-                        <button type="button" id="btnRefreshQueue" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                            <i class="fas fa-rotate mr-2"></i>Refresh
-                        </button>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-users-line text-4xl mb-3"></i>
-                        <p class="text-sm">No patients currently in queue.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pre-admission Section -->
-            <section id="pre-admission" class="admissions-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Pre-admission</h2>
-                            <p class="text-sm text-gray-600 mt-1">Scheduled admissions and pre-operative clearances.</p>
-                        </div>
-                        <button type="button" id="btnSchedulePreAdmission" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Schedule Pre-admission
-                        </button>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-clipboard-check text-4xl mb-3"></i>
-                        <p class="text-sm">No pre-admissions scheduled.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Bed Assignment Section -->
-            <section id="bed-assignment" class="admissions-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Bed Assignment</h2>
-                            <p class="text-sm text-gray-600 mt-1">Assign available beds to admitted patients.</p>
-                        </div>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-bed text-4xl mb-3"></i>
-                        <p class="text-sm">Bed assignment interface coming soon.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Insurance Verification Section -->
-            <section id="insurance" class="admissions-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Insurance Verification</h2>
-                            <p class="text-sm text-gray-600 mt-1">Verify PhilHealth and private insurance coverage.</p>
-                        </div>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-shield-halved text-4xl mb-3"></i>
-                        <p class="text-sm">Insurance verification interface coming soon.</p>
-                    </div>
-                </div>
-            </section>
         </main>
     </div>
 
-    <!-- New Patient Modal -->
-    <div id="newPatientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <!-- Add Room Modal -->
+    <div id="addRoomModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
                 <div class="flex items-center justify-between p-6 border-b">
-                    <h3 class="text-lg font-semibold text-gray-900">New Patient Registration</h3>
-                    <button type="button" id="closeNewPatientModal" class="text-gray-400 hover:text-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Room</h3>
+                    <button type="button" id="closeAddRoomModal" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="newPatientForm" class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                            <input type="text" name="first_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                            <input type="text" name="last_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
-                            <input type="date" name="birth_date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
-                            <select name="gender" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
-                            <input type="tel" name="contact_number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
-                            <input type="tel" name="emergency_contact" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
+                <form id="addRoomForm" class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Ward *</label>
+                        <select name="ward" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Ward</option>
+                            <option value="icu">ICU</option>
+                            <option value="pedia">Pediatrics</option>
+                            <option value="obgyne">OB-GYN</option>
+                            <option value="surgical">Surgical</option>
+                            <option value="medical">Medical</option>
+                        </select>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                        <textarea name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Room Number *</label>
+                        <input type="text" name="room_number" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., 101, 201A">
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Chief Complaint</label>
-                        <textarea name="chief_complaint" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Reason for admission..."></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                        <select name="room_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="ward">Ward (Multiple beds)</option>
+                            <option value="semi-private">Semi-Private (2 beds)</option>
+                            <option value="private">Private (1 bed)</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Number of Beds *</label>
+                        <input type="number" name="bed_count" required min="1" max="20" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div class="flex justify-end gap-3">
-                        <button type="button" id="cancelNewPatient" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <button type="button" id="cancelAddRoom" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
                             Cancel
                         </button>
                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-save mr-2"></i>Register Patient
+                            <i class="fas fa-plus mr-2"></i>Add Room
                         </button>
                     </div>
                 </form>
@@ -232,45 +192,39 @@
         </div>
     </div>
 
-    <!-- Pre-admission Modal -->
-    <div id="preAdmissionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
                 <div class="flex items-center justify-between p-6 border-b">
-                    <h3 class="text-lg font-semibold text-gray-900">Schedule Pre-admission</h3>
-                    <button type="button" id="closePreAdmissionModal" class="text-gray-400 hover:text-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900">New Room Transfer</h3>
+                    <button type="button" id="closeTransferModal" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="preAdmissionForm" class="p-6">
+                <form id="transferForm" class="p-6">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
-                        <select name="patient_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select name="patient_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Loading patients...</option>
                         </select>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled Date *</label>
-                        <input type="date" name="scheduled_date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">To Room *</label>
+                        <select name="to_room" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Available Room</option>
+                        </select>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Procedure/Surgery</label>
-                        <input type="text" name="procedure" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Attending Physician</label>
-                        <input type="text" name="physician" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                        <textarea name="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Transfer</label>
+                        <textarea name="reason" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Medical necessity, patient request, etc."></textarea>
                     </div>
                     <div class="flex justify-end gap-3">
-                        <button type="button" id="cancelPreAdmission" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <button type="button" id="cancelTransfer" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
                             Cancel
                         </button>
                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-calendar-plus mr-2"></i>Schedule
+                            <i class="fas fa-right-left mr-2"></i>Transfer Patient
                         </button>
                     </div>
                 </form>
@@ -301,22 +255,28 @@
             window.addEventListener('hashchange', function () { showSection(getHash()); });
         })();
 
-        // Modal functionality
+        // Bed Configuration functionality
         (function () {
-            var newPatientModal = document.getElementById('newPatientModal');
-            var preAdmissionModal = document.getElementById('preAdmissionModal');
+            var transferModal = document.getElementById('transferModal');
+            var addRoomModal = document.getElementById('addRoomModal');
+            var currentWard = 'icu';
             
-            // Load patient data for dropdowns
-            function loadPatients(selectElement) {
+            // Load admitted patients
+            function loadAdmittedPatients(selectElement) {
                 fetch(API_BASE_URL + '/patients/list.php')
                     .then(response => response.json())
                     .then(data => {
                         if (data.ok && data.patients) {
                             selectElement.innerHTML = '<option value="">Select Patient</option>';
-                            data.patients.forEach(patient => {
+                            const admittedPatients = data.patients.filter(patient => 
+                                patient.progress_status && 
+                                !patient.progress_status.includes('Completed') &&
+                                patient.department
+                            );
+                            admittedPatients.forEach(patient => {
                                 const option = document.createElement('option');
                                 option.value = patient.id;
-                                option.textContent = `${patient.full_name} - ${patient.patient_code}`;
+                                option.textContent = `${patient.full_name} - ${patient.patient_code} (${patient.department || 'Ward'})`;
                                 selectElement.appendChild(option);
                             });
                         }
@@ -327,55 +287,200 @@
                     });
             }
             
-            // New Patient Modal
-            document.getElementById('btnNewPatient').addEventListener('click', function () {
-                newPatientModal.classList.remove('hidden');
+            // Load beds for current ward
+            function loadBeds(ward) {
+                const bedGrid = document.getElementById('bedGrid');
+                if (!bedGrid) return;
+                bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading beds...</div>';
+
+                if (ward === 'icu') {
+                    fetch(API_BASE_URL + '/icu/patients.php')
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.ok) {
+                                const beds = (data.patients || []).map(p => ({
+                                    bed_code:     p.bed_code,
+                                    patient_name: p.patient_name,
+                                    status:       'occupied',
+                                    room_no:      'ICU',
+                                }));
+                                displayBeds(beds, ward);
+                            } else {
+                                bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading ICU beds</div>';
+                            }
+                        })
+                        .catch(() => {
+                            bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading ICU beds</div>';
+                        });
+                } else {
+                    fetch(API_BASE_URL + '/bed_management/beds_list.php?ward=' + encodeURIComponent(ward))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.ok) {
+                                if (data.beds.length === 0) {
+                                    bedGrid.innerHTML = `
+                                        <div class="col-span-full text-center py-12 text-gray-400">
+                                            <i class="fas fa-bed text-4xl mb-3"></i>
+                                            <p class="text-sm mb-4">No beds configured for ${ward.toUpperCase()} ward</p>
+                                            <button type="button" onclick="document.getElementById('addRoomModal').classList.remove('hidden')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                                <i class="fas fa-plus mr-2"></i>Add First Room
+                                            </button>
+                                        </div>
+                                    `;
+                                } else {
+                                    displayBeds(data.beds, ward);
+                                }
+                            } else {
+                                bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading beds</div>';
+                            }
+                        })
+                        .catch(() => {
+                            bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading beds</div>';
+                        });
+                }
+            }
+            
+            // Display beds organized by rooms
+            function displayBeds(beds, ward) {
+                const bedGrid = document.getElementById('bedGrid');
+                
+                if (!beds.length) {
+                    bedGrid.innerHTML = `
+                        <div class="col-span-full text-center py-12 text-gray-400">
+                            <i class="fas fa-bed text-4xl mb-3"></i>
+                            <p class="text-sm mb-4">No beds configured for ${ward.toUpperCase()} ward</p>
+                            <button type="button" onclick="document.getElementById('addRoomModal').classList.remove('hidden')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>Add First Room
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const roomGroups = groupBedsByRoom(beds, ward);
+                
+                bedGrid.innerHTML = `
+                    <div class="col-span-full space-y-4">
+                        ${Object.entries(roomGroups).map(([roomName, roomBeds]) => `
+                            <details class="bg-white border border-gray-200 rounded-lg shadow-sm" open>
+                                <summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-door-open text-gray-600"></i>
+                                        <span class="font-semibold text-gray-900">${roomName}</span>
+                                        <span class="text-sm text-gray-500">(${roomBeds.length} beds)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        ${getRoomStatusSummary(roomBeds)}
+                                        <i class="fas fa-chevron-down text-gray-400"></i>
+                                    </div>
+                                </summary>
+                                <div class="p-4 pt-0 border-t border-gray-100">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                                        ${roomBeds.map(bed => createBedCard(bed)).join('')}
+                                    </div>
+                                </div>
+                            </details>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            function groupBedsByRoom(beds, ward) {
+                const rooms = {};
+                beds.forEach(bed => {
+                    const roomLabel = bed.room_no ? `Room ${bed.room_no}` : `Room ${ward.toUpperCase()}`;
+                    if (!rooms[roomLabel]) rooms[roomLabel] = [];
+                    rooms[roomLabel].push(bed);
+                });
+                return rooms;
+            }
+            
+            function getRoomStatusSummary(roomBeds) {
+                const statusCount = { occupied: 0, available: 0, cleaning: 0, maintenance: 0 };
+                roomBeds.forEach(bed => { statusCount[bed.status || 'available']++; });
+                const badges = [];
+                if (statusCount.occupied > 0) badges.push(`<span class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">${statusCount.occupied} occupied</span>`);
+                if (statusCount.available > 0) badges.push(`<span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">${statusCount.available} available</span>`);
+                if (statusCount.cleaning > 0) badges.push(`<span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">${statusCount.cleaning} cleaning</span>`);
+                return badges.join(' ');
+            }
+            
+            function createBedCard(bed) {
+                const statusColors = {
+                    'occupied': 'bg-red-100 border-red-300 text-red-800',
+                    'available': 'bg-green-100 border-green-300 text-green-800',
+                    'cleaning': 'bg-yellow-100 border-yellow-300 text-yellow-800',
+                    'maintenance': 'bg-orange-100 border-orange-300 text-orange-800'
+                };
+                const statusIcons = {
+                    'occupied': 'fas fa-user',
+                    'available': 'fas fa-check-circle',
+                    'cleaning': 'fas fa-broom',
+                    'maintenance': 'fas fa-tools'
+                };
+                const status = bed.status || 'available';
+                return `
+                    <div class="border-2 rounded-lg p-3 ${statusColors[status] || statusColors['available']} cursor-pointer hover:shadow-md transition-shadow" onclick="editBed('${bed.bed_code}', '${status}')">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-sm">${bed.bed_code}</span>
+                            <i class="${statusIcons[status] || statusIcons['available']}"></i>
+                        </div>
+                        <div class="text-xs">
+                            ${bed.patient_name ? `<p class="font-medium truncate">${bed.patient_name}</p>` : ''}
+                            <p class="capitalize">${status}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            window.editBed = function(bedCode, currentStatus) {
+                const newStatus = prompt(`Change status for ${bedCode}:\n\n1. Available\n2. Occupied\n3. Cleaning\n4. Maintenance\n\nEnter number (1-4):`, '1');
+                const statusMap = { '1': 'available', '2': 'occupied', '3': 'cleaning', '4': 'maintenance' };
+                if (statusMap[newStatus]) {
+                    alert(`Bed ${bedCode} status will be updated to: ${statusMap[newStatus]}`);
+                    loadBeds(currentWard);
+                }
+            };
+            
+            // Ward tab switching
+            document.querySelectorAll('.ward-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.ward-tab').forEach(t => {
+                        t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                        t.classList.add('border-transparent', 'text-gray-500');
+                    });
+                    this.classList.add('active', 'border-blue-500', 'text-blue-600');
+                    this.classList.remove('border-transparent', 'text-gray-500');
+                    currentWard = this.dataset.ward;
+                    loadBeds(currentWard);
+                });
             });
             
-            document.getElementById('closeNewPatientModal').addEventListener('click', function () {
-                newPatientModal.classList.add('hidden');
+            // Add Room Modal
+            document.getElementById('btnAddRoom')?.addEventListener('click', function () {
+                addRoomModal.classList.remove('hidden');
             });
-            
-            document.getElementById('cancelNewPatient').addEventListener('click', function () {
-                newPatientModal.classList.add('hidden');
+            document.getElementById('closeAddRoomModal')?.addEventListener('click', function () {
+                addRoomModal.classList.add('hidden');
             });
-            
-            // Pre-admission Modal
-            document.getElementById('btnSchedulePreAdmission').addEventListener('click', function () {
-                const patientSelect = preAdmissionModal.querySelector('select[name="patient_name"]');
-                loadPatients(patientSelect);
-                preAdmissionModal.classList.remove('hidden');
+            document.getElementById('cancelAddRoom')?.addEventListener('click', function () {
+                addRoomModal.classList.add('hidden');
             });
-            
-            document.getElementById('closePreAdmissionModal').addEventListener('click', function () {
-                preAdmissionModal.classList.add('hidden');
-            });
-            
-            document.getElementById('cancelPreAdmission').addEventListener('click', function () {
-                preAdmissionModal.classList.add('hidden');
-            });
-            
-            // Form submissions
-            document.getElementById('newPatientForm').addEventListener('submit', function (e) {
+            document.getElementById('addRoomForm')?.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const form = e.target;
                 const submitBtn = form.querySelector('[type="submit"]');
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Admitting...';
+                submitBtn.textContent = 'Adding...';
 
                 const data = {
-                    patient_id:          parseInt(form.querySelector('[name="patient_id"]')?.value || '0'),
-                    admission_type:      form.querySelector('[name="admission_type"]')?.value || 'scheduled',
-                    ward:                form.querySelector('[name="ward"]')?.value || '',
-                    admitting_physician: form.querySelector('[name="admitting_physician"]')?.value || '',
-                    admitting_diagnosis: form.querySelector('[name="admitting_diagnosis"]')?.value || '',
-                    philhealth_pin:      form.querySelector('[name="philhealth_pin"]')?.value || '',
-                    insurance_info:      form.querySelector('[name="insurance_info"]')?.value || '',
-                    allergy_notes:       form.querySelector('[name="allergy_notes"]')?.value || '',
-                    admission_date:      new Date().toISOString().slice(0, 19).replace('T', ' '),
+                    ward:       form.querySelector('[name="ward"]')?.value || '',
+                    room_no:    form.querySelector('[name="room_number"]')?.value || '',
+                    room_type:  form.querySelector('[name="room_type"]')?.value || 'ward',
+                    bed_count:  parseInt(form.querySelector('[name="bed_count"]')?.value || '1'),
                 };
 
-                fetch(API_BASE_URL + '/admissions/create.php', {
+                fetch(API_BASE_URL + '/bed_management/room_create.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
@@ -383,84 +488,100 @@
                 .then(r => r.json())
                 .then(res => {
                     if (res.ok) {
-                        alert('Patient admitted successfully! Admission No: ' + res.admission_no);
-                        newPatientModal.classList.add('hidden');
+                        alert('Room ' + res.room_no + ' added with ' + res.beds.length + ' bed(s)!');
+                        addRoomModal.classList.add('hidden');
                         form.reset();
+                        currentWard = data.ward;
+                        loadBeds(currentWard);
                     } else {
-                        alert('Error: ' + (res.error || 'Failed to admit patient'));
+                        alert('Error: ' + (res.error || 'Failed to add room'));
                     }
                 })
                 .catch(() => alert('Network error. Please try again.'))
                 .finally(() => {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Admit Patient';
+                    submitBtn.textContent = 'Add Room';
                 });
             });
             
-            document.getElementById('preAdmissionForm').addEventListener('submit', function (e) {
+            // Quick Actions
+            document.getElementById('btnBulkClean')?.addEventListener('click', function () {
+                if (confirm('Mark all available beds as clean?')) {
+                    alert('Bulk cleaning functionality will be implemented with backend API.');
+                }
+            });
+            document.getElementById('btnBulkMaintenance')?.addEventListener('click', function () {
+                alert('Bulk maintenance scheduling will be implemented with backend API.');
+            });
+            document.getElementById('btnExportBeds')?.addEventListener('click', function () {
+                alert('Bed report export will be implemented with backend API.');
+            });
+            
+            // Transfer Modal
+            document.getElementById('btnNewTransfer')?.addEventListener('click', function () {
+                const patientSelect = transferModal.querySelector('select[name="patient_id"]');
+                loadAdmittedPatients(patientSelect);
+                transferModal.classList.remove('hidden');
+            });
+            document.getElementById('closeTransferModal')?.addEventListener('click', function () {
+                transferModal.classList.add('hidden');
+            });
+            document.getElementById('cancelTransfer')?.addEventListener('click', function () {
+                transferModal.classList.add('hidden');
+            });
+            document.getElementById('transferForm')?.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const form = e.target;
                 const submitBtn = form.querySelector('[type="submit"]');
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Scheduling...';
+                submitBtn.textContent = 'Transferring...';
 
                 const data = {
-                    patient_id:          parseInt(form.querySelector('[name="patient_name"]')?.value || '0'),
-                    scheduled_date:      form.querySelector('[name="scheduled_date"]')?.value || '',
-                    ward:                form.querySelector('[name="ward"]')?.value || '',
-                    procedure_name:      form.querySelector('[name="procedure"]')?.value || '',
-                    admitting_physician: form.querySelector('[name="physician"]')?.value || '',
-                    notes:               form.querySelector('[name="notes"]')?.value || '',
+                    patient_id: parseInt(form.querySelector('[name="patient_id"]')?.value || '0'),
+                    to_bed_id:  parseInt(form.querySelector('[name="to_room"]')?.value || '0'),
+                    reason:     form.querySelector('[name="reason"]')?.value || '',
                 };
 
-                fetch(API_BASE_URL + '/admissions/pre_admission_create.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.ok) {
-                        alert('Pre-admission scheduled! No: ' + res.pre_admission_no);
-                        preAdmissionModal.classList.add('hidden');
-                        form.reset();
-                    } else {
-                        alert('Error: ' + (res.error || 'Failed to schedule'));
-                    }
-                })
-                .catch(() => alert('Network error. Please try again.'))
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Schedule';
-                });
-            });
-            
-            // Refresh Queue button
-            document.getElementById('btnRefreshQueue').addEventListener('click', function () {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Refreshing...';
-                const self = this;
                 fetch(API_BASE_URL + '/admissions/list.php?status=admitted')
                     .then(r => r.json())
-                    .then(data => {
-                        self.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Queue';
-                        if (data.ok) {
-                            console.log('Queue refreshed:', data.admissions.length, 'admissions');
+                    .then(admData => {
+                        if (!admData.ok) throw new Error('Could not load admissions');
+                        const adm = admData.admissions.find(a => String(a.patient_id) === String(data.patient_id));
+                        if (!adm) throw new Error('No active admission found');
+                        data.admission_id = adm.id;
+
+                        return fetch(API_BASE_URL + '/bed_management/transfer_create.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data),
+                        });
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.ok) {
+                            alert('Transfer completed! Transfer No: ' + res.transfer_no);
+                            transferModal.classList.add('hidden');
+                            form.reset();
+                            loadBeds(currentWard);
+                        } else {
+                            alert('Error: ' + (res.error || 'Transfer failed'));
                         }
                     })
-                    .catch(() => {
-                        self.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Queue';
+                    .catch(err => alert('Error: ' + err.message))
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Transfer Patient';
                     });
             });
             
             // Close modals on outside click
             window.addEventListener('click', function (e) {
-                if (e.target === newPatientModal) {
-                    newPatientModal.classList.add('hidden');
-                }
-                if (e.target === preAdmissionModal) {
-                    preAdmissionModal.classList.add('hidden');
-                }
+                if (e.target === addRoomModal) addRoomModal.classList.add('hidden');
+                if (e.target === transferModal) transferModal.classList.add('hidden');
             });
+            
+            // Initialize: load beds for ICU
+            loadBeds('icu');
         })();
     </script>
 </body>
