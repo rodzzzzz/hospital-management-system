@@ -209,6 +209,8 @@
                     </button>
                 </div>
                 <form id="addNoteForm" class="p-6">
+                    <input type="hidden" name="admission_id" value="">
+                    <input type="hidden" name="ward" value="">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
                         <select name="patient_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -226,7 +228,11 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Note *</label>
-                        <textarea name="note_content" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter nursing note..."></textarea>
+                        <textarea name="note_text" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter nursing note..."></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Author / Nurse Name</label>
+                        <input type="text" name="author_name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your name">
                     </div>
                     <div class="flex justify-end gap-3">
                         <button type="button" id="cancelNote" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -305,8 +311,47 @@
             // Form submission
             document.getElementById('addNoteForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                alert('Nurse note functionality will be implemented with backend API.');
-                addNoteModal.classList.add('hidden');
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                const data = {
+                    admission_id: parseInt(form.querySelector('[name="admission_id"]')?.value || '0'),
+                    patient_id:   parseInt(form.querySelector('[name="patient_id"]')?.value || '0'),
+                    ward:         form.querySelector('[name="ward"]')?.value || '',
+                    note_type:    form.querySelector('[name="note_type"]')?.value || 'general',
+                    note_text:    form.querySelector('[name="note_text"]')?.value || '',
+                    author_name:  form.querySelector('[name="author_name"]')?.value || '',
+                };
+
+                if (!data.patient_id) {
+                    alert('Please select a patient.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Note';
+                    return;
+                }
+
+                fetch(API_BASE_URL + '/ward_management/notes_create.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.ok) {
+                        alert('Nurse\'s note saved successfully!');
+                        addNoteModal.classList.add('hidden');
+                        form.reset();
+                    } else {
+                        alert('Error: ' + (res.error || 'Failed to save note'));
+                    }
+                })
+                .catch(() => alert('Network error. Please try again.'))
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Note';
+                });
             });
             
             // Refresh buttons

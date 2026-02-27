@@ -358,22 +358,98 @@
             // Form submissions
             document.getElementById('newPatientForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                // TODO: Implement patient registration API call
-                alert('Patient registration functionality will be implemented with backend API.');
-                newPatientModal.classList.add('hidden');
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Admitting...';
+
+                const data = {
+                    patient_id:          parseInt(form.querySelector('[name="patient_id"]')?.value || '0'),
+                    admission_type:      form.querySelector('[name="admission_type"]')?.value || 'scheduled',
+                    ward:                form.querySelector('[name="ward"]')?.value || '',
+                    admitting_physician: form.querySelector('[name="admitting_physician"]')?.value || '',
+                    admitting_diagnosis: form.querySelector('[name="admitting_diagnosis"]')?.value || '',
+                    philhealth_pin:      form.querySelector('[name="philhealth_pin"]')?.value || '',
+                    insurance_info:      form.querySelector('[name="insurance_info"]')?.value || '',
+                    allergy_notes:       form.querySelector('[name="allergy_notes"]')?.value || '',
+                    admission_date:      new Date().toISOString().slice(0, 19).replace('T', ' '),
+                };
+
+                fetch(API_BASE_URL + '/admissions/create.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.ok) {
+                        alert('Patient admitted successfully! Admission No: ' + res.admission_no);
+                        newPatientModal.classList.add('hidden');
+                        form.reset();
+                    } else {
+                        alert('Error: ' + (res.error || 'Failed to admit patient'));
+                    }
+                })
+                .catch(() => alert('Network error. Please try again.'))
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Admit Patient';
+                });
             });
             
             document.getElementById('preAdmissionForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                // TODO: Implement pre-admission scheduling API call
-                alert('Pre-admission scheduling functionality will be implemented with backend API.');
-                preAdmissionModal.classList.add('hidden');
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Scheduling...';
+
+                const data = {
+                    patient_id:          parseInt(form.querySelector('[name="patient_name"]')?.value || '0'),
+                    scheduled_date:      form.querySelector('[name="scheduled_date"]')?.value || '',
+                    ward:                form.querySelector('[name="ward"]')?.value || '',
+                    procedure_name:      form.querySelector('[name="procedure"]')?.value || '',
+                    admitting_physician: form.querySelector('[name="physician"]')?.value || '',
+                    notes:               form.querySelector('[name="notes"]')?.value || '',
+                };
+
+                fetch(API_BASE_URL + '/admissions/pre_admission_create.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.ok) {
+                        alert('Pre-admission scheduled! No: ' + res.pre_admission_no);
+                        preAdmissionModal.classList.add('hidden');
+                        form.reset();
+                    } else {
+                        alert('Error: ' + (res.error || 'Failed to schedule'));
+                    }
+                })
+                .catch(() => alert('Network error. Please try again.'))
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Schedule';
+                });
             });
             
             // Refresh Queue button
             document.getElementById('btnRefreshQueue').addEventListener('click', function () {
-                // TODO: Implement queue refresh API call
-                alert('Queue refresh functionality will be implemented with backend API.');
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Refreshing...';
+                const self = this;
+                fetch(API_BASE_URL + '/admissions/list.php?status=admitted')
+                    .then(r => r.json())
+                    .then(data => {
+                        self.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Queue';
+                        if (data.ok) {
+                            console.log('Queue refreshed:', data.admissions.length, 'admissions');
+                        }
+                    })
+                    .catch(() => {
+                        self.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Queue';
+                    });
             });
             
             // Close modals on outside click
