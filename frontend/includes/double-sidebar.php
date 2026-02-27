@@ -793,7 +793,7 @@ $wardInnerItems = [
     ],
     [
         'href' => 'ward-management.php#medical',
-        'label' => 'Medical Ward',
+        'label' => 'Medicine Ward',
         'icon' => 'fas fa-heart-pulse',
     ],
     [
@@ -805,6 +805,26 @@ $wardInnerItems = [
         'href' => 'ward-management.php#nurses-notes',
         'label' => "Nurse's Notes",
         'icon' => 'fas fa-notes-medical',
+    ],
+    [
+        'href' => 'ward-management.php#vitals-monitor',
+        'label' => 'Vitals Monitor',
+        'icon' => 'fas fa-heart-pulse',
+    ],
+    [
+        'href' => 'ward-management.php#fluid-balance',
+        'label' => 'Fluid Balance',
+        'icon' => 'fas fa-droplet',
+    ],
+    [
+        'href' => 'ward-management.php#mar',
+        'label' => 'Med. Admin (MAR)',
+        'icon' => 'fas fa-pills',
+    ],
+    [
+        'href' => 'ward-management.php#shift-report',
+        'label' => 'Shift Report',
+        'icon' => 'fas fa-file-medical',
     ],
 ];
 
