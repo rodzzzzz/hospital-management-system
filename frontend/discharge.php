@@ -79,7 +79,7 @@
                 </div>
             </section>
 
-            <!-- Discharge Planning Section -->
+            <!-- Discharge Planning Section (unified) -->
             <section id="planning" class="discharge-section mb-8 hidden">
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center justify-between mb-6">
@@ -87,114 +87,87 @@
                             <h2 class="text-lg font-semibold text-gray-800">Discharge Planning</h2>
                             <p class="text-sm text-gray-600 mt-1">Plan and coordinate patient discharge from wards.</p>
                         </div>
-                        <button type="button" id="btnNewPlan" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>New Plan
-                        </button>
-                    </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-clipboard-list text-4xl mb-3"></i>
-                        <p class="text-sm">No discharge plans created yet.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Discharge Orders Section -->
-            <section id="orders" class="discharge-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Discharge Orders</h2>
-                            <p class="text-sm text-gray-600 mt-1">Doctor-issued discharge orders for admitted patients.</p>
+                        <div class="flex gap-2">
+                            <button type="button" id="btnNewPlan" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>New Plan
+                            </button>
+                            <button type="button" id="btnScheduleFollowup" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-calendar-plus mr-2"></i>Schedule Follow-up
+                            </button>
                         </div>
-                        <button type="button" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                            <i class="fas fa-rotate mr-2"></i>Refresh
-                        </button>
                     </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-file-medical text-4xl mb-3"></i>
-                        <p class="text-sm">No discharge orders pending.</p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Patient Instructions Section -->
-            <section id="instructions" class="discharge-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Patient Instructions</h2>
-                            <p class="text-sm text-gray-600 mt-1">Discharge instructions and home care guidelines for patients.</p>
+                    <!-- Inner Tabs -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-6">
+                            <button type="button" class="planning-tab active py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-panel="tab-orders">
+                                <i class="fas fa-file-medical mr-1"></i>Discharge Orders
+                            </button>
+                            <button type="button" class="planning-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-panel="tab-instructions">
+                                <i class="fas fa-file-lines mr-1"></i>Patient Instructions
+                            </button>
+                            <button type="button" class="planning-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-panel="tab-followup">
+                                <i class="fas fa-calendar-check mr-1"></i>Follow-up Schedule
+                            </button>
+                            <button type="button" class="planning-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-panel="tab-clearance">
+                                <i class="fas fa-circle-check mr-1"></i>Final Clearance
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Discharge Orders Panel -->
+                    <div id="tab-orders" class="planning-panel">
+                        <div class="text-center py-12 text-gray-400">
+                            <i class="fas fa-file-medical text-4xl mb-3"></i>
+                            <p class="text-sm">No discharge orders pending.</p>
                         </div>
-                        <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>New Instructions
-                        </button>
                     </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-file-lines text-4xl mb-3"></i>
-                        <p class="text-sm">No patient instructions generated yet.</p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Follow-up Schedule Section -->
-            <section id="followup" class="discharge-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Follow-up Schedule</h2>
-                            <p class="text-sm text-gray-600 mt-1">Schedule post-discharge follow-up appointments.</p>
+                    <!-- Patient Instructions Panel -->
+                    <div id="tab-instructions" class="planning-panel hidden">
+                        <div class="text-center py-12 text-gray-400">
+                            <i class="fas fa-file-lines text-4xl mb-3"></i>
+                            <p class="text-sm">No patient instructions generated yet.</p>
                         </div>
-                        <button type="button" id="btnScheduleFollowup" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-calendar-plus mr-2"></i>Schedule Follow-up
-                        </button>
                     </div>
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-calendar-check text-4xl mb-3"></i>
-                        <p class="text-sm">No follow-up appointments scheduled.</p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Final Clearance Section -->
-            <section id="clearance" class="discharge-section mb-8 hidden">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Final Clearance</h2>
-                            <p class="text-sm text-gray-600 mt-1">Verify all discharge requirements are met before patient leaves.</p>
+                    <!-- Follow-up Schedule Panel -->
+                    <div id="tab-followup" class="planning-panel hidden">
+                        <div class="text-center py-12 text-gray-400">
+                            <i class="fas fa-calendar-check text-4xl mb-3"></i>
+                            <p class="text-sm">No follow-up appointments scheduled.</p>
                         </div>
-                        <button type="button" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                            <i class="fas fa-rotate mr-2"></i>Refresh
-                        </button>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center gap-3 mb-2">
-                                <i class="fas fa-file-invoice-dollar text-gray-500"></i>
-                                <span class="font-medium text-sm text-gray-700">Billing Cleared</span>
+                    <!-- Final Clearance Panel -->
+                    <div id="tab-clearance" class="planning-panel hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-file-invoice-dollar text-gray-500"></i>
+                                    <span class="font-medium text-sm text-gray-700">Billing Cleared</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Final SOA settled by cashier</p>
                             </div>
-                            <p class="text-xs text-gray-500">Final SOA settled by cashier</p>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center gap-3 mb-2">
-                                <i class="fas fa-pills text-gray-500"></i>
-                                <span class="font-medium text-sm text-gray-700">Pharmacy Cleared</span>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-pills text-gray-500"></i>
+                                    <span class="font-medium text-sm text-gray-700">Pharmacy Cleared</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Medications dispensed</p>
                             </div>
-                            <p class="text-xs text-gray-500">Medications dispensed</p>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center gap-3 mb-2">
-                                <i class="fas fa-user-doctor text-gray-500"></i>
-                                <span class="font-medium text-sm text-gray-700">Doctor Sign-off</span>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-user-doctor text-gray-500"></i>
+                                    <span class="font-medium text-sm text-gray-700">Doctor Sign-off</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Physician discharge order signed</p>
                             </div>
-                            <p class="text-xs text-gray-500">Physician discharge order signed</p>
                         </div>
-                    </div>
-
-                    <div class="text-center py-8 text-gray-400">
-                        <i class="fas fa-circle-check text-4xl mb-3"></i>
-                        <p class="text-sm">No patients awaiting final clearance.</p>
+                        <div class="text-center py-8 text-gray-400">
+                            <i class="fas fa-circle-check text-4xl mb-3"></i>
+                            <p class="text-sm">No patients awaiting final clearance.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -314,6 +287,25 @@
             }
             showSection(getHash());
             window.addEventListener('hashchange', function () { showSection(getHash()); });
+        })();
+
+        // Planning inner tab switching
+        (function () {
+            document.querySelectorAll('.planning-tab').forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.planning-tab').forEach(function (t) {
+                        t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                        t.classList.add('border-transparent', 'text-gray-500');
+                    });
+                    this.classList.add('active', 'border-blue-500', 'text-blue-600');
+                    this.classList.remove('border-transparent', 'text-gray-500');
+
+                    var panelId = this.getAttribute('data-panel');
+                    document.querySelectorAll('.planning-panel').forEach(function (p) {
+                        p.id === panelId ? p.classList.remove('hidden') : p.classList.add('hidden');
+                    });
+                });
+            });
         })();
 
         // Modal functionality
