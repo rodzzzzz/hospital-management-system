@@ -42,7 +42,7 @@ try {
     ensure_pharmacy_tables($pdo);
     ensure_price_master_tables($pdo);
 
-    $actor = auth_current_user($pdo);
+    $actor = auth_current_user_optional_token($pdo);
     if ($receivedBy === '' && $actor) {
         $receivedBy = trim((string)($actor['username'] ?? ''));
         if ($receivedBy === '') {

@@ -10,7 +10,7 @@ require_method('GET');
 
 try {
     $pdo = db();
-    $user = auth_current_user($pdo);
+    $user = auth_current_user_optional_token($pdo);
     if (!$user) {
         json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
     }

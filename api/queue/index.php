@@ -17,6 +17,32 @@ require_once __DIR__ . '/../websocket/_broadcast.php';
 
 $pdo = db();
 
+// Ensure queue tables exist
+function ensureQueueTables(PDO $pdo): void {
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS queue_error_log (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            queue_id INT(11) NOT NULL,
+            patient_id INT(11) NOT NULL,
+            wrong_station_id INT(11) NOT NULL,
+            correct_station_id INT(11) NOT NULL,
+            reported_by INT(11) NOT NULL,
+            confirmed_by INT(11) DEFAULT NULL,
+            status ENUM('pending','confirmed','rejected') NOT NULL DEFAULT 'pending',
+            notes TEXT DEFAULT NULL,
+            reported_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            confirmed_at DATETIME DEFAULT NULL,
+            PRIMARY KEY (id),
+            KEY idx_wrong_station_status (wrong_station_id, status),
+            KEY idx_queue_id (queue_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (Exception $e) {
+        // Table might already exist, ignore
+    }
+}
+
+ensureQueueTables($pdo);
+
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $pathParts = explode('/', trim($path, '/'));

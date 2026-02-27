@@ -3,16 +3,18 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../_response.php';
+require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/_tables.php';
 require_once __DIR__ . '/../auth/_session.php';
 
+cors_headers();
 require_method('GET');
 
 try {
     $pdo = db();
     ensure_er_assessment_tables($pdo);
 
-    $authUser = auth_current_user($pdo);
+    $authUser = auth_current_user_optional_token($pdo);
     if (!$authUser) {
         json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
     }

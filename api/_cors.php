@@ -6,12 +6,25 @@ declare(strict_types=1);
  */
 function cors_headers(): void
 {
+    $envOrigins = getenv('CORS_ALLOWED_ORIGINS');
     $allowed = [
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'http://localhost:3000',
         'http://127.0.0.1:3000',
+        'http://localhost',
+        'http://127.0.0.1',
+        'http://localhost:80',
+        'http://127.0.0.1:80',
     ];
+    if ($envOrigins !== false && $envOrigins !== '') {
+        foreach (explode(',', $envOrigins) as $o) {
+            $o = trim($o);
+            if ($o !== '') {
+                $allowed[] = $o;
+            }
+        }
+    }
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     if (in_array($origin, $allowed, true)) {
         header('Access-Control-Allow-Origin: ' . $origin);

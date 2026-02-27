@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../_response.php';
+require_once __DIR__ . '/../_cors.php';
 
+cors_headers();
 session_start();
 
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');

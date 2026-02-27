@@ -105,7 +105,7 @@ try {
     $approvedAt = ($status === 'approved') ? date('Y-m-d H:i:s') : null;
 
     $pdo = db();
-    $authUser = auth_current_user($pdo);
+    $authUser = auth_current_user_optional_token($pdo);
     if (!$authUser) {
         json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
     }

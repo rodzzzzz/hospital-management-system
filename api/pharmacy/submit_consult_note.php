@@ -34,7 +34,7 @@ try {
     $pdo = db();
     ensure_pharmacy_tables($pdo);
 
-    $authUser = auth_current_user($pdo);
+    $authUser = auth_current_user_optional_token($pdo);
     $submittedByUserId = $authUser ? (int)($authUser['id'] ?? 0) : null;
     $submittedByName = null;
     if ($authUser) {

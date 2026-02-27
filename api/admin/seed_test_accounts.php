@@ -14,7 +14,7 @@ try {
     $pdo = db();
     ensure_users_tables($pdo);
 
-    $actor = auth_current_user($pdo);
+    $actor = auth_current_user_optional_token($pdo);
     if (!$actor) {
         json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
     }

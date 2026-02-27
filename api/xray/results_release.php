@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../_response.php';
+require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/_schema.php';
 
+cors_headers();
 require_method('GET');
 
 function xray_seeded_int(string $seed, int $min, int $max): int

@@ -14,7 +14,7 @@ require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../auth/_session.php';
 
 $pdo = db();
-$currentUser = auth_current_user($pdo);
+$currentUser = auth_current_user_optional_token($pdo);
 
 if (!$currentUser) {
     http_response_code(401);

@@ -1,16 +1,18 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../_cors.php';
 require_once __DIR__ . '/../_db.php';
 require_once __DIR__ . '/../_response.php';
 require_once __DIR__ . '/../users/_tables.php';
 require_once __DIR__ . '/_session.php';
 
+cors_headers();
 require_method('GET');
 
 try {
     $pdo = db();
-    $user = auth_current_user($pdo);
+    $user = auth_current_user_optional_token($pdo);
     if (!$user) {
         json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
     }
