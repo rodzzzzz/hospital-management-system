@@ -311,9 +311,10 @@ function getStationDisplayData(PDO $pdo, int $stationId): array
     
     // Get next patients (up to 10)
     $stmt = $pdo->prepare("
-        SELECT pq.*, p.full_name, p.patient_code
+        SELECT pq.*, p.full_name, p.patient_code, p.diagnosis, qs.station_name
         FROM patient_queue pq
         LEFT JOIN patients p ON pq.patient_id = p.id
+        LEFT JOIN queue_stations qs ON pq.station_id = qs.id
         WHERE pq.station_id = ? AND pq.status IN ('waiting', 'queued')
         ORDER BY pq.queue_position ASC
         LIMIT 10

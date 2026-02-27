@@ -1929,13 +1929,386 @@
                     font-size: 4.5rem;
                 }
             }
+
+        /* ── Start button (single, centered) ── */
+        .kiosk-footer-btn-start {
+            background: linear-gradient(180deg, #2ef01c 0%, #24E016 50%, #1ac012 100%);
+            color: #ffffff;
+            box-shadow:
+                0 8px 0 #158f0d,
+                0 15px 20px rgba(36, 224, 22, 0.4),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+            font-size: 30px;
+            padding: 28px 80px;
+            letter-spacing: 0.04em;
+        }
+        .kiosk-footer-btn-start:hover {
+            box-shadow:
+                0 10px 0 #158f0d,
+                0 20px 30px rgba(36, 224, 22, 0.5),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+        }
+        .kiosk-footer-btn-start:active {
+            box-shadow:
+                0 4px 0 #158f0d,
+                0 8px 15px rgba(36, 224, 22, 0.4),
+                inset 0 2px 0 rgba(255,255,255,0.1);
+        }
+
+        /* ── Purpose Screen ── */
+        .kiosk-purpose-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kiosk-purpose-top {
+            width: 100%;
+            height: 42vh;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .kiosk-purpose-top-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+        }
+
+        .kiosk-purpose-top-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 55%, #fff 100%);
+        }
+
+        .kiosk-purpose-body {
+            flex: 1;
+            position: relative;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 24px 40px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .kiosk-purpose-content {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .kiosk-purpose-title {
+            font-size: 38px;
+            font-weight: 900;
+            color: #111827;
+            text-align: center;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .kiosk-purpose-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            text-align: center;
+            margin-top: -6px;
+        }
+
+        /* ── Service Grid ── */
+        .kiosk-service-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .kiosk-service-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 2.5px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 18px 12px 16px;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .kiosk-service-card:hover {
+            border-color: #a7f3d0;
+            box-shadow: 0 6px 22px rgba(16,185,129,0.13);
+            transform: translateY(-2px);
+        }
+
+        .kiosk-service-card.selected {
+            border-color: #059669;
+            background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+            box-shadow: 0 6px 22px rgba(16,185,129,0.25);
+            transform: translateY(-2px);
+        }
+
+        .kiosk-service-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kiosk-service-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .kiosk-service-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111827;
+            line-height: 1.2;
+        }
+
+        .kiosk-service-desc {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .kiosk-service-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: scale(0.6);
+        }
+
+        .kiosk-service-card.selected .kiosk-service-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Action buttons row */
+        .kiosk-purpose-action-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        .kiosk-purpose-action-btns {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .kiosk-purpose-action-btns .kiosk-footer-btn {
+            width: 100%;
+            font-size: 18px !important;
+            padding: 20px 16px !important;
+        }
+
+        .kiosk-purpose-actions {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            animation: fadeInUp 0.3s ease both;
+        }
+
+        .kiosk-purpose-back-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 32px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 16px 36px;
+            border-radius: 18px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .kiosk-purpose-back-btn:hover {
+            color: #374151;
+            background: #f3f4f6;
+        }
+
+        /* ── Other Services Specify Input ── */
+        .kiosk-other-specify {
+            width: 100%;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 18px;
+            padding: 18px 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeInUp 0.28s ease both;
+        }
+
+        .kiosk-other-specify-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .kiosk-other-specify-input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #111827;
+            background: #ffffff;
+            border: 2.5px solid #e2e8f0;
+            border-radius: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .kiosk-other-specify-input:focus {
+            border-color: #475569;
+            box-shadow: 0 0 0 4px rgba(71,85,105,0.1);
+        }
+
+        .kiosk-other-specify-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239,68,68,0.1);
+        }
+
+        .kiosk-other-specify-hint {
+            font-size: 13px;
+            color: #ef4444;
+            font-weight: 600;
+            min-height: 18px;
+            margin: 0;
+        }
+
+        @media (min-width: 900px) and (min-height: 1500px) and (orientation: portrait) {
+            .kiosk-other-specify-label {
+                font-size: 20px !important;
+            }
+            .kiosk-other-specify-input {
+                font-size: 26px !important;
+                padding: 20px 24px !important;
+                border-radius: 20px !important;
+            }
+            .kiosk-other-specify-hint {
+                font-size: 18px !important;
+            }
+        }
+
+        /* Hide shared nav on purpose screen */
+        #kioskPurpose:not(.hidden) ~ #sharedNav,
+        body:has(#kioskPurpose:not(.hidden)) #sharedNav {
+            display: none !important;
+        }
+
+        @media (min-width: 640px) {
+            .kiosk-purpose-title {
+                font-size: 44px;
+            }
+            .kiosk-purpose-subtitle {
+                font-size: 20px;
+            }
+            .kiosk-service-title {
+                font-size: 18px;
+            }
+            .kiosk-service-desc {
+                font-size: 13px;
+            }
+            .kiosk-service-icon {
+                width: 72px;
+                height: 72px;
+            }
+            .kiosk-purpose-action-btns .kiosk-footer-btn {
+                font-size: 22px !important;
+                padding: 24px 20px !important;
+            }
+        }
+
+        @media (min-width: 900px) and (min-height: 1500px) and (orientation: portrait) {
+            .kiosk-purpose-title {
+                font-size: 58px !important;
+            }
+            .kiosk-purpose-subtitle {
+                font-size: 26px !important;
+            }
+            .kiosk-service-grid {
+                gap: 18px !important;
+            }
+            .kiosk-service-card {
+                padding: 28px 16px 24px !important;
+                border-radius: 24px !important;
+            }
+            .kiosk-service-icon {
+                width: 100px !important;
+                height: 100px !important;
+                border-radius: 22px !important;
+            }
+            .kiosk-service-icon svg {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            .kiosk-service-title {
+                font-size: 28px !important;
+            }
+            .kiosk-service-desc {
+                font-size: 18px !important;
+            }
+            .kiosk-purpose-action-label {
+                font-size: 20px !important;
+            }
+            .kiosk-purpose-action-btns .kiosk-footer-btn {
+                font-size: 30px !important;
+                padding: 30px 20px !important;
+            }
+            .kiosk-purpose-back-btn {
+                font-size: 40px !important;
+                padding: 20px 44px !important;
+                border-radius: 22px !important;
+            }
+        }
         </style>
     </head>
     <body class="bg-gray-50 min-h-screen overflow-hidden">
         <div id="kioskCanvas" class="min-h-screen w-full bg-white overflow-hidden">
 
                     <div id="kioskHome" class="kiosk-home-wrapper">
-                    <div class="kiosk-home-main" onclick="startRegistration()">
+                    <div class="kiosk-home-main" onclick="showPurposeScreen()">
                         <img src="./Resources/img1.png" alt="" class="kiosk-home-top-img img-1-2 is-active" />
                         <img src="./Resources/img2.png" alt="" class="kiosk-home-top-img img-2" />
                         <img src="./Resources/img3.jpg" alt="" class="kiosk-home-top-img img-3" />
@@ -1954,9 +2327,8 @@
 
                             <h2 class="kiosk-footer-title">DR. SERAPIO B. MONTAÑER JR., AL-HAJ MEMORIAL HOSPITAL</h2>
 
-                            <div class="kiosk-footer-actions">
-                                <button type="button" class="kiosk-footer-btn kiosk-footer-btn-primary" onclick="startRegistration(); event.stopPropagation();">Start Registration</button>
-                                <button type="button" class="kiosk-footer-btn kiosk-footer-btn-secondary" onclick="showAlreadyRegistered(); event.stopPropagation();">Already Registered</button>
+                            <div class="kiosk-footer-actions" style="grid-template-columns: 1fr;">
+                                <button type="button" class="kiosk-footer-btn kiosk-footer-btn-start" onclick="showPurposeScreen(); event.stopPropagation();">Start</button>
                             </div>
 
                             <div class="kiosk-footer-info">
@@ -1966,6 +2338,142 @@
                                     <img src="./logo2.png" alt="Logo 2" class="kiosk-footer-logo" />
                                     <img src="./logo3.jpg" alt="Logo 3" class="kiosk-footer-logo" />
                                     <img src="./logo4.png" alt="Logo 4" class="kiosk-footer-logo" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purpose Selection Screen -->
+                <div id="kioskPurpose" class="hidden">
+                    <div class="kiosk-purpose-wrapper">
+                        <!-- Top image section -->
+                        <div class="kiosk-purpose-top">
+                            <img src="./Resources/temp.png" alt="" class="kiosk-purpose-top-img" />
+                            <div class="kiosk-purpose-top-overlay"></div>
+                        </div>
+                        <!-- Content -->
+                        <div class="kiosk-purpose-body">
+                            <img src="./wave.png" alt="" class="kiosk-footer-bg-img" style="bottom:-10px;" />
+                            <div class="kiosk-purpose-content">
+                                <h2 class="kiosk-purpose-title">What brings you here?</h2>
+                                <p class="kiosk-purpose-subtitle">Select the service you need today</p>
+
+                                <!-- Service selection grid -->
+                                <div class="kiosk-service-grid" id="purposeCards">
+
+                                    <button type="button" class="kiosk-service-card" data-service="consultation" onclick="selectService(this)">
+                                        <div class="kiosk-service-icon" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);">
+                                            <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="#059669" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                                        </div>
+                                        <div class="kiosk-service-text">
+                                            <span class="kiosk-service-title">Consultation</span>
+                                            <span class="kiosk-service-desc">See a doctor today</span>
+                                        </div>
+                                        <div class="kiosk-service-check">
+                                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#059669"/><path stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3.5 3.5 6.5-7"/></svg>
+                                        </div>
+                                    </button>
+
+                                    <button type="button" class="kiosk-service-card" data-service="laboratory" onclick="selectService(this)">
+                                        <div class="kiosk-service-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">
+                                            <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="#2563eb" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                                        </div>
+                                        <div class="kiosk-service-text">
+                                            <span class="kiosk-service-title">Laboratory Results</span>
+                                            <span class="kiosk-service-desc">Claim or inquire lab results</span>
+                                        </div>
+                                        <div class="kiosk-service-check">
+                                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#2563eb"/><path stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3.5 3.5 6.5-7"/></svg>
+                                        </div>
+                                    </button>
+
+                                    <button type="button" class="kiosk-service-card" data-service="pharmacy" onclick="selectService(this)">
+                                        <div class="kiosk-service-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">
+                                            <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="#d97706" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+                                        </div>
+                                        <div class="kiosk-service-text">
+                                            <span class="kiosk-service-title">Pharmacy</span>
+                                            <span class="kiosk-service-desc">Buy or pick up medicine</span>
+                                        </div>
+                                        <div class="kiosk-service-check">
+                                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#d97706"/><path stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3.5 3.5 6.5-7"/></svg>
+                                        </div>
+                                    </button>
+
+                                    <button type="button" class="kiosk-service-card" data-service="billing" onclick="selectService(this)">
+                                        <div class="kiosk-service-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">
+                                            <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="#db2777" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                        </div>
+                                        <div class="kiosk-service-text">
+                                            <span class="kiosk-service-title">Billing / Cashier</span>
+                                            <span class="kiosk-service-desc">Pay hospital bills</span>
+                                        </div>
+                                        <div class="kiosk-service-check">
+                                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#db2777"/><path stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3.5 3.5 6.5-7"/></svg>
+                                        </div>
+                                    </button>
+
+                                    <button type="button" class="kiosk-service-card" data-service="imaging" onclick="selectService(this)">
+                                        <div class="kiosk-service-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);">
+                                            <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <div class="kiosk-service-text">
+                                            <span class="kiosk-service-title">Radiology / Imaging</span>
+                                            <span class="kiosk-service-desc">X-ray, ultrasound & more</span>
+                                        </div>
+                                        <div class="kiosk-service-check">
+                                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#7c3aed"/><path stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3.5 3.5 6.5-7"/></svg>
+                                        </div>
+                                    </button>
+
+                                    <button type="button" class="kiosk-service-card" data-service="other" onclick="selectService(this)">
+                                        <div class="kiosk-service-icon" style="background:linear-gradient(135deg,#f1f5f9,#e2e8f0);">
+                                            <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="#475569" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </div>
+                                        <div class="kiosk-service-text">
+                                            <span class="kiosk-service-title">Other Services</span>
+                                            <span class="kiosk-service-desc">Medical certificate, records & more</span>
+                                        </div>
+                                        <div class="kiosk-service-check">
+                                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#475569"/><path stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M7 12.5l3.5 3.5 6.5-7"/></svg>
+                                        </div>
+                                    </button>
+
+                                </div>
+
+                                <!-- Other Services — specify input (shown only when 'other' is selected) -->
+                                <div class="kiosk-other-specify hidden" id="otherSpecifyBox">
+                                    <label class="kiosk-other-specify-label" for="otherSpecifyInput">
+                                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 0l.172.172a2 2 0 010 2.828L12 16H9v-3z"/></svg>
+                                        Please specify your concern
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="otherSpecifyInput"
+                                        class="kiosk-other-specify-input"
+                                        placeholder="e.g. Medical certificate, philhealth form..."
+                                        maxlength="120"
+                                        autocomplete="off"
+                                        readonly
+                                        onfocus="this.removeAttribute('readonly')"
+                                        oninput="onOtherSpecifyInput()"
+                                    />
+                                    <p class="kiosk-other-specify-hint" id="otherSpecifyHint"></p>
+                                </div>
+
+                                <!-- Action buttons — shown after a service is selected -->
+                                <div class="kiosk-purpose-actions hidden" id="purposeActions">
+                                    <div class="kiosk-purpose-action-label" id="purposeActionLabel">How would you like to proceed?</div>
+                                    <div class="kiosk-purpose-action-btns">
+                                        <button type="button" class="kiosk-footer-btn kiosk-footer-btn-primary" onclick="proceedFromPurpose('new')">
+                                            Start Registration
+                                        </button>
+                                        <button type="button" class="kiosk-footer-btn kiosk-footer-btn-secondary" onclick="proceedFromPurpose('returning')">
+                                            Already Registered
+                                        </button>
+                                    </div>
+                                    <button type="button" class="kiosk-purpose-back-btn" onclick="goBackFromPurpose()">← Back</button>
                                 </div>
                             </div>
                         </div>
@@ -2663,45 +3171,13 @@
                 </div>
             </div>
 
-            <!-- Question 8: Diagnosis/Complaints -->
+            <!-- Question 8: PhilHealth ID (Optional) -->
             <div class="question-card" data-question="8">
                 <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
                     <div class="w-full max-w-2xl">
                         <!-- Progress dots -->
                         <div class="progress-dots">
                             <div class="progress-dot completed"></div>
-                            <div class="progress-dot completed"></div>
-                            <div class="progress-dot completed"></div>
-                            <div class="progress-dot completed"></div>
-                            <div class="progress-dot completed"></div>
-                            <div class="progress-dot completed"></div>
-                            <div class="progress-dot active"></div>
-                        </div>
-                        <div class="text-center mb-8">
-                            <div class="medical-icon-container">
-                                <img src="./Resources/What brings you here.png" alt="Diagnosis / Complaints" class="h-24 w-24 object-contain" />
-                            </div>
-                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">What brings you in today?</h2>
-                            <p class="text-lg text-gray-500 mt-2">Describe your symptoms or reason for visit</p>
-                        </div>
-                        <div class="bg-white rounded-3xl border-2 border-gray-200 p-2 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-100 transition-all shadow-lg">
-                            <textarea id="diagnosis" name="diagnosis" placeholder="e.g., Headache and dizziness, Fever for 3 days, etc." required rows="4" class="w-full rounded-2xl border-0 px-6 py-5 text-xl text-gray-900 placeholder-gray-400 focus:ring-0 resize-none"></textarea>
-                        </div>
-                        <div class="error-message text-center mt-3" id="diagnosis_error"></div>
-                    </div>
-                </div>
-                <div class="question-nav">
-                    <button type="button" class="btn btn-secondary inline-flex items-center justify-center rounded-2xl bg-gray-100 px-8 py-5 text-xl text-gray-800 font-semibold hover:bg-gray-200 active:scale-[0.98] transition" onclick="prevQuestion()">← Back</button>
-                    <button type="button" class="btn btn-primary inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-10 py-5 text-xl text-white font-semibold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-[0.98] transition" onclick="nextQuestion()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Question 9: PhilHealth ID (Optional) -->
-            <div class="question-card" data-question="9">
-                <div class="flex flex-col items-center justify-center min-h-[50vh] pt-48">
-                    <div class="w-full max-w-2xl">
-                        <!-- Progress dots -->
-                        <div class="progress-dots">
                             <div class="progress-dot completed"></div>
                             <div class="progress-dot completed"></div>
                             <div class="progress-dot completed"></div>
@@ -3101,6 +3577,12 @@
             return !already.classList.contains('hidden');
         }
 
+        function kioskIsPurposeVisible() {
+            const purpose = document.getElementById('kioskPurpose');
+            if (!purpose) return false;
+            return !purpose.classList.contains('hidden');
+        }
+
         function stopKioskIdleTimer() {
             if (kioskIdleTimer) {
                 window.clearTimeout(kioskIdleTimer);
@@ -3119,10 +3601,11 @@
             stopKioskIdleTimer();
             const isRegVisible = kioskIsRegistrationVisible();
             const isAlreadyVisible = kioskIsAlreadyRegisteredVisible();
+            const isPurposeVisible = kioskIsPurposeVisible();
             
-            console.log('resetKioskIdleTimer called - Reg visible:', isRegVisible, 'Already visible:', isAlreadyVisible);
+            console.log('resetKioskIdleTimer called - Reg visible:', isRegVisible, 'Already visible:', isAlreadyVisible, 'Purpose visible:', isPurposeVisible);
             
-            if (!isRegVisible && !isAlreadyVisible) {
+            if (!isRegVisible && !isAlreadyVisible && !isPurposeVisible) {
                 console.log('Neither page visible, not starting timer');
                 return;
             }
@@ -3136,6 +3619,9 @@
                 } else if (kioskIsAlreadyRegisteredVisible()) {
                     console.log('Resetting already registered form');
                     resetAlreadyRegisteredForm();
+                } else if (kioskIsPurposeVisible()) {
+                    console.log('Resetting from purpose screen');
+                    goBackFromPurpose();
                 }
             }, KIOSK_IDLE_MS);
         }
@@ -3188,7 +3674,6 @@
                 const dob = document.getElementById('dob').value;
                 const sex = document.getElementById('sex').value;
                 const contact = document.getElementById('contact').value.trim();
-                const diagnosis = document.getElementById('diagnosis').value.trim();
 
                 if (!fullName) {
                     showError('full_name', 'Full name is required');
@@ -3210,11 +3695,6 @@
                     isValid = false;
                 } else if (!/^\d{11}$/.test(contact)) {
                     showError('contact', 'Please enter a valid 11-digit contact number');
-                    isValid = false;
-                }
-
-                if (!diagnosis) {
-                    showError('diagnosis', 'Diagnosis / complaints is required');
                     isValid = false;
                 }
             }
@@ -3335,6 +3815,27 @@
                 }
             }
 
+            // Get purpose of visit from the purpose selection
+            let purposeOfVisit = null;
+            if (selectedService) {
+                if (selectedService === 'other') {
+                    const otherInput = document.getElementById('otherSpecifyInput');
+                    if (otherInput) {
+                        purposeOfVisit = otherInput.value.trim();
+                    }
+                } else {
+                    // Map service values to readable text
+                    const serviceMap = {
+                        'consultation': 'Consultation',
+                        'laboratory': 'Laboratory Results',
+                        'pharmacy': 'Pharmacy',
+                        'billing': 'Billing/Cashier',
+                        'radiology': 'Radiology/Imaging'
+                    };
+                    purposeOfVisit = serviceMap[selectedService] || selectedService;
+                }
+            }
+
             const formData = {
                 first_name: firstName,
                 last_name: lastName,
@@ -3344,8 +3845,10 @@
                 blood_type: getVal('blood_type'),
                 civil_status: getVal('civil_status'),
                 contact: getVal('contact').trim(),
+                station_name: 'opd',
                 initial_location: 'OPD',
-                diagnosis: getVal('diagnosis').trim(),
+                diagnosis: '',
+                purpose_of_visit: purposeOfVisit,
                 street_address: getVal('street_address').trim(),
                 barangay: getVal('barangay').trim(),
                 city: getVal('city').trim(),
@@ -3353,10 +3856,12 @@
                 zip_code: getVal('zip_code').trim(),
                 employer_name: getVal('employer_name').trim(),
                 employer_address: getVal('employer_address').trim(),
+                patient_type: getVal('patient_type'),
                 emergency_contact_name: getVal('emergency_contact_name').trim(),
                 emergency_contact_relationship: getVal('emergency_contact_relationship').trim(),
                 emergency_contact_phone: getVal('emergency_contact_phone').trim(),
-                philhealth_pin: getVal('philhealth_pin').trim(),
+                email: getVal('email').trim(),
+                philhealth_pin: getVal('philhealth_pin').trim()
             };
 
             try {
@@ -3566,13 +4071,134 @@
             showStep(1);
         }
 
+        // ── Purpose Screen Flow ──────────────────────────────────────────
+        let selectedService = null; // e.g. 'consultation', 'laboratory', etc.
+
+        function showPurposeScreen() {
+            const home = document.getElementById('kioskHome');
+            const purpose = document.getElementById('kioskPurpose');
+            const reg = document.getElementById('kioskRegistration');
+            const already = document.getElementById('kioskAlreadyRegistered');
+            if (!purpose) return;
+            if (home) home.classList.add('hidden');
+            if (reg) reg.classList.add('hidden');
+            if (already) already.classList.add('hidden');
+            purpose.classList.remove('hidden');
+            resetKioskIdleTimer();
+            // Reset all service card selections
+            selectedService = null;
+            document.querySelectorAll('.kiosk-service-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('purposeActions').classList.add('hidden');
+            // Reset Other specify box
+            const specifyBox = document.getElementById('otherSpecifyBox');
+            const specifyInput = document.getElementById('otherSpecifyInput');
+            const specifyHint = document.getElementById('otherSpecifyHint');
+            if (specifyBox) specifyBox.classList.add('hidden');
+            if (specifyInput) { specifyInput.value = ''; specifyInput.classList.remove('error'); }
+            if (specifyHint) specifyHint.textContent = '';
+        }
+
+        function selectService(cardEl) {
+            selectedService = cardEl.dataset.service;
+
+            // Clear all selections, apply to clicked card
+            document.querySelectorAll('.kiosk-service-card').forEach(c => c.classList.remove('selected'));
+            cardEl.classList.add('selected');
+
+            // Show / hide the "Other Services" specify input
+            const specifyBox = document.getElementById('otherSpecifyBox');
+            const specifyInput = document.getElementById('otherSpecifyInput');
+            const specifyHint = document.getElementById('otherSpecifyHint');
+            if (selectedService === 'other') {
+                specifyBox.classList.remove('hidden');
+                specifyInput.classList.remove('error');
+                specifyHint.textContent = '';
+                setTimeout(() => specifyInput.focus(), 120);
+            } else {
+                specifyBox.classList.add('hidden');
+                specifyInput.value = '';
+                specifyInput.classList.remove('error');
+                specifyHint.textContent = '';
+            }
+
+            // Update label with the selected service name
+            const titleEl = cardEl.querySelector('.kiosk-service-title');
+            const label = document.getElementById('purposeActionLabel');
+            if (label && titleEl) {
+                label.textContent = titleEl.textContent.trim() + ' — how would you like to proceed?';
+            }
+
+            // Show the action buttons
+            const actions = document.getElementById('purposeActions');
+            actions.classList.remove('hidden');
+
+            // Smooth scroll to action area so user sees the buttons
+            setTimeout(() => {
+                actions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 150);
+        }
+
+        function onOtherSpecifyInput() {
+            const input = document.getElementById('otherSpecifyInput');
+            const hint  = document.getElementById('otherSpecifyHint');
+            if (input.value.trim().length > 0) {
+                input.classList.remove('error');
+                hint.textContent = '';
+            }
+        }
+
+        function proceedFromPurpose(type) {
+            if (!selectedService) return;
+
+            // Validate "other" specify input
+            if (selectedService === 'other') {
+                const input = document.getElementById('otherSpecifyInput');
+                const hint  = document.getElementById('otherSpecifyHint');
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    hint.textContent = 'Please describe your concern before proceeding.';
+                    input.focus();
+                    return;
+                }
+                input.classList.remove('error');
+                hint.textContent = '';
+            }
+
+            const purpose = document.getElementById('kioskPurpose');
+            if (purpose) purpose.classList.add('hidden');
+            if (type === 'new') {
+                startRegistration();
+            } else {
+                showAlreadyRegistered();
+            }
+        }
+
+        function goBackFromPurpose() {
+            const purpose = document.getElementById('kioskPurpose');
+            const home = document.getElementById('kioskHome');
+            if (purpose) purpose.classList.add('hidden');
+            if (home) {
+                home.classList.remove('hidden');
+                stopKioskIdleTimer();
+                home.classList.remove('home-animate');
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => {
+                        home.classList.add('home-animate');
+                    });
+                });
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         function startRegistration() {
             const home = document.getElementById('kioskHome');
             const reg = document.getElementById('kioskRegistration');
             const already = document.getElementById('kioskAlreadyRegistered');
+            const purpose = document.getElementById('kioskPurpose');
             if (!reg) return;
             if (home) home.classList.add('hidden');
             if (already) already.classList.add('hidden');
+            if (purpose) purpose.classList.add('hidden');
             reg.classList.remove('hidden');
             resetRegistrationFormOnly();
             resetKioskIdleTimer();
@@ -3582,9 +4208,11 @@
             const home = document.getElementById('kioskHome');
             const reg = document.getElementById('kioskRegistration');
             const already = document.getElementById('kioskAlreadyRegistered');
+            const purpose = document.getElementById('kioskPurpose');
             if (!already) return;
             if (home) home.classList.add('hidden');
             if (reg) reg.classList.add('hidden');
+            if (purpose) purpose.classList.add('hidden');
             already.classList.remove('hidden');
 
             // Clear previous search
@@ -3604,8 +4232,10 @@
             const home = document.getElementById('kioskHome');
             const reg = document.getElementById('kioskRegistration');
             const already = document.getElementById('kioskAlreadyRegistered');
+            const purpose = document.getElementById('kioskPurpose');
             if (reg) reg.classList.add('hidden');
             if (already) already.classList.add('hidden');
+            if (purpose) purpose.classList.add('hidden');
             if (home) {
                 home.classList.remove('hidden');
                 stopKioskIdleTimer();
@@ -4139,7 +4769,7 @@
 
         // Question-based navigation functions
         let currentQuestion = 1;
-        let currentStepQuestions = { 1: 9, 2: 4, 3: 3 }; // Number of questions per step
+        let currentStepQuestions = { 1: 8, 2: 4, 3: 3 }; // Number of questions per step
 
         function goBackToStep(stepNum) {
             showStep(stepNum);
@@ -4307,34 +4937,49 @@
             let isValid = true;
             clearErrors();
 
+            const getElValue = (id, trimValue = true) => {
+                const el = document.getElementById(id);
+                if (!el) return '';
+                const val = el.value ?? '';
+                return trimValue ? val.trim() : val;
+            };
+
             // Step 1 validations
             if (step === 1) {
                 if (questionNum === 1) {
-                    const firstName = document.getElementById('first_name').value.trim();
+                    const firstName = getElValue('first_name');
                     if (!firstName) {
                         showError('first_name', 'Please enter your first name');
                         isValid = false;
                     }
                 } else if (questionNum === 2) {
-                    const lastName = document.getElementById('last_name').value.trim();
+                    const lastName = getElValue('last_name');
                     if (!lastName) {
                         showError('last_name', 'Please enter your last name');
                         isValid = false;
                     }
                 } else if (questionNum === 3) {
-                    const dob = document.getElementById('dob').value;
+                    const dob = getElValue('dob', false);
                     if (!dob) {
                         showError('dob', 'Please select your date of birth');
                         isValid = false;
                     }
                 } else if (questionNum === 4) {
-                    const sex = document.getElementById('sex').value;
+                    const sex = getElValue('sex', false);
                     if (!sex) {
                         showError('sex', 'Please select your sex');
                         isValid = false;
                     }
+                } else if (questionNum === 5) {
+                    const civilStatus = getElValue('civil_status', false);
+                    if (!civilStatus) {
+                        showError('civil_status', 'Please select your civil status');
+                        isValid = false;
+                    }
+                } else if (questionNum === 6) {
+                    // Blood type is optional, no validation needed
                 } else if (questionNum === 7) {
-                    const contact = document.getElementById('contact').value.trim();
+                    const contact = getElValue('contact');
                     if (!contact) {
                         showError('contact', 'Please enter your contact number');
                         isValid = false;
@@ -4343,13 +4988,7 @@
                         isValid = false;
                     }
                 } else if (questionNum === 8) {
-                    const diagnosis = document.getElementById('diagnosis').value.trim();
-                    if (!diagnosis) {
-                        showError('diagnosis', 'Please describe your symptoms');
-                        isValid = false;
-                    }
-                } else if (questionNum === 9) {
-                    const philhealth = document.getElementById('philhealth_pin').value.trim();
+                    const philhealth = getElValue('philhealth_pin');
                     if (philhealth) {
                         // Validate format: 1234-5678-9012-3456
                         const philhealthPattern = /^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$/;
@@ -4364,25 +5003,25 @@
             // Step 2 validations
             if (step === 2) {
                 if (questionNum === 1) {
-                    const street = document.getElementById('street_address').value.trim();
+                    const street = getElValue('street_address');
                     if (!street) {
                         showError('street_address', 'Please enter your street address');
                         isValid = false;
                     }
                 } else if (questionNum === 2) {
-                    const barangay = document.getElementById('barangay').value.trim();
+                    const barangay = getElValue('barangay');
                     if (!barangay) {
                         showError('barangay', 'Please enter your barangay');
                         isValid = false;
                     }
                 } else if (questionNum === 3) {
-                    const city = document.getElementById('city').value.trim();
+                    const city = getElValue('city');
                     if (!city) {
                         showError('city', 'Please enter your city');
                         isValid = false;
                     }
                 } else if (questionNum === 4) {
-                    const province = document.getElementById('province').value.trim();
+                    const province = getElValue('province');
                     if (!province) {
                         showError('province', 'Please enter your province');
                         isValid = false;
@@ -4393,21 +5032,21 @@
             // Step 3 validations
             if (step === 3) {
                 if (questionNum === 1) {
-                    const name = document.getElementById('emergency_contact_name').value.trim();
+                    const name = getElValue('emergency_contact_name');
                     if (!name) {
                         showError('emergency_contact_name', 'Please enter emergency contact name');
                         isValid = false;
                     }
                 } else if (questionNum === 2) {
-                    const relationship = document.getElementById('emergency_contact_relationship').value;
+                    const relationship = getElValue('emergency_contact_relationship', false);
                     if (!relationship) {
                         showError('emergency_contact_relationship', 'Please select relationship');
                         isValid = false;
                     }
                 } else if (questionNum === 3) {
-                    const phone = document.getElementById('emergency_contact_phone').value.trim();
+                    const phone = getElValue('emergency_contact_phone');
                     if (!phone) {
-                        showError('emergency_contact_phone', 'Please enter contact number');
+                        showError('emergency_contact_phone', 'Please enter emergency contact number');
                         isValid = false;
                     } else if (!/^\d{11}$/.test(phone)) {
                         showError('emergency_contact_phone', 'Please enter a valid 11-digit number');

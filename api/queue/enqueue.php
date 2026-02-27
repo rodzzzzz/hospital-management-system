@@ -64,13 +64,13 @@ try {
                     philhealth_pin, full_name, first_name, last_name, dob, sex, blood_type, contact, civil_status,
                     email, street_address, barangay, city, province, zip_code,
                     employer_name, employer_address, patient_type, initial_location,
-                    diagnosis, emergency_contact_name, emergency_contact_relationship,
+                    diagnosis, purpose_of_visit, emergency_contact_name, emergency_contact_relationship,
                     emergency_contact_phone, is_new_patient
                 ) VALUES (
                     :philhealth_pin, :full_name, :first_name, :last_name, :dob, :sex, :blood_type, :contact, :civil_status,
                     :email, :street_address, :barangay, :city, :province, :zip_code,
                     :employer_name, :employer_address, :patient_type, :initial_location,
-                    :diagnosis, :emergency_contact_name, :emergency_contact_relationship,
+                    :diagnosis, :purpose_of_visit, :emergency_contact_name, :emergency_contact_relationship,
                     :emergency_contact_phone, :is_new_patient
                 )'
             );
@@ -96,6 +96,7 @@ try {
                 'patient_type' => $data['patient_type'],
                 'initial_location' => $data['initial_location'],
                 'diagnosis' => $data['diagnosis'],
+                'purpose_of_visit' => $data['purpose_of_visit'] ?? null,
                 'emergency_contact_name' => $data['emergency_contact_name'],
                 'emergency_contact_relationship' => $data['emergency_contact_relationship'],
                 'emergency_contact_phone' => $data['emergency_contact_phone'],
@@ -228,10 +229,10 @@ try {
     // Create queue entry
     $stmt = $pdo->prepare(
         'INSERT INTO patient_queue (
-            patient_id, station_id, queue_number, queue_position, status, arrived_at
-        ) VALUES (?, ?, ?, ?, "waiting", NOW())'
+            patient_id, station_id, queue_number, queue_position, status, arrived_at, purpose_of_visit
+        ) VALUES (?, ?, ?, ?, "waiting", NOW(), ?)'
     );
-    $stmt->execute([$patientId, $stationId, $queueNumber, $queuePosition]);
+    $stmt->execute([$patientId, $stationId, $queueNumber, $queuePosition, $data['purpose_of_visit'] ?? null]);
 
     $queueId = (int)$pdo->lastInsertId();
 

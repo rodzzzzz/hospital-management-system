@@ -813,14 +813,36 @@
             const queueListDiv = document.getElementById('labQueueList');
             if (currentLabQueueData.next_patients && currentLabQueueData.next_patients.length > 0) {
                 queueListDiv.innerHTML = currentLabQueueData.next_patients.map((patient) => `
-                    <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-600 text-white rounded-md flex items-center justify-center font-bold">
-                                ${patient.queue_number}
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-lg">
+                                        ${patient.queue_number}
+                                    </div>
+                                    <div>
+                                        <div class="text-lg font-semibold text-gray-900">${patient.full_name}</div>
+                                        <div class="text-sm text-gray-500">ID: ${patient.patient_code || ''}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-gray-500">Queued At</div>
+                                    <div class="text-sm text-gray-700">${formatDateTime(patient.arrived_at)}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-xl font-semibold text-gray-800 line-clamp-1">${patient.full_name}</div>
-                                <div class="text-sm text-gray-600">${patient.patient_code || ''}</div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-500">Location:</span>
+                                    <span class="ml-2 font-medium text-gray-900">${patient.station_name || '-'}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">Chief Complaint:</span>
+                                    <span class="ml-2 font-medium text-gray-900">${patient.diagnosis || patient.purpose_of_visit || '-'}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">Status:</span>
+                                    <span class="ml-2 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Waiting</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1218,6 +1240,22 @@
                 return dt.toLocaleDateString();
             } catch (_) {
                 return '';
+            }
+        }
+
+        function formatDateTime(d) {
+            try {
+                const dt = (d instanceof Date) ? d : new Date(d);
+                if (Number.isNaN(dt.getTime())) return '-';
+                return dt.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (_) {
+                return '-';
             }
         }
 

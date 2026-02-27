@@ -234,8 +234,8 @@
                     <div class="bg-white rounded-lg shadow overflow-hidden">
                         <div class="p-6 border-b border-gray-100 flex items-center justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold">Queue</h3>
-                                <p class="text-sm text-gray-500">New registrations waiting for nurse confirmation</p>
+                                <h3 class="text-lg font-semibold">Patient Information</h3>
+                                <p class="text-sm text-gray-500">Registered patients from kiosk and manual registration</p>
                             </div>
                             <button type="button" onclick="loadPatientQueue()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-all">
                                 Refresh
@@ -245,11 +245,12 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Queue No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chief Complaint</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Queued At</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Code</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age/Sex</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purpose of Visit</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered At</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -346,12 +347,6 @@
                             placeholder="Enter contact number">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-600 mb-2">Diagnosis / Chief Complaint</label>
-                        <input type="text" id="patientDiagnosis" 
-                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
-                            placeholder="e.g., CKD Stage 5 / ESRD">
-                    </div>
-                    <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-600 mb-2">Street Address</label>
                         <input type="text" id="patientStreet" 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
@@ -398,6 +393,55 @@
                         <input type="text" id="emergencyPhone" 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
                             placeholder="Enter contact phone">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">PhilHealth ID</label>
+                        <input type="text" id="patientPhilhealth" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+                            placeholder="e.g., 01-234567890-1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Purpose of Visit</label>
+                        <select id="patientPurposeOfVisit" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none">
+                            <option value="">Select purpose</option>
+                            <option value="Consultation">Consultation</option>
+                            <option value="Laboratory Results">Laboratory Results</option>
+                            <option value="Pharmacy">Pharmacy</option>
+                            <option value="Billing/Cashier">Billing/Cashier</option>
+                            <option value="Radiology/Imaging">Radiology/Imaging</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Other Purpose (if selected above)</label>
+                        <input type="text" id="patientOtherPurpose" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+                            placeholder="Please specify your concern">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Employer Name</label>
+                        <input type="text" id="patientEmployerName" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+                            placeholder="Enter employer name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Employer Address</label>
+                        <input type="text" id="patientEmployerAddress" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+                            placeholder="Enter employer address">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-2">Patient Type</label>
+                        <select id="patientType" 
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none">
+                            <option value="">Select patient type</option>
+                            <option value="Private">Private</option>
+                            <option value="Company">Company</option>
+                            <option value="Senior Citizen">Senior Citizen</option>
+                            <option value="PWD">PWD</option>
+                            <option value="PHIC">PHIC</option>
+                        </select>
                     </div>
                 </div>
                 <div class="border-t border-gray-100 pt-6">
@@ -457,6 +501,41 @@
                     class="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all">
                     Confirm
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Patient Details Modal -->
+    <div id="viewPatientDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-6xl mx-4 transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Patient Details</h3>
+                <button onclick="closeViewPatientDetailsModal()" class="text-gray-400 hover:text-gray-600 transition-colors" type="button">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="viewPatientDetailsContent" class="space-y-6">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="border-t border-gray-100 pt-6 mt-6">
+                <div class="flex justify-end gap-3">
+                    <button id="viewPatientEditToggleBtn" type="button" onclick="togglePatientDetailsEdit()"
+                        class="hidden px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 transition-all">
+                        Edit
+                    </button>
+                    <button id="viewPatientCancelBtn" type="button" onclick="togglePatientDetailsEdit()"
+                        class="hidden px-4 py-2 rounded-lg border border-gray-600 text-gray-600 hover:bg-gray-50 transition-all">
+                        Cancel
+                    </button>
+                    <button id="viewPatientCloseBtn" type="button" onclick="closeViewPatientDetailsModal()"
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+                        Close
+                    </button>
+                    <button id="viewPatientSaveBtn" type="button" onclick="savePatientDetailsChanges()"
+                        class="hidden px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all">
+                        Save Changes
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -540,6 +619,14 @@
             }
         });
 
+        let currentViewedPatient = null;
+        let isPatientDetailsEditing = false;
+
+        const patientDetailsSexOptions = ['Male', 'Female'];
+        const patientDetailsBloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+        const patientDetailsCivilStatusOptions = ['Single', 'Married', 'Widowed', 'Separated', 'Divorced'];
+        const patientDetailsPurposeOptions = ['Consultation', 'Laboratory Results', 'Pharmacy', 'Billing/Cashier', 'Radiology/Imaging', 'Other'];
+
         // Modal functionality
         function toggleModal(modalId) {
             const modal = document.getElementById(modalId);
@@ -580,6 +667,455 @@
             }
         }
 
+        const viewPatientFieldClasses = 'w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none';
+
+        function renderPatientDetailsSelectOptions(options, selected) {
+            const normalized = (selected ?? '').toString().trim();
+            return options.map(opt => `<option value="${escapeHtml(opt)}"${opt === normalized ? ' selected' : ''}>${escapeHtml(opt)}</option>`).join('');
+        }
+
+        function renderViewPatientDetailsContent(patient) {
+            const content = document.getElementById('viewPatientDetailsContent');
+            if (!content) return;
+            if (!patient) {
+                content.innerHTML = '';
+                return;
+            }
+
+            const ageValue = patient.dob ? calcAge(patient.dob) : null;
+            const ageText = (ageValue !== null && ageValue !== undefined) ? `${ageValue} years` : '-';
+            const ageInputValue = (ageValue !== null && ageValue !== undefined) ? String(ageValue) : '';
+            const formatDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
+            const normalizedSex = normalizeSelectValue('patientSex', patient.sex);
+            const normalizedBloodType = normalizeSelectValue('patientBloodType', patient.blood_type);
+            const normalizedCivilStatus = normalizeSelectValue('patientCivilStatus', patient.civil_status);
+            const normalizedPurpose = normalizeSelectValue('patientPurposeOfVisit', patient.purpose_of_visit);
+            const header = `
+                <div class="relative bg-gradient-to-br from-blue-600 via-teal-600 to-green-600 rounded-2xl p-8 mb-8 shadow-xl overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+                    <div class="relative z-10 flex items-center gap-6">
+                        <div class="relative">
+                            <div class="h-24 w-24 rounded-full bg-white bg-opacity-20 backdrop-blur-sm flex items-center justify-center text-white text-4xl font-bold border-4 border-white border-opacity-30 shadow-lg">
+                                ${(patient.full_name || '?').charAt(0).toUpperCase()}
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 h-8 w-8 bg-green-400 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                <i class="fas fa-check text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-3xl font-bold text-white mb-2 tracking-tight">${escapeHtml(patient.full_name || '-')}</h4>
+                            <div class="flex items-center gap-6">
+                                <div>
+                                    <p class="text-white text-sm font-medium opacity-80">Patient ID</p>
+                                    <p class="text-white text-xl font-bold">${escapeHtml(patient.patient_code || '-')}</p>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-medium opacity-80">Age</p>
+                                    <p class="text-white text-xl font-bold">${escapeHtml(ageText)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-medium opacity-80">Sex</p>
+                                    <p class="text-white text-xl font-bold">${escapeHtml(patient.sex || '-')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const personalView = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Personal Information</h5>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-lg text-gray-600">Date of Birth</p>
+                            <p class="font-bold text-gray-900 text-lg">${formatDate(patient.dob)}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Age</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(ageText)}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Sex</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.sex || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Blood Type</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.blood_type || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Civil Status</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.civil_status || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Contact Number</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.contact || '-')}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const personalEdit = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Personal Information</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Full Name</label>
+                            <input type="text" id="viewPatientFullName"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.full_name || '')}"
+                                placeholder="Enter full name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Date of Birth</label>
+                            <input type="date" id="viewPatientDob"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.dob || '')}"
+                                oninput="syncViewPatientAgeFromDob()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Age</label>
+                            <input type="text" id="viewPatientAge" readonly
+                                class="${viewPatientFieldClasses} bg-gray-50 cursor-not-allowed"
+                                value="${escapeHtml(ageInputValue)}" placeholder="Age">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Sex</label>
+                            <select id="viewPatientSex" class="${viewPatientFieldClasses}">
+                                <option value="">Select sex</option>
+                                ${renderPatientDetailsSelectOptions(patientDetailsSexOptions, normalizedSex)}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Blood Type</label>
+                            <select id="viewPatientBloodType" class="${viewPatientFieldClasses}">
+                                <option value="">Select blood type</option>
+                                ${renderPatientDetailsSelectOptions(patientDetailsBloodTypes, normalizedBloodType)}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Civil Status</label>
+                            <select id="viewPatientCivilStatus" class="${viewPatientFieldClasses}">
+                                <option value="">Select civil status</option>
+                                ${renderPatientDetailsSelectOptions(patientDetailsCivilStatusOptions, normalizedCivilStatus)}
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Contact Number</label>
+                            <input type="text" id="viewPatientContact"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.contact || '')}"
+                                placeholder="Enter contact number">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const medicalView = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Medical Information</h5>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-lg text-gray-600">PhilHealth ID</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.philhealth_pin || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Purpose of Visit</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.purpose_of_visit || '-')}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const medicalEdit = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Medical Information</h5>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">PhilHealth ID</label>
+                            <input type="text" id="viewPatientPhilhealth"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.philhealth_pin || '')}"
+                                placeholder="Enter PhilHealth ID">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Purpose of Visit</label>
+                            <select id="viewPatientPurposeOfVisit" class="${viewPatientFieldClasses}">
+                                <option value="">Select purpose</option>
+                                ${renderPatientDetailsSelectOptions(patientDetailsPurposeOptions, normalizedPurpose)}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Other Purpose (if selected above)</label>
+                            <input type="text" id="viewPatientOtherPurpose"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.purpose_of_visit_other || '')}"
+                                placeholder="Please specify your concern">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const addressView = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Address</h5>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-lg text-gray-600">Street Address</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.street_address || '-')}</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-lg text-gray-600">Barangay</p>
+                                <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.barangay || '-')}</p>
+                            </div>
+                            <div>
+                                <p class="text-lg text-gray-600">City</p>
+                                <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.city || '-')}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-lg text-gray-600">Province</p>
+                                <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.province || '-')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const addressEdit = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Address</h5>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Street Address</label>
+                            <input type="text" id="viewPatientStreet"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.street_address || '')}"
+                                placeholder="Enter street address">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Barangay</label>
+                                <input type="text" id="viewPatientBarangay"
+                                    class="${viewPatientFieldClasses}" value="${escapeHtml(patient.barangay || '')}"
+                                    placeholder="Enter barangay">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">City</label>
+                                <input type="text" id="viewPatientCity"
+                                    class="${viewPatientFieldClasses}" value="${escapeHtml(patient.city || '')}"
+                                    placeholder="Enter city">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Province</label>
+                                <input type="text" id="viewPatientProvince"
+                                    class="${viewPatientFieldClasses}" value="${escapeHtml(patient.province || '')}"
+                                    placeholder="Enter province">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const emergencyView = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Emergency Contact</h5>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-lg text-gray-600">Contact Name</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.emergency_contact_name || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Relationship</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.emergency_contact_relationship || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Phone Number</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.emergency_contact_phone || '-')}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const emergencyEdit = `
+                <div class="space-y-4">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Emergency Contact</h5>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Contact Name</label>
+                            <input type="text" id="viewPatientEmergencyName"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.emergency_contact_name || '')}"
+                                placeholder="Contact name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Relationship</label>
+                            <input type="text" id="viewPatientEmergencyRelationship"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.emergency_contact_relationship || '')}"
+                                placeholder="Relationship">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Phone Number</label>
+                            <input type="text" id="viewPatientEmergencyPhone"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.emergency_contact_phone || '')}"
+                                placeholder="Phone number">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const employmentView = (patient.employer_name || patient.employer_address) ? `
+                <div class="space-y-4 md:col-span-2">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Employment Information</h5>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-lg text-gray-600">Employer Name</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.employer_name || '-')}</p>
+                        </div>
+                        <div>
+                            <p class="text-lg text-gray-600">Employer Address</p>
+                            <p class="font-bold text-gray-900 text-lg">${escapeHtml(patient.employer_address || '-')}</p>
+                        </div>
+                    </div>
+                </div>
+            ` : '';
+
+            const employmentEdit = `
+                <div class="space-y-4 md:col-span-2">
+                    <h5 class="text-xl font-bold text-gray-900 border-b pb-2">Employment Information</h5>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Employer Name</label>
+                            <input type="text" id="viewPatientEmployerName"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.employer_name || '')}"
+                                placeholder="Enter employer name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Employer Address</label>
+                            <input type="text" id="viewPatientEmployerAddress"
+                                class="${viewPatientFieldClasses}" value="${escapeHtml(patient.employer_address || '')}"
+                                placeholder="Enter employer address">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const registeredAt = patient.created_at ? new Date(patient.created_at).toLocaleString() : '-';
+            const updatedAt = patient.updated_at ? new Date(patient.updated_at).toLocaleString() : '-';
+
+            const sections = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    ${isPatientDetailsEditing ? personalEdit : personalView}
+                    ${isPatientDetailsEditing ? medicalEdit : medicalView}
+                    ${isPatientDetailsEditing ? addressEdit : addressView}
+                    ${isPatientDetailsEditing ? emergencyEdit : emergencyView}
+                    ${isPatientDetailsEditing ? employmentEdit : employmentView}
+                    <div class="md:col-span-2 bg-gray-50 rounded-lg p-4">
+                        <div class="grid grid-cols-2 gap-4 text-lg">
+                            <div>
+                                <p class="text-gray-600">Registered At</p>
+                                <p class="font-bold text-gray-900 text-lg">${escapeHtml(registeredAt)}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Last Updated</p>
+                                <p class="font-bold text-gray-900 text-lg">${escapeHtml(updatedAt)}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            content.innerHTML = `${header}${sections}`;
+        }
+
+        function syncViewPatientAgeFromDob() {
+            const dobEl = document.getElementById('viewPatientDob');
+            const ageEl = document.getElementById('viewPatientAge');
+            if (!dobEl || !ageEl) return;
+            const age = calcAge(dobEl.value);
+            ageEl.value = (age !== null && age !== undefined) ? String(age) : '';
+        }
+
+        function updatePatientDetailsEditControls() {
+            const editBtn = document.getElementById('viewPatientEditToggleBtn');
+            if (editBtn) {
+                editBtn.classList.toggle('hidden', !currentViewedPatient);
+                editBtn.textContent = isPatientDetailsEditing ? 'Cancel' : 'Edit';
+            }
+            const saveBtn = document.getElementById('viewPatientSaveBtn');
+            if (saveBtn) {
+                saveBtn.classList.toggle('hidden', !isPatientDetailsEditing);
+            }
+        }
+
+        function togglePatientDetailsEdit(forceState) {
+            if (!currentViewedPatient) return;
+            const nextState = (typeof forceState === 'boolean') ? forceState : !isPatientDetailsEditing;
+            isPatientDetailsEditing = nextState;
+            renderViewPatientDetailsContent(currentViewedPatient);
+            updatePatientDetailsEditControls();
+        }
+
+        function closeViewPatientDetailsModal() {
+            const modal = document.getElementById('viewPatientDetailsModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                toggleModal('viewPatientDetailsModal');
+            }
+            currentViewedPatient = null;
+            isPatientDetailsEditing = false;
+            const content = document.getElementById('viewPatientDetailsContent');
+            if (content) content.innerHTML = '';
+            updatePatientDetailsEditControls();
+        }
+
+        async function savePatientDetailsChanges() {
+            if (!currentViewedPatient || !isPatientDetailsEditing) return;
+            const saveBtn = document.getElementById('viewPatientSaveBtn');
+            if (saveBtn) saveBtn.disabled = true;
+
+            const getVal = (id) => (document.getElementById(id)?.value ?? '').toString().trim();
+
+            const payload = {
+                id: Number(currentViewedPatient.id),
+                full_name: getVal('viewPatientFullName'),
+                philhealth_pin: getVal('viewPatientPhilhealth'),
+                dob: getVal('viewPatientDob'),
+                sex: getVal('viewPatientSex'),
+                blood_type: getVal('viewPatientBloodType'),
+                civil_status: getVal('viewPatientCivilStatus'),
+                contact: getVal('viewPatientContact'),
+                purpose_of_visit: getVal('viewPatientPurposeOfVisit'),
+                purpose_of_visit_other: getVal('viewPatientOtherPurpose'),
+                street_address: getVal('viewPatientStreet'),
+                barangay: getVal('viewPatientBarangay'),
+                city: getVal('viewPatientCity'),
+                province: getVal('viewPatientProvince'),
+                employer_name: getVal('viewPatientEmployerName'),
+                employer_address: getVal('viewPatientEmployerAddress'),
+                emergency_contact_name: getVal('viewPatientEmergencyName'),
+                emergency_contact_relationship: getVal('viewPatientEmergencyRelationship'),
+                emergency_contact_phone: getVal('viewPatientEmergencyPhone'),
+            };
+
+            try {
+                const res = await fetch(API_BASE_URL + '/patients/update.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const json = await res.json().catch(() => null);
+                if (!res.ok || !json || !json.ok || !json.patient) {
+                    alert((json && json.error) ? json.error : 'Failed to update patient details');
+                    return;
+                }
+
+                currentViewedPatient = json.patient;
+                isPatientDetailsEditing = false;
+                renderViewPatientDetailsContent(currentViewedPatient);
+                updatePatientDetailsEditControls();
+            } finally {
+                if (saveBtn) saveBtn.disabled = false;
+            }
+        }
+
         function progressChip(status) {
             const s = (status ?? '').toString().trim();
             const sl = s.toLowerCase();
@@ -600,7 +1136,7 @@
             const tbody = document.getElementById('patientQueueTbody');
             if (!tbody) return;
 
-            const res = await fetch(API_BASE_URL + '/queue/list.php?status=queued', { headers: { 'Accept': 'application/json' } });
+            const res = await fetch(API_BASE_URL + '/patients/list.php', { headers: { 'Accept': 'application/json' } });
             const json = await res.json().catch(() => null);
             if (!res.ok || !json || !json.ok) {
                 tbody.innerHTML = '';
@@ -609,45 +1145,49 @@
                 return;
             }
 
-            const rows = Array.isArray(json.queue) ? json.queue : [];
+            const rows = Array.isArray(json.patients) ? json.patients : [];
             const label = document.getElementById('patientQueueResultsLabel');
             if (label) label.textContent = 'Showing ' + String(rows.length) + ' results';
 
-            tbody.innerHTML = rows.map(item => {
-                const p = item.payload || {};
-                const fullName = escapeHtml(p.full_name || '');
-                const age = p.dob ? calcAge(p.dob) : null;
-                const sub = (age !== null) ? (String(age) + ' years') : '';
-                const loc = escapeHtml(p.initial_location || '');
-                const dx = escapeHtml(p.diagnosis || '');
-                const queuedAt = escapeHtml((item.created_at || '').toString());
-                const qid = Number(item.id);
+            tbody.innerHTML = rows.map(patient => {
+                const fullName = escapeHtml(patient.full_name || '');
+                const patientCode = escapeHtml(patient.patient_code || '-');
+                const age = patient.dob ? calcAge(patient.dob) : '-';
+                const sex = escapeHtml(patient.sex || '-');
+                const ageSex = age !== '-' ? `${age} / ${sex}` : sex;
+                const contact = escapeHtml(patient.contact || '-');
+                const purposeOfVisit = escapeHtml(patient.purpose_of_visit || patient.diagnosis || '-');
+                const registeredAt = patient.created_at ? new Date(patient.created_at).toLocaleString() : '-';
+                const patientId = Number(patient.id);
 
                 return `
                     <tr>
-                        <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700 text-center">${escapeHtml(String(qid))}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${patientCode}</div>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                    <i class="fas fa-user text-gray-500"></i>
+                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-user text-blue-600"></i>
                                 </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">${fullName}</div>
-                                    <div class="text-sm text-gray-500">${escapeHtml(sub)}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">${loc}</div>
+                            <div class="text-sm text-gray-900">${ageSex}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">${dx || '-'}</div>
+                            <div class="text-sm text-gray-900">${contact}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${queuedAt}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${purposeOfVisit}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${registeredAt}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex items-center gap-2">
-                                <button class="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-all" type="button" onclick="openEditQueueItem(${qid})">Edit</button>
-                                <button class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all" type="button" onclick="requestConfirmQueueItem(${qid})">Confirm</button>
+                            <div class="flex items-center">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all" type="button" onclick="viewPatientDetails(${patientId})">View Details</button>
                             </div>
                         </td>
                     </tr>
@@ -676,6 +1216,29 @@
             }
             if (selectId === 'patientBloodType') {
                 return v.toUpperCase().replace(/\s+/g, '');
+            }
+            if (selectId === 'patientPurposeOfVisit') {
+                const purposeMap = {
+                    'consultation': 'Consultation',
+                    'laboratory': 'Laboratory Results',
+                    'pharmacy': 'Pharmacy',
+                    'billing': 'Billing/Cashier',
+                    'radiology': 'Radiology/Imaging',
+                    'other': 'Other'
+                };
+                return purposeMap[key] || v;
+            }
+            if (selectId === 'patientType') {
+                const typeMap = {
+                    'private': 'Private',
+                    'company': 'Company',
+                    'senior citizen': 'Senior Citizen',
+                    'senior': 'Senior Citizen',
+                    'pwd': 'PWD',
+                    'phic': 'PHIC',
+                    'philhealth': 'PHIC'
+                };
+                return typeMap[key] || v;
             }
             return v;
         }
@@ -717,7 +1280,6 @@
             syncAgeFromDob();
             setVal('patientCivilStatus', normalizeSelectValue('patientCivilStatus', p.civil_status));
             setVal('patientContact', p.contact);
-            setVal('patientDiagnosis', p.diagnosis);
             setVal('patientStreet', p.street_address);
             setVal('patientBarangay', p.barangay);
             setVal('patientCity', p.city);
@@ -726,6 +1288,12 @@
             setVal('emergencyName', p.emergency_contact_name);
             setVal('emergencyRelationship', p.emergency_contact_relationship);
             setVal('emergencyPhone', p.emergency_contact_phone);
+            setVal('patientPhilhealth', p.philhealth_pin);
+            setVal('patientPurposeOfVisit', normalizeSelectValue('patientPurposeOfVisit', p.purpose_of_visit));
+            setVal('patientOtherPurpose', p.purpose_of_visit_other);
+            setVal('patientEmployerName', p.employer_name);
+            setVal('patientEmployerAddress', p.employer_address);
+            setVal('patientType', normalizeSelectValue('patientType', p.patient_type));
 
             toggleModal('patientModal');
         }
@@ -912,7 +1480,6 @@
                 syncAgeFromDob();
                 setVal('patientCivilStatus', p.civil_status);
                 setVal('patientContact', p.contact);
-                setVal('patientDiagnosis', p.diagnosis);
                 setVal('patientStreet', p.street_address);
                 setVal('patientBarangay', p.barangay);
                 setVal('patientCity', p.city);
@@ -1045,7 +1612,6 @@
                     civil_status: document.getElementById('patientCivilStatus').value,
                     contact: document.getElementById('patientContact').value,
                     initial_location: 'OPD',
-                    diagnosis: document.getElementById('patientDiagnosis').value,
                     street_address: document.getElementById('patientStreet').value,
                     barangay: document.getElementById('patientBarangay').value,
                     city: document.getElementById('patientCity').value,
@@ -1054,6 +1620,12 @@
                     emergency_contact_name: document.getElementById('emergencyName').value,
                     emergency_contact_relationship: document.getElementById('emergencyRelationship').value,
                     emergency_contact_phone: document.getElementById('emergencyPhone').value,
+                    philhealth_pin: document.getElementById('patientPhilhealth').value,
+                    purpose_of_visit: document.getElementById('patientPurposeOfVisit').value,
+                    purpose_of_visit_other: document.getElementById('patientOtherPurpose').value,
+                    employer_name: document.getElementById('patientEmployerName').value,
+                    employer_address: document.getElementById('patientEmployerAddress').value,
+                    patient_type: document.getElementById('patientType').value,
                 };
 
                 const res = await fetch(API_BASE_URL + '/queue/update.php', {
@@ -1083,7 +1655,6 @@
                 civil_status: document.getElementById('patientCivilStatus').value,
                 contact: document.getElementById('patientContact').value,
                 initial_location: 'OPD',
-                diagnosis: document.getElementById('patientDiagnosis').value,
                 street_address: document.getElementById('patientStreet').value,
                 barangay: document.getElementById('patientBarangay').value,
                 city: document.getElementById('patientCity').value,
@@ -1092,6 +1663,7 @@
                 emergency_contact_name: document.getElementById('emergencyName').value,
                 emergency_contact_relationship: document.getElementById('emergencyRelationship').value,
                 emergency_contact_phone: document.getElementById('emergencyPhone').value,
+                philhealth_pin: document.getElementById('patientPhilhealth').value,
             };
 
             const url = isEdit ? API_BASE_URL + '/patients/update.php' : API_BASE_URL + '/patients/create.php';
@@ -1120,8 +1692,6 @@
             const submitBtn = document.getElementById('patientSubmitBtn');
             if (submitBtn) submitBtn.textContent = 'Save Changes';
 
-            toggleModal('patientModal');
-
             const res = await fetch(API_BASE_URL + '/patients/get.php?id=' + encodeURIComponent(String(patientId)), { headers: { 'Accept': 'application/json' } });
             const json = await res.json().catch(() => null);
             if (!res.ok || !json || !json.ok || !json.patient) {
@@ -1146,7 +1716,6 @@
             setVal('patientEmail', p.email);
             setVal('patientPhilhealthPin', p.philhealth_pin);
             setVal('patientLocation', p.initial_location);
-            setVal('patientDiagnosis', p.diagnosis);
             setVal('patientStreet', p.street_address);
             setVal('patientBarangay', p.barangay);
             setVal('patientCity', p.city);
@@ -1181,6 +1750,29 @@
             const ageEl = document.getElementById('patientAge');
             if (!ageEl) return;
             ageEl.value = calcAge(dob);
+        }
+
+        async function viewPatientDetails(patientId) {
+            const content = document.getElementById('viewPatientDetailsContent');
+            if (!content) return;
+
+            content.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i><p class="mt-2 text-gray-600">Loading patient details...</p></div>';
+            toggleModal('viewPatientDetailsModal');
+
+            const res = await fetch(API_BASE_URL + '/patients/get.php?id=' + encodeURIComponent(String(patientId)), { headers: { 'Accept': 'application/json' } });
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !json || !json.ok || !json.patient) {
+                content.innerHTML = '<div class="text-center py-8 text-red-600"><i class="fas fa-exclamation-circle text-3xl"></i><p class="mt-2">Failed to load patient details</p></div>';
+                currentViewedPatient = null;
+                isPatientDetailsEditing = false;
+                updatePatientDetailsEditControls();
+                return;
+            }
+
+            currentViewedPatient = json.patient;
+            isPatientDetailsEditing = false;
+            renderViewPatientDetailsContent(currentViewedPatient);
+            updatePatientDetailsEditControls();
         }
     </script>
 </body>
