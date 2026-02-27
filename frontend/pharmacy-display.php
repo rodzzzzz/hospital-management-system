@@ -264,15 +264,63 @@ Lanao Del Sur, BARMM 9300
         </div>
     </div>
 
+    <!-- Audio Enable Overlay -->
+    <div id="audioEnableOverlay" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999]" style="display: none;">
+        <div class="bg-white rounded-2xl p-12 text-center max-w-md shadow-2xl">
+            <div class="mb-6">
+                <i class="fas fa-volume-up text-6xl text-blue-600"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Enable Audio Announcements</h2>
+            <p class="text-gray-600 mb-8 text-lg">Click the button below to enable text-to-speech announcements for patient calls.</p>
+            <button id="enableAudioBtn" class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xl font-semibold transition-all transform hover:scale-105">
+                <i class="fas fa-check-circle mr-2"></i>
+                Enable Audio
+            </button>
+        </div>
+    </div>
+
     <script>
         let displayData = null;
         let refreshInterval;
+        let audioEnabled = false;
 
         // Initialize display
         document.addEventListener('DOMContentLoaded', function() {
             updateDateTime();
             setInterval(updateDateTime, 1000);
             loadQueueData();
+            
+            // Show audio enable overlay after 2 seconds
+            setTimeout(() => {
+                document.getElementById('audioEnableOverlay').style.display = 'flex';
+            }, 2000);
+            
+            // Handle enable audio button
+            document.getElementById('enableAudioBtn').addEventListener('click', function() {
+                audioEnabled = true;
+                
+                // Initialize speech synthesis voices with user interaction
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.getVoices();
+                    
+                    // Test TTS to ensure it works
+                    const testUtterance = new SpeechSynthesisUtterance('Audio enabled');
+                    testUtterance.volume = 0.5;
+                    testUtterance.rate = 1.5;
+                    window.speechSynthesis.speak(testUtterance);
+                    
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        const voices = window.speechSynthesis.getVoices();
+                        console.log('TTS voices initialized:', voices.length);
+                    };
+                }
+                
+                // Hide overlay
+                document.getElementById('audioEnableOverlay').style.display = 'none';
+                console.log('Audio announcements enabled');
+            });
+            
             // Subscribe to WebSocket for real-time queue updates
             HospitalWS.subscribe('queue-3');
             HospitalWS.subscribe('global');
@@ -371,23 +419,114 @@ Lanao Del Sur, BARMM 9300
         }
 
 
-        // Sound notification (optional)
         function playNotificationSound() {
-            // Play a subtle notification sound when queue changes
             const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE');
             audio.volume = 0.3;
-            audio.play().catch(e => console.log('Could not play sound'));
+            audio.play().catch(() => console.log('Could not play sound'));
         }
 
-        // Check for changes and play sound
-        let previousQueueCount = 0;
-        function checkForChanges() {
-            if (displayData && displayData.queue_count !== previousQueueCount) {
-                if (displayData.queue_count > previousQueueCount) {
-                    // Patient added to queue
-                    playNotificationSound();
+        // Announce patient name via Text-to-Speech
+        function announcePatient(name) {
+            console.log('Attempting to announce patient:', name);
+            
+            if (!audioEnabled) {
+                console.log('Audio not enabled yet - user must click Enable Audio button');
+                return;
+            }
+            
+            if (!('speechSynthesis' in window)) {
+                console.error('Speech synthesis not supported in this browser');
+                return;
+            }
+            
+            try {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance('Patient ' + name + ', please proceed to the Pharmacy');
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.2;
+                utterance.volume = 1;
+                
+                utterance.onstart = () => console.log('Speech started');
+                utterance.onend = () => console.log('Speech ended');
+                utterance.onerror = (e) => console.error('Speech error:', e);
+                
+                // Get available voices
+                let voices = window.speechSynthesis.getVoices();
+                console.log('Available voices:', voices.length);
+                
+                // If voices not loaded yet, wait for them
+                if (voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        voices = window.speechSynthesis.getVoices();
+                        console.log('Voices loaded:', voices.length);
+                        selectFemaleVoice(utterance, voices);
+                        window.speechSynthesis.speak(utterance);
+                    };
+                } else {
+                    selectFemaleVoice(utterance, voices);
+                    window.speechSynthesis.speak(utterance);
                 }
-                previousQueueCount = displayData.queue_count;
+            } catch (error) {
+                console.error('Error in announcePatient:', error);
+            }
+        }
+        
+        function selectFemaleVoice(utterance, voices) {
+            // Priority order for female voices
+            const femaleVoiceNames = [
+                'Microsoft Zira',
+                'Google US English Female',
+                'Samantha',
+                'Victoria',
+                'Karen',
+                'Moira',
+                'Tessa',
+                'female',
+                'woman'
+            ];
+            
+            // Try to find a female voice by name
+            for (const voiceName of femaleVoiceNames) {
+                const voice = voices.find(v => 
+                    v.lang.startsWith('en') && 
+                    v.name.toLowerCase().includes(voiceName.toLowerCase())
+                );
+                if (voice) {
+                    utterance.voice = voice;
+                    console.log('Using voice:', voice.name);
+                    return;
+                }
+            }
+            
+            // Fallback: use any English voice (increase pitch for more feminine sound)
+            const englishVoice = voices.find(v => v.lang.startsWith('en'));
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+                utterance.pitch = 1.5;
+                console.log('Using fallback voice with higher pitch:', englishVoice.name);
+            }
+        }
+
+        let previousQueueCount = 0;
+        let previousServingName = null;
+        function checkForChanges() {
+            if (displayData) {
+                // Announce new serving patient via TTS
+                const currentServingName = displayData.currently_serving ? displayData.currently_serving.full_name : null;
+                if (currentServingName && currentServingName !== previousServingName) {
+                    announcePatient(currentServingName);
+                }
+                previousServingName = currentServingName;
+
+                // Play notification sound for new queue additions
+                if (displayData.queue_count !== previousQueueCount) {
+                    if (displayData.queue_count > previousQueueCount) {
+                        playNotificationSound();
+                    }
+                    previousQueueCount = displayData.queue_count;
+                }
             }
         }
 
@@ -402,6 +541,11 @@ Lanao Del Sur, BARMM 9300
         document.addEventListener('keydown', function(e) {
             if (e.key === 'r' || e.key === 'R') {
                 loadQueueData();
+            }
+            // Press 't' to test TTS
+            if (e.key === 't' || e.key === 'T') {
+                console.log('Testing TTS...');
+                announcePatient('Test Patient');
             }
         });
 

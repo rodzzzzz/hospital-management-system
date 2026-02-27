@@ -362,52 +362,59 @@
                     });
             }
             
-            // Load beds for current ward
+            // Load beds for current ward from real API
             function loadBeds(ward) {
                 const bedGrid = document.getElementById('bedGrid');
-                bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Loading beds...</div>';
-                
+                bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading beds...</div>';
+
                 if (ward === 'icu') {
-                    // Load ICU beds from existing API
+                    // ICU uses its own existing API
                     fetch(API_BASE_URL + '/icu/patients.php')
-                        .then(response => response.json())
+                        .then(r => r.json())
                         .then(data => {
                             if (data.ok) {
-                                displayBeds(data.patients || [], ward);
+                                // Map ICU patients to bed format
+                                const beds = (data.patients || []).map(p => ({
+                                    bed_code:     p.bed_code,
+                                    patient_name: p.patient_name,
+                                    status:       'occupied',
+                                    room_no:      'ICU',
+                                }));
+                                displayBeds(beds, ward);
+                            } else {
+                                bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading ICU beds</div>';
+                            }
+                        })
+                        .catch(() => {
+                            bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading ICU beds</div>';
+                        });
+                } else {
+                    // All other wards use the bed management API
+                    fetch(API_BASE_URL + '/bed_management/beds_list.php?ward=' + encodeURIComponent(ward))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.ok) {
+                                if (data.beds.length === 0) {
+                                    bedGrid.innerHTML = `
+                                        <div class="col-span-full text-center py-12 text-gray-400">
+                                            <i class="fas fa-bed text-4xl mb-3"></i>
+                                            <p class="text-sm mb-4">No beds configured for ${ward.toUpperCase()} ward</p>
+                                            <button type="button" onclick="document.getElementById('addRoomModal').classList.remove('hidden')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                                <i class="fas fa-plus mr-2"></i>Add First Room
+                                            </button>
+                                        </div>
+                                    `;
+                                } else {
+                                    displayBeds(data.beds, ward);
+                                }
                             } else {
                                 bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading beds</div>';
                             }
                         })
-                        .catch(error => {
-                            console.error('Error loading ICU beds:', error);
+                        .catch(() => {
                             bedGrid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Error loading beds</div>';
                         });
-                } else {
-                    // For other wards, show placeholder beds
-                    const placeholderBeds = generatePlaceholderBeds(ward);
-                    displayBeds(placeholderBeds, ward);
                 }
-            }
-            
-            // Generate placeholder beds for non-ICU wards
-            function generatePlaceholderBeds(ward) {
-                const beds = [];
-                const wardNames = {
-                    'pedia': 'PEDIA',
-                    'obgyne': 'OB',
-                    'surgical': 'SURG',
-                    'medical': 'MED'
-                };
-                const prefix = wardNames[ward] || ward.toUpperCase();
-                
-                for (let i = 1; i <= 12; i++) {
-                    beds.push({
-                        bed_code: `${prefix}-${String(i).padStart(2, '0')}`,
-                        patient_name: i <= 6 ? `Patient ${i}` : null,
-                        status: i <= 6 ? 'occupied' : (i <= 10 ? 'available' : 'cleaning')
-                    });
-                }
-                return beds;
             }
             
             // Display beds organized by rooms with collapsible sections
@@ -481,22 +488,22 @@
                 });
             }
             
-            // Group beds by room number
+            // Group beds by room using real room_no from API
             function groupBedsByRoom(beds, ward) {
                 const rooms = {};
-                
+
                 beds.forEach(bed => {
-                    // Extract room number from bed code (e.g., ICU-01 -> Room ICU-A, ICU-02 -> Room ICU-A)
-                    const bedNum = parseInt(bed.bed_code.split('-')[1] || '1');
-                    const roomNum = Math.ceil(bedNum / 4); // 4 beds per room
-                    const roomName = `Room ${ward.toUpperCase()}-${String.fromCharCode(64 + roomNum)}`; // A, B, C, etc.
-                    
-                    if (!rooms[roomName]) {
-                        rooms[roomName] = [];
+                    // Use room_no from API if available, otherwise fall back to ICU grouping
+                    const roomLabel = bed.room_no
+                        ? `Room ${bed.room_no}`
+                        : `Room ${ward.toUpperCase()}`;
+
+                    if (!rooms[roomLabel]) {
+                        rooms[roomLabel] = [];
                     }
-                    rooms[roomName].push(bed);
+                    rooms[roomLabel].push(bed);
                 });
-                
+
                 return rooms;
             }
             
@@ -626,10 +633,40 @@
             
             document.getElementById('addRoomForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                // TODO: Implement room creation API call
-                alert('Room creation functionality will be implemented with backend API.');
-                addRoomModal.classList.add('hidden');
-                loadBeds(currentWard); // Refresh display
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Adding...';
+
+                const data = {
+                    ward:       form.querySelector('[name="ward"]')?.value || '',
+                    room_no:    form.querySelector('[name="room_number"]')?.value || '',
+                    room_type:  form.querySelector('[name="room_type"]')?.value || 'ward',
+                    bed_count:  parseInt(form.querySelector('[name="bed_count"]')?.value || '1'),
+                };
+
+                fetch(API_BASE_URL + '/bed_management/room_create.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.ok) {
+                        alert('Room ' + res.room_no + ' added with ' + res.beds.length + ' bed(s)!');
+                        addRoomModal.classList.add('hidden');
+                        form.reset();
+                        currentWard = data.ward;
+                        loadBeds(currentWard);
+                    } else {
+                        alert('Error: ' + (res.error || 'Failed to add room'));
+                    }
+                })
+                .catch(() => alert('Network error. Please try again.'))
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add Room';
+                });
             });
             
             // Quick Actions
@@ -668,8 +705,49 @@
             // Form submission
             document.getElementById('transferForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                alert('Room transfer functionality will be implemented with backend API.');
-                transferModal.classList.add('hidden');
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Transferring...';
+
+                const data = {
+                    patient_id:     parseInt(form.querySelector('[name="patient_id"]')?.value || '0'),
+                    to_bed_id:      parseInt(form.querySelector('[name="to_room"]')?.value || '0'),
+                    reason:         form.querySelector('[name="reason"]')?.value || '',
+                    transferred_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                };
+
+                // Resolve admission_id from patient
+                fetch(API_BASE_URL + '/admissions/list.php?status=admitted')
+                    .then(r => r.json())
+                    .then(admData => {
+                        if (!admData.ok) throw new Error('Could not load admissions');
+                        const adm = admData.admissions.find(a => String(a.patient_id) === String(data.patient_id));
+                        if (!adm) throw new Error('No active admission found for selected patient');
+                        data.admission_id = adm.id;
+
+                        return fetch(API_BASE_URL + '/bed_management/transfer_create.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data),
+                        });
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.ok) {
+                            alert('Transfer completed! Transfer No: ' + res.transfer_no);
+                            transferModal.classList.add('hidden');
+                            form.reset();
+                            loadBeds(currentWard);
+                        } else {
+                            alert('Error: ' + (res.error || 'Transfer failed'));
+                        }
+                    })
+                    .catch(err => alert('Error: ' + err.message))
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Transfer';
+                    });
             });
             
             // Close modal on outside click

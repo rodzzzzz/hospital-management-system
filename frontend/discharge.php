@@ -381,14 +381,111 @@
             // Form submissions
             document.getElementById('dischargePlanForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                alert('Discharge planning functionality will be implemented with backend API.');
-                dischargePlanModal.classList.add('hidden');
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating...';
+
+                const patientId = parseInt(form.querySelector('[name="patient_id"]')?.value || '0');
+                if (!patientId) {
+                    alert('Please select a patient.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Plan';
+                    return;
+                }
+
+                // Resolve admission_id first
+                fetch(API_BASE_URL + '/admissions/list.php?status=admitted')
+                    .then(r => r.json())
+                    .then(admData => {
+                        if (!admData.ok) throw new Error('Could not load admissions');
+                        const adm = admData.admissions.find(a => String(a.patient_id) === String(patientId));
+                        if (!adm) throw new Error('No active admission found for selected patient');
+
+                        const data = {
+                            admission_id:            adm.id,
+                            patient_id:              patientId,
+                            expected_discharge_date: form.querySelector('[name="discharge_date"]')?.value || null,
+                            discharge_destination:   form.querySelector('[name="destination"]')?.value || 'home',
+                            discharge_notes:         form.querySelector('[name="notes"]')?.value || '',
+                            planned_by:              '',
+                        };
+
+                        return fetch(API_BASE_URL + '/discharge/plan_create.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data),
+                        });
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.ok) {
+                            alert('Discharge plan created! Plan No: ' + res.plan_no);
+                            dischargePlanModal.classList.add('hidden');
+                            form.reset();
+                        } else {
+                            alert('Error: ' + (res.error || 'Failed to create plan'));
+                        }
+                    })
+                    .catch(err => alert('Error: ' + err.message))
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Create Plan';
+                    });
             });
             
             document.getElementById('followupForm').addEventListener('submit', function (e) {
                 e.preventDefault();
-                alert('Follow-up scheduling functionality will be implemented with backend API.');
-                followupModal.classList.add('hidden');
+                const form = e.target;
+                const submitBtn = form.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Scheduling...';
+
+                const patientId = parseInt(form.querySelector('[name="patient_id"]')?.value || '0');
+                if (!patientId) {
+                    alert('Please select a patient.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Schedule';
+                    return;
+                }
+
+                // Resolve discharge_plan_id
+                fetch(API_BASE_URL + '/discharge/plan_list.php?patient_id=' + patientId)
+                    .then(r => r.json())
+                    .then(planData => {
+                        const plan = (planData.plans || [])[0];
+                        if (!plan) throw new Error('No discharge plan found. Create a discharge plan first.');
+
+                        const data = {
+                            discharge_plan_id: plan.id,
+                            patient_id:        patientId,
+                            followup_date:     form.querySelector('[name="followup_date"]')?.value || '',
+                            department:        form.querySelector('[name="department"]')?.value || '',
+                            physician:         form.querySelector('[name="physician"]')?.value || '',
+                            notes:             form.querySelector('[name="notes"]')?.value || '',
+                        };
+
+                        return fetch(API_BASE_URL + '/discharge/followup_create.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data),
+                        });
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.ok) {
+                            alert('Follow-up appointment scheduled successfully!');
+                            followupModal.classList.add('hidden');
+                            form.reset();
+                        } else {
+                            alert('Error: ' + (res.error || 'Failed to schedule follow-up'));
+                        }
+                    })
+                    .catch(err => alert('Error: ' + err.message))
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Schedule';
+                    });
             });
             
             // Close modals on outside click
