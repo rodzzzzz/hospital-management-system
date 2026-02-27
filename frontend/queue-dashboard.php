@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Queue Dashboard - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -620,17 +621,15 @@
             return await response.json();
         }
 
-        // Auto refresh management
+        // Auto refresh management via WebSocket
         function startAutoRefresh() {
-            if (autoRefresh) {
-                refreshInterval = setInterval(refreshAllQueues, 10000); // Refresh every 10 seconds
-            }
+            HospitalWS.subscribe('global');
+            HospitalWS.on('queue_update', function() { if (autoRefresh) refreshAllQueues(); });
+            HospitalWS.on('fallback_poll', function() { if (autoRefresh) refreshAllQueues(); });
         }
 
         function stopAutoRefresh() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-            }
+            // WebSocket stays connected; the autoRefresh flag gates the callback
         }
 
         function toggleAutoRefresh() {
@@ -638,11 +637,9 @@
             const btn = document.getElementById('autoRefreshBtn');
             
             if (autoRefresh) {
-                startAutoRefresh();
                 btn.innerHTML = '<i class="fas fa-pause"></i><span>Auto Refresh: ON</span>';
                 btn.className = 'px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2';
             } else {
-                stopAutoRefresh();
                 btn.innerHTML = '<i class="fas fa-play"></i><span>Auto Refresh: OFF</span>';
                 btn.className = 'px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center space-x-2';
             }

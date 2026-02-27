@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Monitoring</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
@@ -941,24 +942,39 @@
 
             if (view === 'dashboard') {
                 if (patientsProgressPoll) {
-                    window.clearInterval(patientsProgressPoll);
                     patientsProgressPoll = null;
+                    if (window._patientsWsHandler) {
+                        HospitalWS.off('queue_update', window._patientsWsHandler);
+                        HospitalWS.off('fallback_poll', window._patientsWsHandler);
+                        window._patientsWsHandler = null;
+                    }
                 }
                 loadPatientStats();
             } else if (view === 'progress') {
                 const q = (document.getElementById('patientSearch')?.value ?? '').toString();
                 loadPatients(q);
 
+                // Subscribe to WebSocket for real-time patient progress updates
                 if (!patientsProgressPoll) {
-                    patientsProgressPoll = window.setInterval(() => {
-                        const q2 = (document.getElementById('patientSearch')?.value ?? '').toString();
-                        loadPatients(q2);
-                    }, 8000);
+                    patientsProgressPoll = true;
+                    HospitalWS.subscribe('global');
+                    window._patientsWsHandler = function() {
+                        if (patientsProgressPoll) {
+                            const q2 = (document.getElementById('patientSearch')?.value ?? '').toString();
+                            loadPatients(q2);
+                        }
+                    };
+                    HospitalWS.on('queue_update', window._patientsWsHandler);
+                    HospitalWS.on('fallback_poll', window._patientsWsHandler);
                 }
             } else {
                 if (patientsProgressPoll) {
-                    window.clearInterval(patientsProgressPoll);
                     patientsProgressPoll = null;
+                    if (window._patientsWsHandler) {
+                        HospitalWS.off('queue_update', window._patientsWsHandler);
+                        HospitalWS.off('fallback_poll', window._patientsWsHandler);
+                        window._patientsWsHandler = null;
+                    }
                 }
                 loadPatientQueue();
             }

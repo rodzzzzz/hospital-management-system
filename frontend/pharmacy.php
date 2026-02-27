@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pharmacy Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -3513,11 +3514,14 @@
             window.open('pharmacy-display.php', '_blank');
         }
 
-        // Auto-refresh queue every 10 seconds
-        setInterval(loadPharmacyQueue, 10000);
-        
         // Initial load
         loadPharmacyQueue();
+
+        // Subscribe to WebSocket for real-time queue updates
+        HospitalWS.subscribe('queue-3');
+        HospitalWS.subscribe('global');
+        HospitalWS.on('queue_update', function() { loadPharmacyQueue(); });
+        HospitalWS.on('fallback_poll', function() { loadPharmacyQueue(); });
     </script>
     <?php include __DIR__ . '/includes/queue-error-correction.php'; ?>
     <script>window.qecStationId = 3; window.qecRefreshQueue = function() { loadPharmacyQueue(); };</script>

@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Messages - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50">
@@ -586,19 +587,29 @@
                     showEmpty('--');
                     setComposerEnabled(false);
 
-                    state.polling = setInterval(async function () {
-                        try {
-                            await poll();
-                        } catch (e) {
+                    // Subscribe to WebSocket for real-time chat updates
+                    HospitalWS.subscribe('chat-global');
+                    HospitalWS.on('chat_message', function(msg) {
+                        // Append message directly if it belongs to the active thread
+                        if (msg.data && state.active && state.active.threadId) {
+                            var m = msg.data;
+                            if (m.thread_id === state.active.threadId && m.sender_user_id !== (state.me ? state.me.id : 0)) {
+                                if (messagesEl.classList.contains('hidden')) {
+                                    showMessages();
+                                    messagesEl.innerHTML = '';
+                                }
+                                messagesEl.appendChild(renderMessage(m));
+                                state.lastId = Math.max(state.lastId || 0, m.id || 0);
+                                messagesEl.scrollTop = messagesEl.scrollHeight;
+                            }
+                            // Refresh module list to update unread counts
+                            refreshModules().catch(function() {});
                         }
-                    }, 2000);
-
-                    state.refresh = setInterval(async function () {
-                        try {
-                            await refreshModules();
-                        } catch (e) {
-                        }
-                    }, 4000);
+                    });
+                    HospitalWS.on('fallback_poll', async function() {
+                        try { await poll(); } catch(e) {}
+                        try { await refreshModules(); } catch(e) {}
+                    });
                 } catch (e) {
                     console.error(e);
                     if (!state.me) {

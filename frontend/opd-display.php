@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OPD Queue Display - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
@@ -386,7 +387,11 @@ Lanao Del Sur, BARMM 9300
             setInterval(updateDateTime, 1000);
             loadQueueData();
             loadLoggedInDoctors();
-            startAutoRefresh();
+            // Subscribe to WebSocket for real-time queue updates
+            HospitalWS.subscribe('queue-1');
+            HospitalWS.subscribe('global');
+            HospitalWS.on('queue_update', function() { loadQueueData(); loadLoggedInDoctors(); });
+            HospitalWS.on('fallback_poll', function() { loadQueueData(); loadLoggedInDoctors(); });
         });
 
         // Update date and time
@@ -644,13 +649,6 @@ Lanao Del Sur, BARMM 9300
             }
         }
 
-        // Auto refresh
-        function startAutoRefresh() {
-            refreshInterval = setInterval(() => {
-                loadQueueData();
-                loadLoggedInDoctors();
-            }, 5000); // Refresh every 5 seconds
-        }
 
         // Sound notification (optional)
         function playNotificationSound() {

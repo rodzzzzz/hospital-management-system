@@ -14,6 +14,7 @@ $__authToken = auth_get_token();
 <script>
     window.API_BASE_URL = <?php echo json_encode(rtrim(API_BASE_URL, '/')); ?>;
     window.AUTH_TOKEN = <?php echo json_encode($__authToken); ?>;
+    window.WS_URL = <?php echo json_encode(defined('WS_URL') ? WS_URL : 'ws://localhost:8080'); ?>;
 
     // Auto-attach Bearer token to all fetch requests targeting the backend API
     (function() {

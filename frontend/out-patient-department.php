@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Out-Patient Department - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -6028,11 +6029,14 @@
             window.open('opd-display.php', '_blank');
         }
 
-        // Auto-refresh queue every 10 seconds
-        setInterval(loadOpdQueue, 10000);
-        
         // Initial load
         loadOpdQueue();
+
+        // Subscribe to WebSocket for real-time queue updates
+        HospitalWS.subscribe('queue-1');
+        HospitalWS.subscribe('global');
+        HospitalWS.on('queue_update', function() { loadOpdQueue(); });
+        HospitalWS.on('fallback_poll', function() { loadOpdQueue(); });
     </script>
     <?php include __DIR__ . '/includes/xray-results-release-js.php'; ?>
     <?php include __DIR__ . '/includes/queue-error-correction.php'; ?>

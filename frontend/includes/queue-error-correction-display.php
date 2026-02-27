@@ -141,8 +141,17 @@
         }, 200);
     }
 
-    // Poll every 5 seconds
+    // Check for corrections on load
     qecDisplayCheckCorrections();
-    setInterval(qecDisplayCheckCorrections, 5000);
+
+    // Subscribe to WebSocket for real-time correction alerts
+    if (typeof HospitalWS !== 'undefined') {
+        HospitalWS.subscribe('queue-' + STATION_ID);
+        HospitalWS.on('correction_alert', function() { qecDisplayCheckCorrections(); });
+        HospitalWS.on('queue_update', function() { qecDisplayCheckCorrections(); });
+        HospitalWS.on('fallback_poll', function() { qecDisplayCheckCorrections(); });
+    } else {
+        setInterval(qecDisplayCheckCorrections, 5000);
+    }
 })();
 </script>

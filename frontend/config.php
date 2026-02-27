@@ -8,4 +8,5 @@ declare(strict_types=1);
  * Example: 'http://192.168.1.100/hospital-management-system/api'
  */
 
-define('API_BASE_URL', 'http://192.168.1.16:80/hospital-management-system/api');
+define('API_BASE_URL', 'http://127.0.0.1:80/hospital-management-system/api');
+define('WS_URL', 'ws://127.0.0.1:8080');
