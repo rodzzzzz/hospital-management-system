@@ -521,7 +521,6 @@ function completeServiceWithTarget(PDO $pdo, int $queueId, int $staffUserId, ?in
  */
 function getRecentTransfersFromStation(PDO $pdo, int $fromStationId): array
 {
-    $today = date('Y-m-d');
     $stmt = $pdo->prepare("
         SELECT qt.*, 
                p.full_name, p.patient_code,
@@ -533,11 +532,11 @@ function getRecentTransfersFromStation(PDO $pdo, int $fromStationId): array
         LEFT JOIN queue_stations fs ON qt.from_station_id = fs.id
         LEFT JOIN queue_stations ts ON qt.to_station_id = ts.id
         LEFT JOIN users u ON qt.transferred_by = u.id
-        WHERE qt.from_station_id = ? AND DATE(qt.transferred_at) = ?
+        WHERE qt.from_station_id = ? AND DATE(qt.transferred_at) = CURDATE()
         ORDER BY qt.transferred_at DESC
         LIMIT 20
     ");
-    $stmt->execute([$fromStationId, $today]);
+    $stmt->execute([$fromStationId]);
     $transfers = $stmt->fetchAll();
 
     foreach ($transfers as &$t) {
@@ -727,4 +726,367 @@ function confirmQueueCorrection(PDO $pdo, int $errorLogId, int $confirmedBy): ar
         $pdo->rollBack();
         throw $e;
     }
+}
+
+// =========================================================
+// Queue Return Request (Reverse QEC) Functions
+// =========================================================
+
+/**
+ * Get recent transfers TO a station (today only)
+ * Used by Station B to pick which patient was wrongly sent to them.
+ */
+function getRecentTransfersToStation(PDO $pdo, int $toStationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qt.*,
+               p.full_name, p.patient_code,
+               fs.station_display_name as from_station_name,
+               fs.id as from_station_id,
+               ts.station_display_name as to_station_name,
+               u.full_name as transferred_by_name
+        FROM queue_transfers qt
+        LEFT JOIN patients p ON qt.patient_id = p.id
+        LEFT JOIN queue_stations fs ON qt.from_station_id = fs.id
+        LEFT JOIN queue_stations ts ON qt.to_station_id = ts.id
+        LEFT JOIN users u ON qt.transferred_by = u.id
+        WHERE qt.to_station_id = ? AND DATE(qt.transferred_at) = CURDATE()
+        ORDER BY qt.transferred_at DESC
+        LIMIT 20
+    ");
+    $stmt->execute([$toStationId]);
+    $transfers = $stmt->fetchAll();
+
+    foreach ($transfers as &$t) {
+        // Find the patient's latest queue entry
+        $pqStmt = $pdo->prepare("
+            SELECT pq.id as current_queue_id, pq.station_id as current_station_id,
+                   pq.status as current_status, pq.queue_number,
+                   qs.station_display_name as current_station_name
+            FROM patient_queue pq
+            LEFT JOIN queue_stations qs ON pq.station_id = qs.id
+            WHERE pq.patient_id = ?
+            ORDER BY pq.updated_at DESC
+            LIMIT 1
+        ");
+        $pqStmt->execute([$t['patient_id']]);
+        $currentEntry = $pqStmt->fetch();
+
+        $t['current_queue_id'] = $currentEntry ? $currentEntry['current_queue_id'] : null;
+        $t['current_station_id'] = $currentEntry ? (int)$currentEntry['current_station_id'] : null;
+        $t['current_station_name'] = $currentEntry ? $currentEntry['current_station_name'] : null;
+        $t['current_status'] = $currentEntry ? $currentEntry['current_status'] : null;
+        $t['queue_number'] = $currentEntry ? $currentEntry['queue_number'] : null;
+
+        // Check if there's already a pending return request for this queue entry
+        if ($currentEntry) {
+            $pendingCheck = $pdo->prepare("
+                SELECT COUNT(*) as count FROM queue_return_requests
+                WHERE queue_id = ? AND status = 'pending'
+            ");
+            $pendingCheck->execute([$currentEntry['current_queue_id']]);
+            $t['has_pending_return'] = $pendingCheck->fetch()['count'] > 0;
+        } else {
+            $t['has_pending_return'] = false;
+        }
+    }
+    unset($t);
+
+    return $transfers;
+}
+
+/**
+ * Create a return request (Station B flags a wrongly received patient)
+ */
+function createReturnRequest(PDO $pdo, int $queueId, int $patientId, int $requestingStationId, int $originStationId, int $suggestedStationId, int $requestedBy, ?string $notes = null): int
+{
+    $requestingStation = getQueueStation($pdo, $requestingStationId);
+    $originStation = getQueueStation($pdo, $originStationId);
+    $suggestedStation = getQueueStation($pdo, $suggestedStationId);
+    if (!$requestingStation || !$originStation || !$suggestedStation) {
+        throw new Exception("Invalid station");
+    }
+
+    $checkStmt = $pdo->prepare("
+        SELECT COUNT(*) as count FROM queue_return_requests
+        WHERE queue_id = ? AND status = 'pending'
+    ");
+    $checkStmt->execute([$queueId]);
+    if ($checkStmt->fetch()['count'] > 0) {
+        throw new Exception("A pending return request already exists for this patient");
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO queue_return_requests
+        (queue_id, patient_id, requesting_station_id, origin_station_id, suggested_station_id, requested_by, status, request_notes)
+        VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
+    ");
+    $stmt->execute([$queueId, $patientId, $requestingStationId, $originStationId, $suggestedStationId, $requestedBy, $notes]);
+    return (int)$pdo->lastInsertId();
+}
+
+/**
+ * Get pending return requests targeting a station as origin (Station A sees these)
+ */
+function getPendingReturnRequests(PDO $pdo, int $originStationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qrr.*,
+               p.full_name, p.patient_code,
+               rs.station_display_name as requesting_station_name,
+               os.station_display_name as origin_station_name,
+               ss.station_display_name as suggested_station_name,
+               u.full_name as requested_by_name,
+               pq.queue_number
+        FROM queue_return_requests qrr
+        LEFT JOIN patients p ON qrr.patient_id = p.id
+        LEFT JOIN queue_stations rs ON qrr.requesting_station_id = rs.id
+        LEFT JOIN queue_stations os ON qrr.origin_station_id = os.id
+        LEFT JOIN queue_stations ss ON qrr.suggested_station_id = ss.id
+        LEFT JOIN users u ON qrr.requested_by = u.id
+        LEFT JOIN patient_queue pq ON pq.id = qrr.queue_id
+        WHERE qrr.origin_station_id = ? AND qrr.status = 'pending'
+        ORDER BY qrr.requested_at ASC
+    ");
+    $stmt->execute([$originStationId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get pending return requests filed BY a station (Station B tracks own requests)
+ */
+function getMyPendingReturnRequests(PDO $pdo, int $requestingStationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qrr.*,
+               p.full_name, p.patient_code,
+               rs.station_display_name as requesting_station_name,
+               os.station_display_name as origin_station_name,
+               ss.station_display_name as suggested_station_name,
+               u.full_name as requested_by_name,
+               pq.queue_number
+        FROM queue_return_requests qrr
+        LEFT JOIN patients p ON qrr.patient_id = p.id
+        LEFT JOIN queue_stations rs ON qrr.requesting_station_id = rs.id
+        LEFT JOIN queue_stations os ON qrr.origin_station_id = os.id
+        LEFT JOIN queue_stations ss ON qrr.suggested_station_id = ss.id
+        LEFT JOIN users u ON qrr.requested_by = u.id
+        LEFT JOIN patient_queue pq ON pq.id = qrr.queue_id
+        WHERE qrr.requesting_station_id = ? AND qrr.status = 'pending'
+        ORDER BY qrr.requested_at ASC
+    ");
+    $stmt->execute([$requestingStationId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Acknowledge a rejected return request (Station B acknowledges Station A's rejection)
+ * Returns payload for notifying the origin station via websocket.
+ */
+function acknowledgeRejectedReturnRequest(PDO $pdo, int $requestId, int $acknowledgingStationId): array
+{
+    $stmt = $pdo->prepare("SELECT * FROM queue_return_requests WHERE id = ? AND status = 'rejected'");
+    $stmt->execute([$requestId]);
+    $request = $stmt->fetch();
+
+    if (!$request) {
+        throw new Exception("Rejected return request not found");
+    }
+
+    if ((int)$request['requesting_station_id'] !== $acknowledgingStationId) {
+        throw new Exception("You can only acknowledge rejections for your station");
+    }
+
+    $patientStmt = $pdo->prepare("SELECT full_name, patient_code FROM patients WHERE id = ?");
+    $patientStmt->execute([$request['patient_id']]);
+    $patient = $patientStmt->fetch();
+
+    $requestingStation = getQueueStation($pdo, (int)$request['requesting_station_id']);
+    $originStation = getQueueStation($pdo, (int)$request['origin_station_id']);
+
+    return [
+        'request_id' => $requestId,
+        'origin_station_id' => (int)$request['origin_station_id'],
+        'requesting_station_id' => (int)$request['requesting_station_id'],
+        'patient_name' => $patient['full_name'] ?? '',
+        'patient_code' => $patient['patient_code'] ?? '',
+        'requesting_station_name' => $requestingStation['station_display_name'] ?? '',
+        'origin_station_name' => $originStation['station_display_name'] ?? ''
+    ];
+}
+
+/**
+ * Confirm a return request — move patient from requesting station to suggested station
+ */
+function confirmReturnRequest(PDO $pdo, int $requestId, int $confirmedBy): array
+{
+    $pdo->beginTransaction();
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM queue_return_requests WHERE id = ? AND status = 'pending'");
+        $stmt->execute([$requestId]);
+        $request = $stmt->fetch();
+
+        if (!$request) {
+            throw new Exception("Return request not found or already processed");
+        }
+
+        $queueId = $request['queue_id'];
+        $suggestedStationId = $request['suggested_station_id'];
+
+        $positionStmt = $pdo->prepare("
+            SELECT COALESCE(MAX(queue_position), 0) + 1 as next_position
+            FROM patient_queue
+            WHERE station_id = ? AND status IN ('waiting', 'queued', 'in_progress')
+        ");
+        $positionStmt->execute([$suggestedStationId]);
+        $nextPosition = $positionStmt->fetch()['next_position'];
+
+        $updateStmt = $pdo->prepare("
+            UPDATE patient_queue
+            SET station_id = ?,
+                queue_position = ?,
+                status = 'waiting',
+                updated_at = NOW()
+            WHERE id = ?
+        ");
+        $updateStmt->execute([$suggestedStationId, $nextPosition, $queueId]);
+
+        $logStmt = $pdo->prepare("
+            INSERT INTO queue_transfers
+            (patient_id, from_station_id, to_station_id, transferred_by, transfer_reason, notes)
+            VALUES (?, ?, ?, ?, 'manual', 'Queue return request confirmed')
+        ");
+        $logStmt->execute([$request['patient_id'], $request['requesting_station_id'], $suggestedStationId, $confirmedBy]);
+
+        $confirmStmt = $pdo->prepare("
+            UPDATE queue_return_requests
+            SET status = 'confirmed',
+                responded_by = ?,
+                responded_at = NOW()
+            WHERE id = ?
+        ");
+        $confirmStmt->execute([$confirmedBy, $requestId]);
+
+        $pdo->commit();
+
+        $patientStmt = $pdo->prepare("SELECT full_name, patient_code FROM patients WHERE id = ?");
+        $patientStmt->execute([$request['patient_id']]);
+        $patient = $patientStmt->fetch();
+
+        $suggestedStation = getQueueStation($pdo, $suggestedStationId);
+
+        return [
+            'patient_name' => $patient['full_name'] ?? '',
+            'patient_code' => $patient['patient_code'] ?? '',
+            'suggested_station_name' => $suggestedStation['station_display_name'] ?? '',
+            'requesting_station_id' => (int)$request['requesting_station_id'],
+            'origin_station_id' => (int)$request['origin_station_id'],
+            'suggested_station_id' => (int)$suggestedStationId,
+            'request_id' => $requestId
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+/**
+ * Reject a return request — patient stays, Station B is notified with reason
+ */
+function rejectReturnRequest(PDO $pdo, int $requestId, int $rejectedBy, string $reason): array
+{
+    $stmt = $pdo->prepare("SELECT * FROM queue_return_requests WHERE id = ? AND status = 'pending'");
+    $stmt->execute([$requestId]);
+    $request = $stmt->fetch();
+
+    if (!$request) {
+        throw new Exception("Return request not found or already processed");
+    }
+
+    $updateStmt = $pdo->prepare("
+        UPDATE queue_return_requests
+        SET status = 'rejected',
+            responded_by = ?,
+            rejection_reason = ?,
+            responded_at = NOW()
+        WHERE id = ?
+    ");
+    $updateStmt->execute([$rejectedBy, $reason, $requestId]);
+
+    $patientStmt = $pdo->prepare("SELECT full_name, patient_code FROM patients WHERE id = ?");
+    $patientStmt->execute([$request['patient_id']]);
+    $patient = $patientStmt->fetch();
+
+    $originStation = getQueueStation($pdo, (int)$request['origin_station_id']);
+    $rejectedByStmt = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+    $rejectedByStmt->execute([$rejectedBy]);
+    $rejectedByUser = $rejectedByStmt->fetch();
+
+    return [
+        'patient_name' => $patient['full_name'] ?? '',
+        'patient_code' => $patient['patient_code'] ?? '',
+        'origin_station_name' => $originStation['station_display_name'] ?? '',
+        'requesting_station_id' => (int)$request['requesting_station_id'],
+        'origin_station_id' => (int)$request['origin_station_id'],
+        'rejection_reason' => $reason,
+        'rejected_by_name' => $rejectedByUser['full_name'] ?? 'Staff',
+        'request_id' => $requestId
+    ];
+}
+
+/**
+ * Get recently confirmed return requests for a station's display page
+ * (where requesting_station_id = stationId, confirmed within last 30 seconds)
+ */
+function getRecentConfirmedReturnRequests(PDO $pdo, int $stationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qrr.*,
+               p.full_name, p.patient_code,
+               rs.station_display_name as requesting_station_name,
+               os.station_display_name as origin_station_name,
+               ss.station_display_name as suggested_station_name,
+               pq.queue_number
+        FROM queue_return_requests qrr
+        LEFT JOIN patients p ON qrr.patient_id = p.id
+        LEFT JOIN queue_stations rs ON qrr.requesting_station_id = rs.id
+        LEFT JOIN queue_stations os ON qrr.origin_station_id = os.id
+        LEFT JOIN queue_stations ss ON qrr.suggested_station_id = ss.id
+        LEFT JOIN patient_queue pq ON pq.id = qrr.queue_id
+        WHERE qrr.requesting_station_id = ? AND qrr.status = 'confirmed'
+              AND qrr.responded_at >= NOW() - INTERVAL 30 SECOND
+        ORDER BY qrr.responded_at DESC
+    ");
+    $stmt->execute([$stationId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get recent rejected return requests for a station (Station B sees rejections)
+ * Within last 60 seconds so polling picks them up
+ */
+function getRecentRejectedReturnRequests(PDO $pdo, int $requestingStationId): array
+{
+    $stmt = $pdo->prepare("
+        SELECT qrr.*,
+               p.full_name, p.patient_code,
+               rs.station_display_name as requesting_station_name,
+               os.station_display_name as origin_station_name,
+               ss.station_display_name as suggested_station_name,
+               u.full_name as responded_by_name,
+               pq.queue_number
+        FROM queue_return_requests qrr
+        LEFT JOIN patients p ON qrr.patient_id = p.id
+        LEFT JOIN queue_stations rs ON qrr.requesting_station_id = rs.id
+        LEFT JOIN queue_stations os ON qrr.origin_station_id = os.id
+        LEFT JOIN queue_stations ss ON qrr.suggested_station_id = ss.id
+        LEFT JOIN users u ON qrr.responded_by = u.id
+        LEFT JOIN patient_queue pq ON pq.id = qrr.queue_id
+        WHERE qrr.requesting_station_id = ? AND qrr.status = 'rejected'
+              AND qrr.responded_at >= NOW() - INTERVAL 60 SECOND
+        ORDER BY qrr.responded_at DESC
+    ");
+    $stmt->execute([$requestingStationId]);
+    return $stmt->fetchAll();
 }

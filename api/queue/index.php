@@ -32,6 +32,29 @@ function ensureQueueTables(PDO $pdo): void {
     } catch (Exception $e) {
         // Table might already exist, ignore
     }
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS queue_return_requests (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            queue_id INT(11) NOT NULL,
+            patient_id INT(11) NOT NULL,
+            requesting_station_id INT(11) NOT NULL,
+            origin_station_id INT(11) NOT NULL,
+            suggested_station_id INT(11) NOT NULL,
+            requested_by INT(11) NOT NULL,
+            responded_by INT(11) DEFAULT NULL,
+            status ENUM('pending','confirmed','rejected') NOT NULL DEFAULT 'pending',
+            request_notes TEXT DEFAULT NULL,
+            rejection_reason TEXT DEFAULT NULL,
+            requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            responded_at DATETIME DEFAULT NULL,
+            PRIMARY KEY (id),
+            KEY idx_qrr_origin_status (origin_station_id, status),
+            KEY idx_qrr_requesting_status (requesting_station_id, status),
+            KEY idx_qrr_queue_id (queue_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (Exception $e) {
+        // Table might already exist, ignore
+    }
 }
 
 ensureQueueTables($pdo);
@@ -144,6 +167,53 @@ function handleGetRequest(PDO $pdo, array $pathParts): void
             }
             $corrections = getRecentConfirmedCorrections($pdo, $stationId);
             echo json_encode(['success' => true, 'corrections' => $corrections]);
+            break;
+
+        // --- Queue Return Request (Reverse QEC) GET endpoints ---
+
+        case 'incoming-transfers':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $transfers = getRecentTransfersToStation($pdo, $stationId);
+            echo json_encode(['success' => true, 'transfers' => $transfers]);
+            break;
+
+        case 'pending-return-requests':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $requests = getPendingReturnRequests($pdo, $stationId);
+            echo json_encode(['success' => true, 'requests' => $requests]);
+            break;
+
+        case 'my-return-requests':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $requests = getMyPendingReturnRequests($pdo, $stationId);
+            echo json_encode(['success' => true, 'requests' => $requests]);
+            break;
+
+        case 'confirmed-return-requests':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $requests = getRecentConfirmedReturnRequests($pdo, $stationId);
+            echo json_encode(['success' => true, 'requests' => $requests]);
+            break;
+
+        case 'rejected-return-requests':
+            $stationId = (int)($pathParts[$queueIndex + 2] ?? 0);
+            if (!$stationId) {
+                throw new Exception('Station ID required');
+            }
+            $requests = getRecentRejectedReturnRequests($pdo, $stationId);
+            echo json_encode(['success' => true, 'requests' => $requests]);
             break;
 
         default:
@@ -281,6 +351,82 @@ function handlePostRequest(PDO $pdo, array $pathParts, array $currentUser): void
                 broadcastQueueUpdate('correction-confirmed', $affectedStations, ['result' => $result]);
             }
             echo json_encode(['success' => true, 'result' => $result]);
+            break;
+
+        // --- Queue Return Request (Reverse QEC) POST endpoints ---
+
+        case 'return-request':
+            $queueId = (int)($input['queue_id'] ?? 0);
+            $patientId = (int)($input['patient_id'] ?? 0);
+            $requestingStationId = (int)($input['requesting_station_id'] ?? 0);
+            $originStationId = (int)($input['origin_station_id'] ?? 0);
+            $suggestedStationId = (int)($input['suggested_station_id'] ?? 0);
+            $notes = $input['notes'] ?? null;
+
+            if (!$queueId || !$patientId || !$requestingStationId || !$originStationId || !$suggestedStationId) {
+                throw new Exception('queue_id, patient_id, requesting_station_id, origin_station_id, and suggested_station_id are required');
+            }
+
+            $requestId = createReturnRequest($pdo, $queueId, $patientId, $requestingStationId, $originStationId, $suggestedStationId, $currentUser['id'], $notes);
+
+            $pendingData = getPendingReturnRequests($pdo, $originStationId);
+            if (!empty($pendingData)) {
+                broadcastReturnRequestAlert($originStationId, $pendingData[0]);
+            }
+
+            echo json_encode(['success' => true, 'request_id' => $requestId]);
+            break;
+
+        case 'confirm-return-request':
+            $requestId = (int)($input['request_id'] ?? 0);
+
+            if (!$requestId) {
+                throw new Exception('request_id is required');
+            }
+
+            $result = confirmReturnRequest($pdo, $requestId, $currentUser['id']);
+            if ($result) {
+                $affectedStations = [$result['requesting_station_id'], $result['suggested_station_id']];
+                broadcastQueueUpdate('return-confirmed', $affectedStations, ['result' => $result]);
+                broadcastReturnResponse($result['requesting_station_id'], array_merge($result, ['type' => 'confirmed']));
+            }
+            echo json_encode(['success' => true, 'result' => $result]);
+            break;
+
+        case 'reject-return-request':
+            $requestId = (int)($input['request_id'] ?? 0);
+            $reason = trim((string)($input['reason'] ?? ''));
+
+            if (!$requestId) {
+                throw new Exception('request_id is required');
+            }
+            if ($reason === '') {
+                throw new Exception('reason is required when rejecting a return request');
+            }
+
+            $result = rejectReturnRequest($pdo, $requestId, $currentUser['id'], $reason);
+            if ($result) {
+                broadcastReturnResponse($result['requesting_station_id'], array_merge($result, ['type' => 'rejected']));
+            }
+            echo json_encode(['success' => true, 'result' => $result]);
+            break;
+
+        case 'acknowledge-return-rejection':
+            $requestId = (int)($input['request_id'] ?? 0);
+            $stationId = (int)($input['station_id'] ?? 0);
+
+            if (!$requestId) {
+                throw new Exception('request_id is required');
+            }
+            if (!$stationId) {
+                throw new Exception('station_id is required');
+            }
+
+            $ack = acknowledgeRejectedReturnRequest($pdo, $requestId, $stationId);
+            if ($ack) {
+                broadcastReturnRejectionAcknowledged($ack['origin_station_id'], $ack);
+            }
+            echo json_encode(['success' => true, 'ack' => $ack]);
             break;
 
         default:
