@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../_db.php';
 require_once __DIR__ . '/../../_response.php';
 require_once __DIR__ . '/../../auth/_session.php';
 require_once __DIR__ . '/../_tables.php';
+require_once __DIR__ . '/../../websocket/_broadcast.php';
 
 cors_headers();
 require_method('POST');
@@ -99,6 +100,11 @@ try {
         'created_at' => (string)($r['created_at'] ?? ''),
         'is_me' => true,
     ];
+
+    // Broadcast chat message via WebSocket
+    $broadcastMessage = $message;
+    $broadcastMessage['is_me'] = false; // Recipients will see it as not their own
+    broadcastChatMessage($threadId, $broadcastMessage);
 
     json_response([
         'ok' => true,

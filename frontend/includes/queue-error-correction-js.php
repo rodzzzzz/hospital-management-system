@@ -462,9 +462,18 @@
         }
     });
 
-    // Poll for pending corrections every 5 seconds
+    // Check for pending corrections on load
     qecCheckPendingCorrections();
-    setInterval(qecCheckPendingCorrections, 5000);
+
+    // Subscribe to WebSocket for real-time correction alerts
+    if (typeof HospitalWS !== 'undefined') {
+        HospitalWS.subscribe('queue-' + STATION_ID);
+        HospitalWS.on('correction_alert', function() { qecCheckPendingCorrections(); });
+        HospitalWS.on('queue_update', function() { qecCheckPendingCorrections(); });
+        HospitalWS.on('fallback_poll', function() { qecCheckPendingCorrections(); });
+    } else {
+        setInterval(qecCheckPendingCorrections, 5000);
+    }
 
 })();
 </script>

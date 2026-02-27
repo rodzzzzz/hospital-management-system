@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X-Ray Queue Display - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
@@ -263,7 +264,11 @@ Lanao Del Sur, BARMM 9300
             updateDateTime();
             setInterval(updateDateTime, 1000);
             loadQueueData();
-            startAutoRefresh();
+            // Subscribe to WebSocket for real-time queue updates
+            HospitalWS.subscribe('queue-5');
+            HospitalWS.subscribe('global');
+            HospitalWS.on('queue_update', function() { loadQueueData(); });
+            HospitalWS.on('fallback_poll', function() { loadQueueData(); });
         });
 
         function updateDateTime() {
@@ -348,11 +353,6 @@ Lanao Del Sur, BARMM 9300
             }
         }
 
-        function startAutoRefresh() {
-            refreshInterval = setInterval(() => {
-                loadQueueData();
-            }, 5000);
-        }
 
         function playNotificationSound() {
             const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE');

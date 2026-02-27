@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xray - Hospital System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php include __DIR__ . '/includes/websocket-client.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1087,7 +1088,11 @@
             }
 
             loadXrayQueue();
-            window.setInterval(loadXrayQueue, 10000);
+            // Subscribe to WebSocket for real-time queue updates
+            HospitalWS.subscribe('queue-5');
+            HospitalWS.subscribe('global');
+            HospitalWS.on('queue_update', function() { loadXrayQueue(); });
+            HospitalWS.on('fallback_poll', function() { loadXrayQueue(); });
         });
     </script>
     <?php include __DIR__ . '/includes/queue-error-correction.php'; ?>
