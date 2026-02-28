@@ -88,4 +88,79 @@ function ensure_ward_management_tables(PDO $pdo): void
             INDEX idx_ward_orders_status (status)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
     );
+
+    // IV/Dextrose bottle monitoring
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS ward_dextrose (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            admission_id INT NOT NULL,
+            patient_id INT NOT NULL,
+            ward VARCHAR(64) NOT NULL,
+            bottle_no SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+            solution VARCHAR(128) NOT NULL,
+            volume_ml SMALLINT UNSIGNED NOT NULL DEFAULT 1000,
+            rate_ml_hr SMALLINT UNSIGNED NULL,
+            iv_site VARCHAR(128) NULL,
+            started_at DATETIME NOT NULL,
+            completed_at DATETIME NULL,
+            status ENUM('running','completed','discontinued') NOT NULL DEFAULT 'running',
+            recorded_by VARCHAR(255) NULL,
+            notes TEXT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_ward_dext_admission FOREIGN KEY (admission_id) REFERENCES admissions(id) ON DELETE CASCADE,
+            CONSTRAINT fk_ward_dext_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE RESTRICT,
+            INDEX idx_ward_dext_admission (admission_id),
+            INDEX idx_ward_dext_patient (patient_id),
+            INDEX idx_ward_dext_status (status)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+    );
+
+    // Fluid balance (Intake & Output) per shift entry
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS ward_fluid_balance (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            admission_id INT NOT NULL,
+            patient_id INT NOT NULL,
+            ward VARCHAR(64) NOT NULL,
+            shift ENUM('AM','PM','NOC') NOT NULL DEFAULT 'AM',
+            entry_type ENUM('oral_intake','iv_intake','urine_output','drain_output','vomit','other') NOT NULL,
+            volume_ml SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+            notes TEXT NULL,
+            recorded_by VARCHAR(255) NULL,
+            recorded_at DATETIME NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT fk_ward_fluid_admission FOREIGN KEY (admission_id) REFERENCES admissions(id) ON DELETE CASCADE,
+            CONSTRAINT fk_ward_fluid_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE RESTRICT,
+            INDEX idx_ward_fluid_admission (admission_id),
+            INDEX idx_ward_fluid_patient (patient_id),
+            INDEX idx_ward_fluid_recorded (recorded_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+    );
+
+    // Medication Administration Record (MAR)
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS ward_mar (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            admission_id INT NOT NULL,
+            patient_id INT NOT NULL,
+            ward VARCHAR(64) NOT NULL,
+            medication_name VARCHAR(255) NOT NULL,
+            dose VARCHAR(64) NULL,
+            route ENUM('oral','IV','IM','SC','topical','inhalation','other') NOT NULL DEFAULT 'oral',
+            frequency VARCHAR(64) NULL,
+            scheduled_time TIME NULL,
+            given_at DATETIME NULL,
+            given_by VARCHAR(255) NULL,
+            status ENUM('given','held','refused','not_available','pending') NOT NULL DEFAULT 'pending',
+            remarks TEXT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_ward_mar_admission FOREIGN KEY (admission_id) REFERENCES admissions(id) ON DELETE CASCADE,
+            CONSTRAINT fk_ward_mar_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE RESTRICT,
+            INDEX idx_ward_mar_admission (admission_id),
+            INDEX idx_ward_mar_patient (patient_id),
+            INDEX idx_ward_mar_status (status)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+    );
 }
