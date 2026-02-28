@@ -1,8 +1,8 @@
-<?php require_once __DIR__ . '/auth.php'; auth_session_start(); ?>
+<?php require_once __DIR__ . '/../auth.php'; auth_session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php include __DIR__ . '/config.js.php'; ?>
+    <?php include __DIR__ . '/../config.js.php'; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ward Management - Hospital System</title>
@@ -11,9 +11,8 @@
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen">
-        <?php include __DIR__ . '/includes/double-sidebar.php'; ?>
-
-        <main class="ml-16 lg:ml-80 p-8">
+        <?php include __DIR__ . '/includes/ward-sidebar.php'; ?>
+        <main class="ml-64 p-8">
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Ward Management</h1>

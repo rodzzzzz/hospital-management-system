@@ -117,7 +117,7 @@ if (in_array($current, ['admissions.php'], true)) {
     }
 }
 
-if (in_array($current, ['ward-management.php'], true)) {
+if (in_array($current, ['Ward/ward-management.php', 'Ward/index.php', 'Ward/pediatrics-ward.php', 'Ward/obgyn-ward.php', 'Ward/medical-ward.php', 'Ward/ward-census.php', 'Ward/nurses-notes.php'], true)) {
     if (!$isAdmin && !auth_user_has_module($authUser, 'WARD')) {
         header('Location: dashboard.php');
         exit;
@@ -167,10 +167,10 @@ $navItems = [
         'active_pages' => ['admissions.php', 'bed-management.php', 'discharge.php'],
     ],
     [
-        'href' => 'ward-management.php',
+        'href' => 'Ward/index.php',
         'label' => 'Ward Management',
         'icon' => 'fas fa-hospital',
-        'active_pages' => ['ward-management.php'],
+        'active_pages' => ['Ward/ward-management.php', 'Ward/index.php', 'Ward/pediatrics-ward.php', 'Ward/obgyn-ward.php', 'Ward/medical-ward.php', 'Ward/ward-census.php', 'Ward/nurses-notes.php'],
     ],
     [
         'href' => 'dialysis.php',
@@ -235,7 +235,13 @@ $navAlways = ['dashboard.php', 'patients.php', 'chat.php'];
 $navRequirements = [
     'clinical-area.php' => ['ER', 'OPD', 'DOCTOR', 'ICU', 'XRAY'],
     'admissions.php' => ['ADMISSIONS'],
-    'ward-management.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/ward-management.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/index.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/pediatrics-ward.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/obgyn-ward.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/medical-ward.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/ward-census.php' => ['WARD', 'ADMISSIONS'],
+    'Ward/nurses-notes.php' => ['WARD', 'ADMISSIONS'],
     'bed-management.php' => ['ADMISSIONS', 'WARD'],
     'discharge.php' => ['ADMISSIONS', 'DOCTOR', 'WARD'],
     'dialysis.php' => ['LAB'],
@@ -751,42 +757,43 @@ $admissionsInnerItems = [
 ];
 
 $wardPages = [
-    'ward-management.php',
+    'Ward/ward-management.php',
+    'Ward/index.php',
+    'Ward/pediatrics-ward.php',
+    'Ward/obgyn-ward.php',
+    'Ward/medical-ward.php',
+    'Ward/ward-census.php',
+    'Ward/nurses-notes.php',
 ];
 
 $wardInnerItems = [
     [
-        'href' => 'ward-management.php#dashboard',
+        'href' => 'Ward/index.php',
         'label' => 'Dashboard',
         'icon' => 'fas fa-chart-line',
     ],
     [
-        'href' => 'ward-management.php#pedia',
+        'href' => 'Ward/pediatrics-ward.php',
         'label' => 'Pediatrics Ward',
         'icon' => 'fas fa-child',
     ],
     [
-        'href' => 'ward-management.php#obgyne',
+        'href' => 'Ward/obgyn-ward.php',
         'label' => 'OB-GYN Ward',
         'icon' => 'fas fa-venus',
     ],
     [
-        'href' => 'ward-management.php#surgical',
-        'label' => 'Surgical Ward',
-        'icon' => 'fas fa-scalpel',
-    ],
-    [
-        'href' => 'ward-management.php#medical',
+        'href' => 'Ward/medical-ward.php',
         'label' => 'Medical Ward',
         'icon' => 'fas fa-heart-pulse',
     ],
     [
-        'href' => 'ward-management.php#census',
+        'href' => 'Ward/ward-census.php',
         'label' => 'Ward Census',
         'icon' => 'fas fa-list-check',
     ],
     [
-        'href' => 'ward-management.php#nurses-notes',
+        'href' => 'Ward/nurses-notes.php',
         'label' => "Nurse's Notes",
         'icon' => 'fas fa-notes-medical',
     ],
@@ -1482,11 +1489,11 @@ $opdInnerItems = [
                             <?php foreach ($wardInnerItems as $inner): ?>
                                 <?php
                                 $innerHref = (string)($inner['href'] ?? '');
-                                $innerFragment = (string)(parse_url($innerHref, PHP_URL_FRAGMENT) ?: '');
-                                $innerClass = 'ward-inner-link flex items-center gap-x-3 px-3 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors duration-200';
+                                $isActive = ($innerHref === $current || basename($innerHref) === $current);
+                                $innerClass = 'ward-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ' . ($isActive ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
                                 ?>
                                 <li>
-                                    <a href="<?php echo htmlspecialchars($innerHref, ENT_QUOTES); ?>" data-hash="<?php echo htmlspecialchars($innerFragment, ENT_QUOTES); ?>" class="<?php echo $innerClass; ?>">
+                                    <a href="<?php echo htmlspecialchars($innerHref, ENT_QUOTES); ?>" class="<?php echo $innerClass; ?>">
                                         <i class="<?php echo htmlspecialchars($inner['icon'], ENT_QUOTES); ?> w-5 text-center"></i>
                                         <span class="font-medium"><?php echo htmlspecialchars($inner['label'], ENT_QUOTES); ?></span>
                                     </a>
@@ -2918,33 +2925,6 @@ $opdInnerItems = [
         nav.addEventListener('click', function () { window.setTimeout(setActiveFromHash, 0); });
     })();
 
-    (function () {
-        var nav = document.getElementById('ward-inner-nav');
-        if (!nav) return;
-        function getPage() {
-            var p = '';
-            try { p = (window.location && window.location.pathname ? window.location.pathname : '').toString(); } catch (e0) { p = ''; }
-            p = (p.split('?')[0] || '').split('#')[0];
-            return (p || '').replace(/^.*\//, '');
-        }
-        if (getPage() !== 'ward-management.php') {
-            nav.querySelectorAll('a.ward-inner-link[data-hash]').forEach(function (a) {
-                a.className = 'ward-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-gray-200';
-            });
-            return;
-        }
-        function setActiveFromHash() {
-            var h = '';
-            try { h = (window.location.hash || '').toString().replace(/^#/, ''); } catch (e0) { h = ''; }
-            if (!h) h = 'dashboard';
-            nav.querySelectorAll('a.ward-inner-link[data-hash]').forEach(function (a) {
-                var target = (a.getAttribute('data-hash') || '').toString();
-                a.className = 'ward-inner-link flex items-center gap-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ' + (target === h ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-200');
-            });
-        }
-        setActiveFromHash();
-        window.addEventListener('hashchange', setActiveFromHash);
-        nav.addEventListener('click', function () { window.setTimeout(setActiveFromHash, 0); });
-    })();
+    // Ward navigation - file-based, no hash navigation needed
 
 </script>
